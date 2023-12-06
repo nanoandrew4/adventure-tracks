@@ -1,19 +1,19 @@
 <template>
     <div id="track-creator" class="track-creator">
         <div id="adventure-track" class="adventure-track">
-            <ActivityMap id="activityMap" ref="activityMap" :bbox="bbox" :activities="adventure.activities" />
+            <ActivityMap ref="activityMap" />
             <DataGraph :display="displayGraph" />
             <h1 id="main-text">{{ adventure.mainText }}</h1>
             <h2 id="secondary-text">{{ adventure.secondaryText }}</h2>
         </div>
-        <ConfigurationPanel />
+        <ConfigurationPanel @capture="capture"/>
     </div>
     <div id="output"></div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
-import ActivityMap from '../components/ActivityMap.js'
+import { ref, defineComponent } from 'vue'
+import ActivityMap from '../components/ActivityMap.vue'
 import DataGraph from '../components/DataGraph.vue'
 import ConfigurationPanel from '../components/ConfigurationPanel.vue'
 import "../../node_modules/mapbox-gl/dist/mapbox-gl.css"
@@ -39,12 +39,8 @@ export default defineComponent({
     },
     data() {
         const rawGpxFiles: string[] = []
-        const bbox: number[][] = [
-            [-74.04728500751165, 40.68392799015035],
-            [-73.91058699000139, 40.87764500765852],
-        ]
         return {
-            bbox,
+            activityMap: ref<InstanceType<typeof ActivityMap>>(),
             rawGpxFiles
         }
     },
@@ -67,14 +63,13 @@ export default defineComponent({
     },
     methods: {
         async capture() {
-            const activityMapComponent = this.$refs.activityMap as Vue & { resizeMap: () => void, recenter: () => void };
-            // const activityMapImage = activityMapComponent.captureMap();
-
             let captureElement = document.getElementById("adventure-track")
-            if (captureElement != null) {
+            let activityMapRef = this.$refs.activityMap as typeof ActivityMap
+
+            if (captureElement != null && activityMapRef != null) {
                 captureElement.style.width = '7680px'
-                activityMapComponent.resizeMap()
-                activityMapComponent.recenter()
+                activityMapRef.resizeMap()
+                activityMapRef.recenter()
 
                 await new Promise(r => setTimeout(r, 5000));
 
@@ -96,7 +91,7 @@ export default defineComponent({
                 await new Promise(r => setTimeout(r, 2000));
 
                 captureElement.style.width = ''
-                activityMapComponent.resizeMap()
+                activityMapRef.resizeMap()
             } else {
                 alert("Adventure track to save could not be located")
             }

@@ -1,23 +1,45 @@
+<template>
+  <div id="mapContainer" class="map-container"></div>
+</template>
+
+<script lang="ts">
 import mapboxgl from 'mapbox-gl'
+import { defineComponent } from 'vue';
+import type { Activity } from '../types/Activity.type';
+import { useStore } from '../vuex/store';
+import type { Store } from 'vuex';
 
-mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN
+let store: Store
+let map: mapboxgl.Map
 
-const ActivityMap = {
-  template: `
-        <div id="mapContainer" ref="mapContainer" class="map-container"></div>
-    `,
-  props: ['bbox', 'activities', 'orientation'],
-  data: () => ({ map: null }),
+export default defineComponent({
+  computed: {
+    activities: (): Activity[] => store.state.adventure.activities
+  },
+  data() {
+    return {
+      boundingCoordinateBox: [
+        [-74.04728500751165, 40.68392799015035],
+        [-73.91058699000139, 40.87764500765852],
+      ]
+    }
+  },
   setup(props) {
-    
+    store = useStore()
+    mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN
   },
   mounted() {
-    const bbox = this.bbox
+    const bbox = this.boundingCoordinateBox
 
-    const map = new mapboxgl.Map({
-      container: this.$refs.mapContainer,
+    const mapContainerElement = document.getElementById('mapContainer')
+    if (mapContainerElement == null)
+      return
+
+    const center: [number, number] = [bbox[0][0].valueOf(), bbox[0][1].valueOf()]
+    map = new mapboxgl.Map({
+      container: mapContainerElement,
       style: 'mapbox://styles/nanoandrew4/clppmhvwn00zp01qt8lcsh6py',
-      center: [bbox[0][0], bbox[0][1]],
+      center: center,
       bearing: 0,
       pitch: 0,
       zoom: 9,
@@ -26,13 +48,13 @@ const ActivityMap = {
     })
 
     map.addControl(
-      new mapboxgl.NavigationControl({ showCompass: false, showPitch: false, showZoom: false })
+      new mapboxgl.NavigationControl({ showCompass: false, showZoom: false })
     )
     // map.addControl(new mapboxgl.AttributionControl({
     //     customAttribution: "© Mapbox, © OpenStreetMap"
     // }))
 
-    const calculatedZoomAndCenter = this.calculateZoomAndCenter(bbox, map)
+    const calculatedZoomAndCenter = this.calculateZoomAndCenter()
     map.setCenter({
       lng: calculatedZoomAndCenter.center[0],
       lat: calculatedZoomAndCenter.center[1]
@@ -46,30 +68,21 @@ const ActivityMap = {
       // Reset the pitch to 0 whenever it changes
       map.setPitch(0)
     })
-
-    this.map = map
   },
   unmounted() {
-    this.map.remove()
-    this.map = null
+    map.remove()
   },
   watch: {
-    orientation(next) {
-      // if (next == "vertical") {
-      // } else {
-      // }
-    },
-    bbox(next) {
-      const map = this.map
-      const calculatedZoomAndCenter = this.calculateZoomAndCenter(next, map)
+    boundingCoordinateBox(next) {
+      this.boundingCoordinateBox = next
+      const calculatedZoomAndCenter = this.calculateZoomAndCenter()
       map.setCenter({
         lng: calculatedZoomAndCenter.center[0],
         lat: calculatedZoomAndCenter.center[1]
       })
       map.setZoom(calculatedZoomAndCenter.zoom)
     },
-    activities(old, next) {
-      const map = this.map
+    activities(old: Activity[], next: Activity[]) {
       console.log(this.activities)
 
       if (old !== undefined) {
@@ -84,15 +97,17 @@ const ActivityMap = {
 
       this.activities.forEach((newActivity) => {
         console.log(newActivity)
+        let data: GeoJSON.Feature = {
+          type: 'Feature',
+          geometry: {
+            type: 'LineString',
+            coordinates: newActivity.activityGeoPoints.map(geoPoint => geoPoint.position)
+          },
+          properties: null
+        }
         map.addSource(newActivity.sourceName, {
           type: 'geojson',
-          data: {
-            type: 'Feature',
-            geometry: {
-              type: 'LineString',
-              coordinates: newActivity.lineCoordinates
-            }
-          }
+          data
         })
         // Add a layer to display the line
         map.addLayer({
@@ -113,55 +128,40 @@ const ActivityMap = {
   },
   methods: {
     resizeMap() {
-      this.map.resize()
-    },
-    getLocation() {
-      return {
-        ...this.map.getCenter(),
-        bearing: this.map.getBearing(),
-        pitch: this.map.getPitch(),
-        zoom: this.map.getZoom()
-      }
+      map.resize()
     },
     recenter() {
-      const map = this.map
-      const calculatedZoomAndCenter = this.calculateZoomAndCenter(this.bbox, map)
+      const calculatedZoomAndCenter = this.calculateZoomAndCenter()
       map.setCenter({
         lng: calculatedZoomAndCenter.center[0],
         lat: calculatedZoomAndCenter.center[1]
       })
       map.setZoom(calculatedZoomAndCenter.zoom)
     },
-    calculateZoomAndCenter(bbox, map) {
-      const bounds = new mapboxgl.LngLatBounds(bbox[0], bbox[1])
+    calculateZoomAndCenter() {
+      const boundsLike: [number, number, number, number] = [
+        this.boundingCoordinateBox[0][0],
+        this.boundingCoordinateBox[0][1],
+        this.boundingCoordinateBox[1][0],
+        this.boundingCoordinateBox[1][1]
+      ]
+      const bounds = new mapboxgl.LngLatBounds(boundsLike)
 
       const { lng, lat } = bounds.getCenter()
       const ne = bounds.getNorthEast()
       const sw = bounds.getSouthWest()
 
       // Calculate the zoom level based on the bounding box dimensions
-      const zoom = this.getZoom(ne.lng - sw.lng, map._canvas.clientWidth)
+      const zoom = this.getZoom(ne.lng - sw.lng, map.getCanvas().clientWidth)
 
       return { center: [lng, lat], zoom }
     },
-    getZoom(width, containerWidth) {
+    getZoom(width: number, containerWidth: number) {
       const zoom = Math.log2(containerWidth / width) - 1
       return zoom
     },
-    takeScreenshot() {
-        const map = this.map
-        const recenterFunc = this.recenter
-        return new Promise(function (resolve, reject) {
-            map.once("render", function () {
-                resolve(map.getCanvas().toDataURL());
-            });
-            /* trigger render */
-            map.triggerRepaint();
-            recenterFunc();
-        })
-    },
     captureMap() {
-      const dataURL = this.map.getCanvas().toDataURL('image/png')
+      const dataURL = map.getCanvas().toDataURL('image/png')
 
       // Create an image element to display or download the screenshot
       const image = new Image()
@@ -171,6 +171,16 @@ const ActivityMap = {
       return image
     }
   }
-}
+});
 
-export default ActivityMap
+</script>
+
+<style>
+.map-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    aspect-ratio: 16/9;
+    border-radius: 12px;
+}
+</style>

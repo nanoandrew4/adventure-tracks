@@ -4,7 +4,7 @@
             :max-file-size="20 * 1024 * 1024" @validated="handleFilesValidated" @changed="handleFilesChanged">
             Select GPX files
         </FileSelector>
-        <v-btn class="configurator_save-btn" @click="capture">
+        <v-btn class="configurator_save-btn" @click="$emit('capture')">
             Save Adventure
         </v-btn>
     </div>
@@ -19,7 +19,7 @@ import html2canvas from 'html2canvas';
 import { constants } from '../constants/constants'
 import { buildSampleAdventure } from '../helpers/buildSampleAdventure'
 import { type Activity } from '../types/Activity.type'
-import { type GeoPoint } from '../types/GeoPoint.type'
+import { GeoPoint } from '../types/GeoPoint.type'
 import {useStore} from '../vuex/store'
 import {Store} from '../../vuex'
 
@@ -69,41 +69,6 @@ export default defineComponent({
 
             return decodedGpx || '';
         },
-        async capture() {
-            const activityMapComponent = this.$refs.activityMap as Vue & { resizeMap: () => void, recenter: () => void };
-            // const activityMapImage = activityMapComponent.captureMap();
-
-            let captureElement = document.getElementById("adventure-track")
-            if (captureElement != null) {
-                captureElement.style.width = '7680px'
-                activityMapComponent.resizeMap()
-                activityMapComponent.recenter()
-
-                await new Promise(r => setTimeout(r, 5000));
-
-                html2canvas(captureElement).then((canvas) => {
-                    const newWindow = window.open();
-
-                    if (newWindow != null) {
-                        newWindow.document.write(`<html><body><div id="output"></body></html>`);
-
-                        let outputDiv = newWindow.document.getElementById('output')
-                        if (outputDiv != null) {
-                            outputDiv.appendChild(canvas);
-                        }
-
-                        newWindow.document.close();
-                    }
-                })
-
-                await new Promise(r => setTimeout(r, 2000));
-
-                captureElement.style.width = ''
-                activityMapComponent.resizeMap()
-            } else {
-                alert("Adventure track to save could not be located")
-            }
-        },
         draw() {
             var gpx = new GpxParser()
             let minLat = 1000, minLong = 1000
@@ -119,22 +84,19 @@ export default defineComponent({
                 let activitySourceName = track.name.toLowerCase().replace(/\s/g, '_',)
                 // console.log(activitySourceName)
                 let activityGeoPoints: GeoPoint[] = []
-                let elevationProfile: number[] = []
                 // let heartRateData: number[] = []
                 track.points.forEach(point => {
-                    elevationProfile.push(point.ele)
                     maxLat = Math.max(point.lat, maxLat)
                     minLat = Math.min(point.lat, minLat)
                     maxLong = Math.max(point.lon, maxLong)
                     minLong = Math.min(point.lon, minLong)
-                    activityGeoPoints.push({ longitude: point.lon, latitude: point.lat })
+                    activityGeoPoints.push(new GeoPoint(point.lon, point.lat, point.ele))
                 })
 
                 activities.push({
                     name: activityName,
                     sourceName: activitySourceName,
                     activityGeoPoints,
-                    elevationProfile,
                     elevationProfileColor: constants.defaultTextColor,
                     lineColor: constants.defaultBackgroundColor
                 })

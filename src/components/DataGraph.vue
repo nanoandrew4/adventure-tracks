@@ -55,8 +55,9 @@ export default defineComponent({
             let numOfElevationPoints = 0;
             let highestPoint = 0;
             activities.forEach(activity => {
-                numOfElevationPoints += activity.elevationProfile.length;
-                highestPoint = Math.max(...activity.elevationProfile, highestPoint)
+                const elevationProfile = activity.activityGeoPoints.flatMap((geoPoint) => (geoPoint.elevation() !== undefined ? [geoPoint?.elevation() as number] : []))
+                numOfElevationPoints += activity.activityGeoPoints.length;
+                highestPoint = Math.max(...elevationProfile, highestPoint)
             });
 
             console.log(highestPoint)
@@ -68,11 +69,13 @@ export default defineComponent({
             newSvg.setAttribute('viewBox', `0 0 ${componentWidth} ${graphHeightPx}`)
             let numOfProcessedElevationPoints = 0
             activities.forEach(activity => {
+                const elevationProfile = activity.activityGeoPoints.flatMap((geoPoint) => (geoPoint.elevation() !== undefined ? [geoPoint?.elevation() as number] : []))
+
                 let svgGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g')
-                svgGroup.style.width = `${(activity.elevationProfile.length / numOfElevationPoints) * componentWidth}px`
+                svgGroup.style.width = `${(elevationProfile.length / numOfElevationPoints) * componentWidth}px`
                 svgGroup.style.height = componentHeight
                 let activitySvgPath = document.createElementNS('http://www.w3.org/2000/svg', 'path')
-                activitySvgPath.style.width = `${(activity.elevationProfile.length / numOfElevationPoints) * componentWidth}px`
+                activitySvgPath.style.width = `${(elevationProfile.length / numOfElevationPoints) * componentWidth}px`
                 activitySvgPath.style.height = componentHeight
                 activitySvgPath.setAttribute('fill', activity.elevationProfileColor)
                 activitySvgPath.setAttribute('vector-effect', 'non-scaling-stroke')
@@ -80,7 +83,7 @@ export default defineComponent({
                 const stepSize = (componentWidth / numOfElevationPoints)
                 let currPx = (numOfProcessedElevationPoints / numOfElevationPoints) * componentWidth
                 let d = "M " + currPx + " " + graphHeightPx
-                activity.elevationProfile.forEach((elevationPoint) => {
+                elevationProfile.forEach((elevationPoint) => {
                     d += " L " + currPx + " " + (graphHeightPx - (elevationPoint / highestPoint) * graphHeightPx)
                     currPx += stepSize
                 })
@@ -90,7 +93,7 @@ export default defineComponent({
 
                 newSvg.appendChild(svgGroup)
 
-                numOfProcessedElevationPoints += activity.elevationProfile.length
+                numOfProcessedElevationPoints += elevationProfile.length
             });
 
             let oldSvg = document.getElementById('data-graph')
