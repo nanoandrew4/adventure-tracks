@@ -14,32 +14,23 @@ let map: mapboxgl.Map
 
 export default defineComponent({
   computed: {
-    activities: (): Activity[] => store.state.adventure.activities
-  },
-  data() {
-    return {
-      boundingCoordinateBox: [
-        [-74.04728500751165, 40.68392799015035],
-        [-73.91058699000139, 40.87764500765852],
-      ]
-    }
+    activities: (): Activity[] => store.state.adventure.activities,
+    boundingCoordinateBox: (): [number, number, number, number] => store.state.boundingCoordinateBox
   },
   setup(props) {
     store = useStore()
     mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN
   },
   mounted() {
-    const bbox = this.boundingCoordinateBox
-
     const mapContainerElement = document.getElementById('mapContainer')
     if (mapContainerElement == null)
       return
 
-    const center: [number, number] = [bbox[0][0].valueOf(), bbox[0][1].valueOf()]
+    const bounds = new mapboxgl.LngLatBounds(this.boundingCoordinateBox)
     map = new mapboxgl.Map({
       container: mapContainerElement,
       style: 'mapbox://styles/nanoandrew4/clppmhvwn00zp01qt8lcsh6py',
-      center: center,
+      center: bounds.getCenter(),
       bearing: 0,
       pitch: 0,
       zoom: 9,
@@ -73,8 +64,7 @@ export default defineComponent({
     map.remove()
   },
   watch: {
-    boundingCoordinateBox(next) {
-      this.boundingCoordinateBox = next
+    boundingCoordinateBox() {
       const calculatedZoomAndCenter = this.calculateZoomAndCenter()
       map.setCenter({
         lng: calculatedZoomAndCenter.center[0],
@@ -83,8 +73,6 @@ export default defineComponent({
       map.setZoom(calculatedZoomAndCenter.zoom)
     },
     activities(old: Activity[], next: Activity[]) {
-      console.log(this.activities)
-
       if (old !== undefined) {
         old.forEach((oldActivity) => {
           console.log('Old activity: ' + oldActivity.name)
@@ -139,13 +127,7 @@ export default defineComponent({
       map.setZoom(calculatedZoomAndCenter.zoom)
     },
     calculateZoomAndCenter() {
-      const boundsLike: [number, number, number, number] = [
-        this.boundingCoordinateBox[0][0],
-        this.boundingCoordinateBox[0][1],
-        this.boundingCoordinateBox[1][0],
-        this.boundingCoordinateBox[1][1]
-      ]
-      const bounds = new mapboxgl.LngLatBounds(boundsLike)
+      const bounds = new mapboxgl.LngLatBounds(this.boundingCoordinateBox)
 
       const { lng, lat } = bounds.getCenter()
       const ne = bounds.getNorthEast()
@@ -159,16 +141,6 @@ export default defineComponent({
     getZoom(width: number, containerWidth: number) {
       const zoom = Math.log2(containerWidth / width) - 1
       return zoom
-    },
-    captureMap() {
-      const dataURL = map.getCanvas().toDataURL('image/png')
-
-      // Create an image element to display or download the screenshot
-      const image = new Image()
-      image.src = dataURL
-
-      // Optionally, append the image to the document or open it in a new tab
-      return image
     }
   }
 });

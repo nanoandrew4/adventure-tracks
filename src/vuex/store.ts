@@ -8,6 +8,7 @@ import mutations from './mutations'
 // define your typings for the store state
 export interface State {
   adventure: Adventure
+  boundingCoordinateBox: [number, number, number, number]
 }
 
 // define injection key
@@ -15,7 +16,10 @@ export const key: InjectionKey<Store<State>> = Symbol()
 
 export const store = createStore<State>({
   state: {
-    adventure: buildSampleAdventure(new Date().toLocaleDateString())
+    adventure: buildSampleAdventure(new Date().toLocaleDateString()),
+    boundingCoordinateBox: [
+      -74.04728500751165, 40.68392799015035, -73.91058699000139, 40.87764500765852
+    ]
   },
   mutations
 })

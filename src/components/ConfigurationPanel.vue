@@ -14,14 +14,13 @@
 import { defineComponent } from 'vue'
 import { type FsValidationResult } from 'vue-file-selector/dist';
 import GpxParser from 'gpxparser'
-import html2canvas from 'html2canvas';
 
 import { constants } from '../constants/constants'
 import { buildSampleAdventure } from '../helpers/buildSampleAdventure'
 import { type Activity } from '../types/Activity.type'
-import { GeoPoint } from '../types/GeoPoint.type'
-import {useStore} from '../vuex/store'
-import {Store} from '../../vuex'
+import { GeoPoint } from '../types/GeoPoint'
+import { useStore } from '../vuex/store'
+import { Store } from '../../vuex'
 
 let store: Store;
 
@@ -31,12 +30,7 @@ export default defineComponent({
     },
     data() {
         const rawGpxFiles: string[] = []
-        const bbox: number[][] = [
-            [-74.04728500751165, 40.68392799015035],
-            [-73.91058699000139, 40.87764500765852],
-        ]
         return {
-            bbox,
             store: useStore(),
             rawGpxFiles
         }
@@ -98,17 +92,15 @@ export default defineComponent({
                     sourceName: activitySourceName,
                     activityGeoPoints,
                     elevationProfileColor: constants.defaultTextColor,
-                    lineColor: constants.defaultBackgroundColor
+                    lineColor: constants.defaultBackgroundColor,
+                    startTime: track.points[0].time,
+                    endTime: track.points[track.points.length - 1].time
                 })
             });
 
-            this.bbox = [
-                [minLong, minLat],
-                [maxLong, maxLat],
-            ]
-            console.log(gpx.tracks[0].points[0].time.toDateString())
             store.commit('UPDATE_ADVENTURE', buildSampleAdventure(gpx.tracks[0].points[0].time.toDateString()))
-            store.commit('UPDATE_ADVENTURE_ACTIVITIES', activities)
+            store.commit('UPDATE_ADVENTURE_ACTIVITIES', activities.sort((a, b) => a.startTime.getTime() - b.startTime.getTime()))
+            store.commit('UPDATE_BOUNDING_COORDINATE_BOX', [minLong, minLat, maxLong, maxLat])
         },
     }
 })
@@ -161,3 +153,4 @@ export default defineComponent({
 
 }
 </style>
+../types/GeoPoint
