@@ -1,0 +1,17 @@
+{
+  "header": {
+    "home": "Home",
+    "creator": "Creador",
+    "about": "About"
+  },
+  "creator": {
+    "config-panel": {
+      "activities": "Actividades",
+      "activity": {
+        "line-color": "Color de linea"
+      },
+      "select-gpx-files": "Selecciona tus fickeros GPX",
+      "save": "Guardar aventura"
+    }
+  }
+}

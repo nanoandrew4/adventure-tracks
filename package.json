@@ -12,6 +12,8 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
+    "@jamescoyle/vue-icon": "^0.1.2",
+    "@mdi/js": "^7.3.67",
     "@types/geojson": "^7946.0.13",
     "gpxparser": "^3.0.8",
     "html2canvas": "^1.4.1",
@@ -20,6 +22,8 @@
     "vite-plugin-vuetify": "^1.0.2",
     "vue": "^3.3.4",
     "vue-file-selector": "^2.0.2",
+    "vue-i18n": "^9.8.0",
+    "vue-material-design-icons": "^5.2.0",
     "vue-router": "^4.2.5",
     "vuetify": "^3.4.4",
     "vuex": "^4.0.2"

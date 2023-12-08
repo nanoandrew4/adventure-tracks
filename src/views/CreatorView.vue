@@ -105,13 +105,14 @@ export default defineComponent({
     width: 100%;
     height: fit-content;
     display: grid;
-    grid-template-columns: 80% 20%;
+    grid-template-columns: 75% 25%;
     align-items: center;
     justify-content: center;
 }
 
 .adventure-track {
-    width: 60vw;
+    width: 100%;
+    
 }
 
 .map-container {
@@ -120,6 +121,7 @@ export default defineComponent({
     align-items: center;
     aspect-ratio: 16/9;
     border-radius: 12px;
+    margin: 20px;
 }
 
 .configurator {

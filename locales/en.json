@@ -1,0 +1,17 @@
+{
+  "header": {
+    "home": "Home",
+    "creator": "Creator",
+    "about": "About"
+  },
+  "creator": {
+    "config-panel": {
+      "activities": "Activities",
+      "activity": {
+        "line-color": "Line color"
+      },
+      "select-gpx-files": "Select GPX files",
+      "save": "Save adventure"
+    }
+  }
+}

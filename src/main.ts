@@ -1,10 +1,27 @@
 import './assets/main.css'
-import 'vue-file-selector/dist/main.css';
+import 'vue-file-selector/dist/main.css'
 
 import { createApp } from 'vue'
+import { createI18n } from 'vue-i18n'
 import { store, key } from './vuex/store'
 import App from './App.vue'
 import router from './router'
+
+import en from '../locales/en.json'
+import es from '../locales/es.json'
+
+type MessageSchema = typeof en
+const i18n = createI18n<[MessageSchema], 'en' | 'es'>({
+  legacy: false,
+  allowComposition: true,
+  locale: 'en',
+  fallbackLocale: 'en',
+  globalInjection: true,
+  messages: {
+    en: { ...en },
+    es: { ...es }
+  }
+})
 
 // Vuetify
 import 'vuetify/styles'
@@ -14,14 +31,15 @@ import * as directives from 'vuetify/directives'
 
 const vuetify = createVuetify({
     components,
-    directives,
-  })
+    directives
+})
 
-import FileSelector from 'vue-file-selector';
+import FileSelector from 'vue-file-selector'
 
 const app = createApp(App)
 
 app.use(router)
+app.use(i18n)
 app.use(store, key)
 app.use(FileSelector)
 app.use(vuetify)
