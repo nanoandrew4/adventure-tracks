@@ -1,4 +1,4 @@
-import {type Activity} from './Activity.type'
+import {type Activity} from './Activity'
 
 export interface Adventure {
     mainText: string;

@@ -12,7 +12,7 @@ export default {
   UPDATE_ADVENTURE_ACTIVITIES(state: State, updatedActivities: Activity[]) {
     state.adventure.activities = updatedActivities
   },
-  UPDATE_ACTIVITY_LINE_COLOR(state: State, activityToMutate: Activity) {
+  UPDATE_ACTIVITY(state: State, activityToMutate: Activity) {
     state.adventure.activities.forEach((activity) => {
       if (activity.name == activityToMutate.name) activity = activityToMutate
     })

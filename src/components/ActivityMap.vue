@@ -1,13 +1,16 @@
 <template>
-  <div id="mapContainer" class="map-container"></div>
+  <div
+    id="mapContainer"
+    class="map-container"
+  ></div>
 </template>
 
 <script lang="ts">
 import mapboxgl from 'mapbox-gl'
-import { defineComponent } from 'vue';
-import type { Activity } from '../types/Activity.type';
-import { useStore } from '../vuex/store';
-import type { Store } from 'vuex';
+import { defineComponent } from 'vue'
+import type { Activity } from '../types/Activity'
+import { useStore } from '../vuex/store'
+import type { Store } from 'vuex'
 
 let store: Store
 let map: mapboxgl.Map
@@ -17,14 +20,13 @@ export default defineComponent({
     activities: (): Activity[] => store.state.adventure.activities,
     boundingCoordinateBox: (): [number, number, number, number] => store.state.boundingCoordinateBox
   },
-  setup(props) {
+  setup() {
     store = useStore()
     mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN
   },
   mounted() {
     const mapContainerElement = document.getElementById('mapContainer')
-    if (mapContainerElement == null)
-      return
+    if (mapContainerElement == null) return
 
     const bounds = new mapboxgl.LngLatBounds(this.boundingCoordinateBox)
     map = new mapboxgl.Map({
@@ -38,9 +40,7 @@ export default defineComponent({
       attributionControl: true
     })
 
-    map.addControl(
-      new mapboxgl.NavigationControl({ showCompass: false, showZoom: false })
-    )
+    map.addControl(new mapboxgl.NavigationControl({ showCompass: false, showZoom: false }))
     // map.addControl(new mapboxgl.AttributionControl({
     //     customAttribution: "© Mapbox, © OpenStreetMap"
     // }))
@@ -72,49 +72,79 @@ export default defineComponent({
       })
       map.setZoom(calculatedZoomAndCenter.zoom)
     },
-    activities(old: Activity[], next: Activity[]) {
-      if (old !== undefined) {
-        old.forEach((oldActivity) => {
-          console.log('Old activity: ' + oldActivity.name)
-          if (map.getSource(oldActivity.sourceName)) {
-            map.removeLayer(`layer-${oldActivity.sourceName}`)
-            map.removeSource(oldActivity.sourceName)
+    activities: {
+      deep: true,
+      handler(modifiedActivities: Activity[], oldActivities: Activity[]) {
+        let fullRedrawRequired = !oldActivities || oldActivities.length !== modifiedActivities.length
+        if (!fullRedrawRequired) {
+          const currentActivityUids = modifiedActivities.flatMap((activity) => [activity.uid])
+          const oldActivityUids = oldActivities.flatMap((activity) => [activity.uid])
+          fullRedrawRequired = !this.arraysEqual(currentActivityUids, oldActivityUids)
+        }
+
+        if (oldActivities !== undefined) {
+          oldActivities.forEach((oldActivity) => {
+            if (fullRedrawRequired && map.getSource(oldActivity.sourceName)) {
+              map.removeLayer(oldActivity.layerName)
+              map.removeSource(oldActivity.sourceName)
+            }
+          })
+        }
+
+        modifiedActivities.forEach((modifiedActivity) => {
+          if (fullRedrawRequired) {
+            let data: GeoJSON.Feature = {
+              type: 'Feature',
+              geometry: {
+                type: 'LineString',
+                coordinates: modifiedActivity.activityGeoPoints.map((geoPoint) => geoPoint.position)
+              },
+              properties: null
+            }
+            map.addSource(modifiedActivity.sourceName, {
+              type: 'geojson',
+              data
+            })
+
+            map.addLayer({
+              id: modifiedActivity.layerName,
+              type: 'line',
+              source: modifiedActivity.sourceName,
+              layout: {
+                'line-join': 'round',
+                'line-cap': 'round'
+              },
+              paint: {
+                'line-color': modifiedActivity.lineColor,
+                'line-width': 4
+              }
+            })
+          } else if (map.getPaintProperty(modifiedActivity.layerName, 'line-color') != modifiedActivity.lineColor) {
+            map.setPaintProperty(modifiedActivity.layerName, 'line-color', modifiedActivity.lineColor)
+          } else {
+            console.log(`${map.getPaintProperty(modifiedActivity.layerName, 'line-color')} != ${modifiedActivity.lineColor}`)
           }
         })
       }
-
-      this.activities.forEach((newActivity) => {
-        console.log(newActivity)
-        let data: GeoJSON.Feature = {
-          type: 'Feature',
-          geometry: {
-            type: 'LineString',
-            coordinates: newActivity.activityGeoPoints.map(geoPoint => geoPoint.position)
-          },
-          properties: null
-        }
-        map.addSource(newActivity.sourceName, {
-          type: 'geojson',
-          data
-        })
-        // Add a layer to display the line
-        map.addLayer({
-          id: 'layer-' + newActivity.sourceName,
-          type: 'line',
-          source: newActivity.sourceName,
-          layout: {
-            'line-join': 'round',
-            'line-cap': 'round'
-          },
-          paint: {
-            'line-color': '#888',
-            'line-width': 4
-          }
-        })
-      })
     }
   },
   methods: {
+    arraysEqual<T>(a: T[], b: T[]): boolean {
+      if (a.length !== b.length) {
+        return false
+      }
+
+      const sortedA = [...a].sort()
+      const sortedB = [...b].sort()
+
+      for (let i = 0; i < sortedA.length; i++) {
+        if (sortedA[i] !== sortedB[i]) {
+          return false
+        }
+      }
+
+      return true
+    },
     resizeMap() {
       map.resize()
     },
@@ -143,16 +173,15 @@ export default defineComponent({
       return zoom
     }
   }
-});
-
+})
 </script>
 
 <style>
 .map-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    aspect-ratio: 16/9;
-    border-radius: 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  aspect-ratio: 16/9;
+  border-radius: 12px;
 }
 </style>

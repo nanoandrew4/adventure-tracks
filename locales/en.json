@@ -8,7 +8,8 @@
     "config-panel": {
       "activities": "Activities",
       "activity": {
-        "line-color": "Line color"
+        "line-color": "Line color",
+        "elevation-color": "Elevation profile color"
       },
       "select-gpx-files": "Select GPX files",
       "save": "Save adventure"

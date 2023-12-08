@@ -8,7 +8,8 @@
     "config-panel": {
       "activities": "Actividades",
       "activity": {
-        "line-color": "Color de linea"
+        "line-color": "Color de linea",
+        "elevation-color": "Color del perfil de elevacion"
       },
       "select-gpx-files": "Selecciona tus fickeros GPX",
       "save": "Guardar aventura"

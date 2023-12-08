@@ -44,7 +44,7 @@ export default defineComponent({
             rawGpxFiles
         }
     },
-    setup(props) {
+    setup() {
         store = useStore()
     },
     mounted() {
@@ -112,7 +112,6 @@ export default defineComponent({
 
 .adventure-track {
     width: 100%;
-    
 }
 
 .map-container {

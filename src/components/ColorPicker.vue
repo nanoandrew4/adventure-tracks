@@ -28,7 +28,6 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { constants } from '../constants/constants'
 import SvgIcon from '@jamescoyle/vue-icon'
 import { mdiCloseCircleOutline } from '@mdi/js'
 

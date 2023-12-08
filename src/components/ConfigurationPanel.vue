@@ -34,7 +34,7 @@ import GpxParser from 'gpxparser'
 import ActivityCard from './ActivityCard.vue'
 import { constants } from '../constants/constants'
 import { buildSampleAdventure } from '../helpers/buildSampleAdventure'
-import { type Activity } from '../types/Activity.type'
+import { Activity } from '../types/Activity'
 import { GeoPoint } from '../types/GeoPoint'
 import { useStore } from '../vuex/store'
 import { Store } from '../../vuex'
@@ -95,7 +95,6 @@ export default defineComponent({
 
       gpx.tracks.forEach((track) => {
         let activityName = track.name
-        let activitySourceName = track.name.toLowerCase().replace(/\s/g, '_')
         let activityGeoPoints: GeoPoint[] = []
         // let heartRateData: number[] = []
         track.points.forEach((point) => {
@@ -106,15 +105,16 @@ export default defineComponent({
           activityGeoPoints.push(new GeoPoint(point.lon, point.lat, point.ele))
         })
 
-        activities.push({
-          name: activityName,
-          sourceName: activitySourceName,
-          activityGeoPoints,
-          elevationProfileColor: constants.defaultTextColor,
-          lineColor: constants.defaultBackgroundColor,
-          startTime: track.points[0].time,
-          endTime: track.points[track.points.length - 1].time
-        })
+        activities.push(
+          new Activity(
+            activityName,
+            activityGeoPoints,
+            constants.defaultTextColor,
+            constants.defaultBackgroundColor,
+            track.points[0].time,
+            track.points[track.points.length - 1].time
+          )
+        )
       })
 
       store.commit(

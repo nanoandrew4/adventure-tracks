@@ -1,5 +1,5 @@
 import { type GeoPoint } from '../types/GeoPoint'
-import { type Activity } from '../types/Activity.type'
+import { type Activity } from '../types/Activity'
 import objectHash from 'object-hash'
 
 const requestURL = import.meta.env.VITE_ELEVATION_API_ENDPOINT
