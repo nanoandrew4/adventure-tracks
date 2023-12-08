@@ -12,6 +12,8 @@
         "elevation-color": "Elevation profile color"
       },
       "select-gpx-files": "Select GPX files",
+      "map-styles": "Map styles",
+      "adventure": "Adventure",
       "save": "Save adventure"
     }
   }

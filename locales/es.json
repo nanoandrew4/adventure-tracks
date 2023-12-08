@@ -9,9 +9,11 @@
       "activities": "Actividades",
       "activity": {
         "line-color": "Color de linea",
-        "elevation-color": "Color del perfil de elevacion"
+        "elevation-color": "Color del perfil de elevación"
       },
-      "select-gpx-files": "Selecciona tus fickeros GPX",
+      "select-gpx-files": "Selecciona tus ficheros GPX",
+      "map-styles": "Estilos del mapa",
+      "adventure": "Aventura",
       "save": "Guardar aventura"
     }
   }

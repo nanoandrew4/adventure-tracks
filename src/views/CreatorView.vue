@@ -15,7 +15,7 @@
 import { ref, defineComponent } from 'vue'
 import ActivityMap from '../components/ActivityMap.vue'
 import DataGraph from '../components/DataGraph.vue'
-import ConfigurationPanel from '../components/ConfigurationPanel.vue'
+import ConfigurationPanel from '../components/configurator/MainPanel.vue'
 import "../../node_modules/mapbox-gl/dist/mapbox-gl.css"
 import html2canvas from 'html2canvas';
 
@@ -118,25 +118,8 @@ export default defineComponent({
     display: flex;
     justify-content: center;
     align-items: center;
-    aspect-ratio: 16/9;
     border-radius: 12px;
     margin: 20px;
-}
-
-.configurator {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
-
-    &_save-btn {
-        width: 100%;
-    }
-
-    &_file-selector {
-        cursor: pointer;
-        width: 100%;
-    }
 }
 
 @media (min-width: 1024px) {

@@ -25,13 +25,17 @@ const i18n = createI18n<[MessageSchema], 'en' | 'es'>({
 
 // Vuetify
 import 'vuetify/styles'
+import '@mdi/font/css/materialdesignicons.css'
 import { createVuetify } from 'vuetify'
 import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'
 
 const vuetify = createVuetify({
     components,
-    directives
+    directives,
+    icons: {
+      defaultSet: 'mdi',
+    },
 })
 
 import FileSelector from 'vue-file-selector'

@@ -11,11 +11,10 @@
       v-model="open"
     >
       <div class="color-picker-modal">
-        <svg-icon
+        <v-icon
           @click="open = false"
-          type="mdi"
-          :path="closeIconPath"
-        ></svg-icon>
+          icon="mdi-close-circle-outline"
+        />
         <v-color-picker
           v-model="color"
           @update:model-value="(color) => $emit('color-updated', color)"
@@ -28,14 +27,9 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import SvgIcon from '@jamescoyle/vue-icon'
-import { mdiCloseCircleOutline } from '@mdi/js'
 
 export default defineComponent({
   emits: ['color-updated'],
-  components: {
-    SvgIcon
-  },
   props: {
     initialColor: {
       type: String,
@@ -49,8 +43,7 @@ export default defineComponent({
   data() {
     return {
       open: false,
-      color: this.initialColor,
-      closeIconPath: mdiCloseCircleOutline
+      color: this.initialColor
     }
   }
 })
@@ -81,7 +74,7 @@ export default defineComponent({
 
   right: -32vw;
 
-  & > svg {
+  & > i {
     right: 0;
     color: black;
     position: absolute;

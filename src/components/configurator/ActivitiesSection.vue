@@ -1,29 +1,35 @@
 <template>
-  <div class="configurator">
-    <h2>{{ $t('creator.config-panel.activities') }}</h2>
-    <div
+  <v-expansion-panels
+    theme="dark"
+    multiple
+    variant="accordion"
+  >
+    <v-expansion-panel
       :key="activity.name"
       v-for="activity in adventure.activities"
     >
-      <ActivityCard :activity="activity" />
-    </div>
-    <FileSelector
-      class="configurator-file-selector"
-      accept-extensions=".gpx"
-      :multiple="true"
-      :max-file-size="20 * 1024 * 1024"
-      @validated="handleFilesValidated"
-      @changed="handleFilesChanged"
-    >
-      {{ $t('creator.config-panel.select-gpx-files') }}
-    </FileSelector>
-    <v-btn
-      class="configurator-save-btn"
-      :text="$t('creator.config-panel.save')"
-      :theme="undefined"
-      @click="$emit('capture')"
-    />
-  </div>
+      <v-expansion-panel-title class="configurator-activity-title">
+        <v-icon
+          class="configurator-activity-delete"
+          icon="mdi-delete"
+          @click="deleteActivity(activity.uid)"
+        />
+        <h3 class="configurator-activity-name">{{ activity.name }}</h3>
+      </v-expansion-panel-title>
+      <v-expansion-panel-text>
+        <ActivityCard :activity="activity" />
+      </v-expansion-panel-text>
+    </v-expansion-panel>
+  </v-expansion-panels>
+  <FileSelector
+    class="configurator-file-selector"
+    accept-extensions=".gpx"
+    :multiple="true"
+    @validated="handleFilesValidated"
+    @changed="handleFilesChanged"
+  >
+    {{ $t('creator.config-panel.select-gpx-files') }}
+  </FileSelector>
 </template>
 
 <script lang="ts">
@@ -32,12 +38,12 @@ import { type FsValidationResult } from 'vue-file-selector/dist'
 import GpxParser from 'gpxparser'
 
 import ActivityCard from './ActivityCard.vue'
-import { constants } from '../constants/constants'
-import { buildSampleAdventure } from '../helpers/buildSampleAdventure'
-import { Activity } from '../types/Activity'
-import { GeoPoint } from '../types/GeoPoint'
-import { useStore } from '../vuex/store'
-import { Store } from '../../vuex'
+import { constants } from '../../constants/constants'
+import { buildSampleAdventure } from '../../helpers/buildSampleAdventure'
+import { Activity } from '../../types/Activity'
+import { GeoPoint } from '../../types/GeoPoint'
+import { useStore } from '../../vuex/store'
+import { Store } from '../../../vuex'
 
 let store: Store
 
@@ -51,14 +57,19 @@ export default defineComponent({
   data() {
     const rawGpxFiles: string[] = []
     return {
-      store: useStore(),
       rawGpxFiles
     }
   },
-  setup(props) {
+  setup() {
     store = useStore()
   },
   methods: {
+    deleteActivity(uidToDelete: string) {
+      const modifiedActivities = this.adventure.activities.flatMap((activity: Activity) =>
+        activity.uid != uidToDelete ? [activity] : []
+      )
+      store.commit('UPDATE_ADVENTURE_ACTIVITIES', modifiedActivities)
+    },
     handleFilesValidated(result: FsValidationResult, files: File[]) {
       console.log('Validation result: ' + result)
     },
@@ -132,21 +143,23 @@ export default defineComponent({
 </script>
 
 <style>
-.configurator {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  height: 100%;
-}
-
-.configurator-save-btn {
-  width: 80%;
-  color: black;
-}
-
 .configurator-file-selector {
   cursor: pointer;
   width: 100%;
+  padding: 12px;
+  margin: 12px;
+  border-radius: 0.5vw;
+  border: 1px solid gray;
+}
+
+.fs-btn-select {
+  text-align: center;
+  width: 100%;
+  height: 100%;
+}
+
+.configurator-activity-name {
+  width: 100%;
+  text-align: center;
 }
 </style>

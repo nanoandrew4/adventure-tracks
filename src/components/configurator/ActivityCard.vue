@@ -1,8 +1,6 @@
 <template>
   <div class="activity-card">
-    <h3 @click="unfolded = !unfolded">{{ activity.name }}</h3>
     <div
-      v-if="unfolded"
       class="activity-details"
     >
       <ColorPicker
@@ -20,6 +18,8 @@
             updateActivity((activity: Activity) => (activity.elevationProfileColor = color))
         "
       />
+      line size
+      show elevation
     </div>
   </div>
 </template>
@@ -28,9 +28,9 @@
 import { defineComponent, type PropType } from 'vue'
 import ColorPicker from './ColorPicker.vue'
 
-import { type Activity } from '../types/Activity.type'
-import { useStore } from '../vuex/store'
-import { Store } from '../../vuex'
+import { type Activity } from '../../types/Activity'
+import { useStore } from '../../vuex/store'
+import { Store } from '../../../vuex'
 
 let store: Store
 
