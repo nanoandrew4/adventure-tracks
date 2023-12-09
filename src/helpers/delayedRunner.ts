@@ -7,7 +7,6 @@ export class DelayedRunner {
     }
 
     this.timeoutId = setTimeout(() => {
-      console.log('running delayed func')
       callback()
       this.timeoutId = null
     }, delayInMilliseconds)

@@ -8,13 +8,12 @@
 <script lang="ts">
 import mapboxgl from 'mapbox-gl'
 import { defineComponent } from 'vue'
-import objectHash from 'object-hash'
 
-import type { Activity } from '../types/Activity'
-import type { GeoPoint } from '../types/GeoPoint'
-import { useStore } from '../vuex/store'
+import type { Activity } from '../../types/Activity'
+import { useStore } from '../../vuex/store'
 import type { Store } from 'vuex'
-import { DelayedRunner } from '../helpers/delayedRunner'
+import { DelayedRunner } from '../../helpers/delayedRunner'
+import { ReducedActivity } from './ReducedActivity'
 
 const TARGET_REFRESH_RATE = 10.0
 const MILLISECONDS_BETWEEN_FRAMES = 1000.0 / TARGET_REFRESH_RATE
@@ -26,6 +25,7 @@ export default defineComponent({
   computed: {
     lineWidth: (): number => store.state.adventure.lineWidth,
     activities: (): Activity[] => store.state.adventure.activities,
+    reducedActivities: (): ReducedActivity[] => store.state.adventure.activities.map((activity: Activity) => new ReducedActivity(activity)),
     boundingCoordinateBox: (): [number, number, number, number] => store.state.boundingCoordinateBox
   },
   setup() {
@@ -90,68 +90,62 @@ export default defineComponent({
         map.setPaintProperty(activity.layerName, 'line-width', this.lineWidth * 0.25)
       })
     },
-    activities: {
+    reducedActivities: {
       deep: true,
-      handler(modifiedActivities: Activity[], oldActivities: Activity[]) {
+      handler(modifiedActivities: ReducedActivity[], oldActivities: ReducedActivity[]) {
         this.fpsCappedMapRefresh(modifiedActivities, oldActivities)
       }
     }
   },
   methods: {
-    fpsCappedMapRefresh(modifiedActivities: Activity[], oldActivities?: Activity[]) {
+    fpsCappedMapRefresh(modifiedActivities: ReducedActivity[], oldActivities?: ReducedActivity[]) {
       if (new Date().getTime() - this.lastRefreshTimestamp < MILLISECONDS_BETWEEN_FRAMES) {
-        console.log('queueing')
         this.delayedRunner.runDelayedFunction(() => {
           this.refreshMap(modifiedActivities, oldActivities)
         }, MILLISECONDS_BETWEEN_FRAMES)
       } else {
-        console.log(new Date().getTime() - this.lastRefreshTimestamp)
         this.delayedRunner.clearTimeout()
         this.refreshMap(modifiedActivities, oldActivities)
       }
     },
-    refreshMap(modifiedActivities: Activity[], oldActivities?: Activity[]) {
-      if (!oldActivities || oldActivities.length == 0) {
-        modifiedActivities.forEach((activity) => this.addSourceAndLayer(activity))
-        return
-      } else if (!modifiedActivities || modifiedActivities.length == 0) {
-        this.removeSourcesAndLayers(oldActivities)
-        return
-      }
-
-      let oldActivitiesMap = oldActivities.reduce((result, item) => {
+    refreshMap(modifiedActivities: ReducedActivity[], oldActivities?: ReducedActivity[]) {
+      let oldActivitiesMap = oldActivities?.reduce((result, item) => {
         result.set(item.uid, item)
         return result
-      }, new Map<string, Activity>())
+      }, new Map<string, ReducedActivity>())
       let modifiedActivitiesMap = modifiedActivities.reduce((result, item) => {
         result.set(item.uid, item)
         return result
+      }, new Map<string, ReducedActivity>())
+      let activitiesMap = this.activities.reduce((result, item) => {
+        result.set(item.uid, item)
+        return result
       }, new Map<string, Activity>())
 
-      let activitiesToRemove: Activity[] = oldActivities.flatMap((activity) =>
+      let activitiesToRemove: ReducedActivity[] | undefined = oldActivities?.flatMap((activity) =>
         !modifiedActivitiesMap.has(activity.uid) ? [activity] : []
       )
-      let activitiesToAdd: Activity[] = modifiedActivities.flatMap((activity) => {
-        if (!oldActivitiesMap.has(activity.uid) || !map.getLayer(activity.layerName)) {
+      let activitiesToAdd: ReducedActivity[] = modifiedActivities.flatMap((activity) => {
+        if (oldActivitiesMap && !oldActivitiesMap.has(activity.uid) || !map.getLayer(activity.layerName)) {
           return [activity]
         }
         return []
       })
       let activitiesWithChangedColor = modifiedActivities.flatMap((activity) => {
-        const oldActivity = oldActivitiesMap.get(activity.uid)
+        const oldActivity = oldActivitiesMap?.get(activity.uid)
         if (oldActivities && activity.lineColor != oldActivity?.lineColor) return [activity]
         return []
       })
 
       this.removeSourcesAndLayers(activitiesToRemove)
-      activitiesToAdd.forEach((activity) => this.addSourceAndLayer(activity))
+      activitiesToAdd.forEach((activity) => this.addSourceAndLayer(activitiesMap.get(activity.uid)!))
       activitiesWithChangedColor.forEach(activity => {
         map.setPaintProperty(activity.layerName, 'line-color', activity.lineColor)
       })
 
       this.lastRefreshTimestamp = new Date().getTime()
     },
-    removeSourcesAndLayers(activitiesToRemove: Activity[]) {
+    removeSourcesAndLayers(activitiesToRemove: ReducedActivity[] | undefined) {
       if (activitiesToRemove) {
         activitiesToRemove.forEach((oldActivity) => {
           if (map.getSource(oldActivity.sourceName)) {

@@ -13,7 +13,7 @@
 
 <script lang="ts">
 import { ref, defineComponent } from 'vue'
-import ActivityMap from '../components/ActivityMap.vue'
+import ActivityMap from '../components/map/ActivityMap.vue'
 import DataGraph from '../components/DataGraph.vue'
 import ConfigurationPanel from '../components/configurator/MainPanel.vue'
 import "../../node_modules/mapbox-gl/dist/mapbox-gl.css"
