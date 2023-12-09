@@ -1,6 +1,6 @@
 import type { State } from './store'
 import type { Adventure } from '../types/Adventure.type'
-import type { Activity } from '../types/Activity.type'
+import type { Activity } from '../types/Activity'
 
 export default {
   UPDATE_BOUNDING_COORDINATE_BOX(state: State, newBoundingBox: [number, number, number, number]) {

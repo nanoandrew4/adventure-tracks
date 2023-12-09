@@ -1,25 +1,25 @@
 <template>
   <div class="activity-card">
-    <div
-      class="activity-details"
-    >
+    <div class="activity-details">
       <ColorPicker
         :label="$t('creator.config-panel.activity.line-color')"
-        :initial-color="activity.lineColor"
+        :color="activity.lineColor"
         @color-updated="
           (color) => updateActivity((activity: Activity) => (activity.lineColor = color))
         "
       />
       <ColorPicker
         :label="$t('creator.config-panel.activity.elevation-color')"
-        :initial-color="activity.elevationProfileColor"
+        :color="activity.elevationProfileColor"
         @color-updated="
           (color) =>
             updateActivity((activity: Activity) => (activity.elevationProfileColor = color))
         "
       />
-      line size
-      show elevation
+      <v-btn
+        :text="$t('creator.config-panel.activity.correct-elevation')"
+        @click="correctElevationData"
+      />
     </div>
   </div>
 </template>
@@ -46,7 +46,7 @@ export default defineComponent({
   },
   data() {
     return {
-      unfolded: false,
+      unfolded: false
     }
   },
   setup() {
@@ -57,7 +57,8 @@ export default defineComponent({
       const updatedActivity = this.activity
       modifierFunc(updatedActivity)
       store.commit('UPDATE_ACTIVITY', updatedActivity)
-    }
+    },
+    correctElevationData() {}
   }
 })
 </script>

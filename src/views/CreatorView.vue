@@ -1,10 +1,10 @@
 <template>
     <div id="track-creator" class="track-creator">
-        <div id="adventure-track" class="adventure-track">
+        <div id="adventure-track" class="adventure-track" :style="`background: ${adventure.backgroundColor};`">
             <ActivityMap ref="activityMap" />
-            <DataGraph :display="displayGraph" />
-            <h1 id="main-text">{{ adventure.mainText }}</h1>
-            <h2 id="secondary-text">{{ adventure.secondaryText }}</h2>
+            <DataGraph v-if="adventure.displayElevationProfile" :display="displayGraph" />
+            <h1 id="main-text" :style="`color: ${adventure.mainTextColor};`">{{ adventure.mainText }}</h1>
+            <h2 id="secondary-text" :style="`color: ${adventure.secondaryTextColor};`">{{ adventure.secondaryText }}</h2>
         </div>
         <ConfigurationPanel @capture="capture"/>
     </div>
@@ -46,20 +46,6 @@ export default defineComponent({
     },
     setup() {
         store = useStore()
-    },
-    mounted() {
-        let creatorElement = document.getElementById('adventure-track')
-        if (creatorElement != null) {
-            creatorElement.style.background = this.adventure.backgroundColor
-        }
-        document.querySelectorAll("h1, h2, h3, h4, h5, h6").forEach(rawElement => {
-            const element = rawElement as HTMLElement
-            if (element.id == 'main-text') {
-                element.style.color = this.adventure.mainTextColor
-            } else if (element.id == 'secondary-text') {
-                element.style.color = this.adventure.secondaryTextColor
-            }
-        });
     },
     methods: {
         async capture() {
@@ -112,6 +98,7 @@ export default defineComponent({
 
 .adventure-track {
     width: 100%;
+    border-radius: 0.5em;
 }
 
 .map-container {

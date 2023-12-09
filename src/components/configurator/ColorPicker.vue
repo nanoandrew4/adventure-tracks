@@ -16,7 +16,6 @@
           icon="mdi-close-circle-outline"
         />
         <v-color-picker
-          v-model="color"
           @update:model-value="(color) => $emit('color-updated', color)"
           :mode="'rgb'"
         ></v-color-picker>
@@ -31,7 +30,7 @@ import { defineComponent } from 'vue'
 export default defineComponent({
   emits: ['color-updated'],
   props: {
-    initialColor: {
+    color: {
       type: String,
       required: true
     },
@@ -43,7 +42,6 @@ export default defineComponent({
   data() {
     return {
       open: false,
-      color: this.initialColor
     }
   }
 })
@@ -57,6 +55,7 @@ export default defineComponent({
   display: flex;
   align-items: center;
   cursor: pointer;
+  margin: 0.5em 0 0.5em 5px;
 }
 
 .color-picker-circle {

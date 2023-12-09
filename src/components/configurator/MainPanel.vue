@@ -16,6 +16,7 @@
       </v-expansion-panel>
       <v-expansion-panel class="configurator-section-header" :title="$t('creator.config-panel.adventure')">
         <v-expansion-panel-text>
+          <AdventureSection/>
         </v-expansion-panel-text>
       </v-expansion-panel>
     </v-expansion-panels>
@@ -32,10 +33,12 @@
 import { defineComponent } from 'vue'
 
 import ActivitiesSection from './ActivitiesSection.vue'
+import AdventureSection from './AdventureSection.vue'
 
 export default defineComponent({
   components: {
-    ActivitiesSection
+    ActivitiesSection,
+    AdventureSection
   }
 })
 </script>
@@ -47,7 +50,7 @@ export default defineComponent({
   justify-content: flex-start;
   align-items: center;
   height: 100%;
-  margin: 0 1vw 0 1vw;
+  margin-left: 1em;
 }
 
 .configurator-section-header {

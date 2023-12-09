@@ -8,21 +8,35 @@
 <script lang="ts">
 import mapboxgl from 'mapbox-gl'
 import { defineComponent } from 'vue'
+import objectHash from 'object-hash'
+
 import type { Activity } from '../types/Activity'
+import type { GeoPoint } from '../types/GeoPoint'
 import { useStore } from '../vuex/store'
 import type { Store } from 'vuex'
+import { DelayedRunner } from '../helpers/delayedRunner'
+
+const TARGET_REFRESH_RATE = 10.0
+const MILLISECONDS_BETWEEN_FRAMES = 1000.0 / TARGET_REFRESH_RATE
 
 let store: Store
 let map: mapboxgl.Map
 
 export default defineComponent({
   computed: {
+    lineWidth: (): number => store.state.adventure.lineWidth,
     activities: (): Activity[] => store.state.adventure.activities,
     boundingCoordinateBox: (): [number, number, number, number] => store.state.boundingCoordinateBox
   },
   setup() {
     store = useStore()
     mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN
+  },
+  data() {
+    return {
+      lastRefreshTimestamp: 0,
+      delayedRunner: new DelayedRunner()
+    }
   },
   mounted() {
     const mapContainerElement = document.getElementById('mapContainer')
@@ -56,7 +70,6 @@ export default defineComponent({
       map.setBearing(0)
     })
     map.on('pitch', () => {
-      // Reset the pitch to 0 whenever it changes
       map.setPitch(0)
     })
   },
@@ -72,63 +85,110 @@ export default defineComponent({
       })
       map.setZoom(calculatedZoomAndCenter.zoom)
     },
+    lineWidth() {
+      this.activities.forEach((activity) => {
+        map.setPaintProperty(activity.layerName, 'line-width', this.lineWidth * 0.25)
+      })
+    },
     activities: {
       deep: true,
       handler(modifiedActivities: Activity[], oldActivities: Activity[]) {
-        let fullRedrawRequired = !oldActivities || oldActivities.length !== modifiedActivities.length
-        if (!fullRedrawRequired) {
-          const currentActivityUids = modifiedActivities.flatMap((activity) => [activity.uid])
-          const oldActivityUids = oldActivities.flatMap((activity) => [activity.uid])
-          fullRedrawRequired = !this.arraysEqual(currentActivityUids, oldActivityUids)
-        }
-
-        if (oldActivities !== undefined) {
-          oldActivities.forEach((oldActivity) => {
-            if (fullRedrawRequired && map.getSource(oldActivity.sourceName)) {
-              map.removeLayer(oldActivity.layerName)
-              map.removeSource(oldActivity.sourceName)
-            }
-          })
-        }
-
-        modifiedActivities.forEach((modifiedActivity) => {
-          if (fullRedrawRequired) {
-            let data: GeoJSON.Feature = {
-              type: 'Feature',
-              geometry: {
-                type: 'LineString',
-                coordinates: modifiedActivity.activityGeoPoints.map((geoPoint) => geoPoint.position)
-              },
-              properties: null
-            }
-            map.addSource(modifiedActivity.sourceName, {
-              type: 'geojson',
-              data
-            })
-
-            map.addLayer({
-              id: modifiedActivity.layerName,
-              type: 'line',
-              source: modifiedActivity.sourceName,
-              layout: {
-                'line-join': 'round',
-                'line-cap': 'round'
-              },
-              paint: {
-                'line-color': modifiedActivity.lineColor,
-                'line-width': 4
-              }
-            })
-          } else if (map.getPaintProperty(modifiedActivity.layerName, 'line-color') != modifiedActivity.lineColor) {
-            map.setPaintProperty(modifiedActivity.layerName, 'line-color', modifiedActivity.lineColor)
-          } else {
-            console.log(`${map.getPaintProperty(modifiedActivity.layerName, 'line-color')} != ${modifiedActivity.lineColor}`)
-          }
-        })
+        this.fpsCappedMapRefresh(modifiedActivities, oldActivities)
       }
     }
   },
   methods: {
+    fpsCappedMapRefresh(modifiedActivities: Activity[], oldActivities?: Activity[]) {
+      if (new Date().getTime() - this.lastRefreshTimestamp < MILLISECONDS_BETWEEN_FRAMES) {
+        console.log('queueing')
+        this.delayedRunner.runDelayedFunction(() => {
+          this.refreshMap(modifiedActivities, oldActivities)
+        }, MILLISECONDS_BETWEEN_FRAMES)
+      } else {
+        console.log(new Date().getTime() - this.lastRefreshTimestamp)
+        this.delayedRunner.clearTimeout()
+        this.refreshMap(modifiedActivities, oldActivities)
+      }
+    },
+    refreshMap(modifiedActivities: Activity[], oldActivities?: Activity[]) {
+      if (!oldActivities || oldActivities.length == 0) {
+        modifiedActivities.forEach((activity) => this.addSourceAndLayer(activity))
+        return
+      } else if (!modifiedActivities || modifiedActivities.length == 0) {
+        this.removeSourcesAndLayers(oldActivities)
+        return
+      }
+
+      let oldActivitiesMap = oldActivities.reduce((result, item) => {
+        result.set(item.uid, item)
+        return result
+      }, new Map<string, Activity>())
+      let modifiedActivitiesMap = modifiedActivities.reduce((result, item) => {
+        result.set(item.uid, item)
+        return result
+      }, new Map<string, Activity>())
+
+      let activitiesToRemove: Activity[] = oldActivities.flatMap((activity) =>
+        !modifiedActivitiesMap.has(activity.uid) ? [activity] : []
+      )
+      let activitiesToAdd: Activity[] = modifiedActivities.flatMap((activity) => {
+        if (!oldActivitiesMap.has(activity.uid) || !map.getLayer(activity.layerName)) {
+          return [activity]
+        }
+        return []
+      })
+      let activitiesWithChangedColor = modifiedActivities.flatMap((activity) => {
+        const oldActivity = oldActivitiesMap.get(activity.uid)
+        if (oldActivities && activity.lineColor != oldActivity?.lineColor) return [activity]
+        return []
+      })
+
+      this.removeSourcesAndLayers(activitiesToRemove)
+      activitiesToAdd.forEach((activity) => this.addSourceAndLayer(activity))
+      activitiesWithChangedColor.forEach(activity => {
+        map.setPaintProperty(activity.layerName, 'line-color', activity.lineColor)
+      })
+
+      this.lastRefreshTimestamp = new Date().getTime()
+    },
+    removeSourcesAndLayers(activitiesToRemove: Activity[]) {
+      if (activitiesToRemove) {
+        activitiesToRemove.forEach((oldActivity) => {
+          if (map.getSource(oldActivity.sourceName)) {
+            map.removeLayer(oldActivity.layerName)
+            map.removeSource(oldActivity.sourceName)
+          }
+        })
+      }
+    },
+    addSourceAndLayer(activity: Activity) {
+      let data: GeoJSON.Feature = {
+        type: 'Feature',
+        geometry: {
+          type: 'LineString',
+          coordinates: activity.activityGeoPoints.map((geoPoint) => geoPoint.position)
+        },
+        properties: null
+      }
+      map.addSource(activity.sourceName, {
+        type: 'geojson',
+        data
+      })
+
+      map.addLayer({
+        id: activity.layerName,
+        type: 'line',
+        source: activity.sourceName,
+        layout: {
+          'line-join': 'round',
+          'line-cap': 'round'
+        },
+        paint: {
+          'line-color': activity.lineColor,
+          'line-width': this.lineWidth * 0.25
+        }
+      })
+    },
     arraysEqual<T>(a: T[], b: T[]): boolean {
       if (a.length !== b.length) {
         return false

@@ -48,3 +48,5 @@ app.use(store, key)
 app.use(FileSelector)
 app.use(vuetify)
 app.mount('#app')
+
+app.config.performance = true

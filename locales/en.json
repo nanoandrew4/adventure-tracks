@@ -9,12 +9,20 @@
       "activities": "Activities",
       "activity": {
         "line-color": "Line color",
-        "elevation-color": "Elevation profile color"
+        "elevation-color": "Elevation profile color",
+        "correct-elevation": "Correct elevation data"
       },
       "select-gpx-files": "Select GPX files",
       "map-styles": "Map styles",
       "adventure": "Adventure",
-      "save": "Save adventure"
+      "save": "Save adventure",
+      "adventure-section": {
+        "background-color": "Background color",
+        "main-text-color": "Main text color",
+        "secondary-text-color": "Secondary text color",
+        "line-width": "Activity line thickness",
+        "show-elevation": "Draw elevation profile"
+      }
     }
   }
 }

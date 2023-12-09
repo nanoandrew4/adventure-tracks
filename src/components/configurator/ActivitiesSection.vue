@@ -146,8 +146,8 @@ export default defineComponent({
 .configurator-file-selector {
   cursor: pointer;
   width: 100%;
-  padding: 12px;
-  margin: 12px;
+  padding: 1em;
+  margin: 1em 0 0 0;
   border-radius: 0.5vw;
   border: 1px solid gray;
 }
