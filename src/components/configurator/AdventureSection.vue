@@ -1,4 +1,26 @@
 <template>
+  <v-text-field
+    v-model="adventure.mainText"
+    label="Main text"
+    hide-details
+    rounded
+    variant="solo"
+    @update:model-value="
+      (text) => updateAdventure((adventure: Adventure) => (adventure.mainText = text))
+    "
+  />
+
+  <v-text-field
+    v-model="adventure.secondaryText"
+    label="Secondary text"
+    hide-details
+    rounded
+    variant="solo"
+    @update:model-value="
+      (text) => updateAdventure((adventure: Adventure) => (adventure.secondaryText = text))
+    "
+  />
+
   <ColorPicker
     :label="$t('creator.config-panel.adventure-section.background-color')"
     :color="adventure.backgroundColor"
@@ -6,6 +28,7 @@
       (color) => updateAdventure((adventure: Adventure) => (adventure.backgroundColor = color))
     "
   />
+
   <ColorPicker
     :label="$t('creator.config-panel.adventure-section.main-text-color')"
     :color="adventure.mainTextColor"
@@ -13,6 +36,7 @@
       (color) => updateAdventure((adventure: Adventure) => (adventure.mainTextColor = color))
     "
   />
+
   <ColorPicker
     :label="$t('creator.config-panel.adventure-section.secondary-text-color')"
     :color="adventure.secondaryTextColor"
@@ -20,6 +44,7 @@
       (color) => updateAdventure((adventure: Adventure) => (adventure.secondaryTextColor = color))
     "
   />
+
   <v-checkbox
     :label="$t('creator.config-panel.adventure-section.show-elevation')"
     hide-details
@@ -28,6 +53,7 @@
       (display) => updateAdventure((adventure) => (adventure.displayElevationProfile = display))
     "
   />
+
   <v-text-field
     class="text-field"
     :label="$t('creator.config-panel.adventure-section.line-width')"
