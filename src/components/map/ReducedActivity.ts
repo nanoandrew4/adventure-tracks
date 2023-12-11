@@ -8,8 +8,8 @@ export class ReducedActivity {
   readonly layerName: string
   lineColor: string
   elevationProfileColor: string
-  startTime: Date
-  endTime: Date
+  startTime?: Date
+  endTime?: Date
 
   constructor(activity: Activity) {
     this.name = activity.name

@@ -3,16 +3,17 @@
     theme="dark"
     multiple
     variant="accordion"
+    class="activities-section"
   >
     <v-expansion-panel
       :key="activity.name"
-      v-for="activity in adventure.activities"
+      v-for="activity in sortedActivities"
     >
       <v-expansion-panel-title class="configurator-activity-title">
         <v-icon
           class="configurator-activity-delete"
           icon="mdi-delete"
-          @click="deleteActivity(activity.uid)"
+          @click.stop="deleteActivity(activity.uid)"
         />
         <h3 class="configurator-activity-name">{{ activity.name }}</h3>
       </v-expansion-panel-title>
@@ -35,15 +36,13 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { type FsValidationResult } from 'vue-file-selector/dist'
-import GpxParser from 'gpxparser'
+import { gpxGen } from '@tmcw/togeojson'
 
 import ActivityCard from './ActivityCard.vue'
-import { constants } from '../../constants/constants'
-import { buildSampleAdventure } from '../../helpers/buildSampleAdventure'
 import { Activity } from '../../types/Activity'
-import { GeoPoint } from '../../types/GeoPoint'
-import { useStore } from '../../vuex/store'
-import { Store } from '../../../vuex'
+import { useStore, type State } from '../../vuex/store'
+import type { Store } from 'vuex'
+import type { Adventure } from '@/types/Adventure.type'
 
 let store: Store
 
@@ -52,12 +51,13 @@ export default defineComponent({
     ActivityCard
   },
   computed: {
-    adventure: () => store.state.adventure
-  },
-  data() {
-    const rawGpxFiles: string[] = []
-    return {
-      rawGpxFiles
+    adventure: (): Adventure => store.state.adventure,
+    sortedActivities: (): Activity[] => {
+      return (store.state as State).adventure.activities.sort((a, b) => {
+        if (!a.startTime) return -1
+        if (!b.startTime) return 1
+        return a.startTime.getTime() - b.startTime.getTime()
+      })
     }
   },
   setup() {
@@ -77,66 +77,37 @@ export default defineComponent({
       console.log('Selected files: ')
       console.table(files)
 
-      const promiseArr = files.map((f) => this.loadGpx(f))
-      this.rawGpxFiles = await Promise.all(promiseArr)
-
-      this.draw()
+      this.processFiles(files)
     },
-    async loadGpx(file: File) {
-      const decodedGpx: string = await new Promise((resolve) => {
-        const reader = new FileReader()
+    processIntoGeoJson(file: File) {
+      const reader = new FileReader()
 
-        reader.readAsText(file)
-        reader.onload = (e) => resolve(e.target?.result as string)
-      })
+      reader.readAsText(file)
+      reader.onload = (response) => {
+        const rawFile = response.target?.result as string
+        let geoJsonGen = gpxGen(new DOMParser().parseFromString(rawFile, 'text/xml'))
+        let nextFeature = geoJsonGen.next()
+        while (!nextFeature.done) {
+          console.log(nextFeature.value)
+          store.commit('ADD_ACTIVITY', new Activity(nextFeature.value))
+          nextFeature = geoJsonGen.next()
+        }
+      }
 
-      return decodedGpx || ''
+      reader.onloadend = () => {
+        const adventure = store.state.adventure as Adventure
+        let startDate = adventure.activities
+          .filter((activity: Activity) => activity.startTime)
+          .map((activity) => activity.startTime)
+          .pop()
+        if (startDate) adventure.secondaryText = startDate.toDateString()
+        store.commit('UPDATE_ADVENTURE', adventure)
+      }
     },
-    draw() {
-      var gpx = new GpxParser()
-      let minLat = 1000,
-        minLong = 1000
-      let maxLat = -1000,
-        maxLong = -1000
-
-      let activities: Activity[] = []
-      this.rawGpxFiles.forEach((rawGpxFile) => {
-        gpx.parse(rawGpxFile)
+    processFiles(files: File[]) {
+      files.forEach((file) => {
+        this.processIntoGeoJson(file)
       })
-
-      gpx.tracks.forEach((track) => {
-        let activityName = track.name
-        let activityGeoPoints: GeoPoint[] = []
-        // let heartRateData: number[] = []
-        track.points.forEach((point) => {
-          maxLat = Math.max(point.lat, maxLat)
-          minLat = Math.min(point.lat, minLat)
-          maxLong = Math.max(point.lon, maxLong)
-          minLong = Math.min(point.lon, minLong)
-          activityGeoPoints.push(new GeoPoint(point.lon, point.lat, point.ele))
-        })
-
-        activities.push(
-          new Activity(
-            activityName,
-            activityGeoPoints,
-            constants.defaultTextColor,
-            constants.defaultBackgroundColor,
-            track.points[0].time,
-            track.points[track.points.length - 1].time
-          )
-        )
-      })
-
-      store.commit(
-        'UPDATE_ADVENTURE',
-        buildSampleAdventure(gpx.tracks[0].points[0].time.toDateString())
-      )
-      store.commit(
-        'UPDATE_ADVENTURE_ACTIVITIES',
-        activities.sort((a, b) => a.startTime.getTime() - b.startTime.getTime())
-      )
-      store.commit('UPDATE_BOUNDING_COORDINATE_BOX', [minLong, minLat, maxLong, maxLat])
     }
   }
 })
@@ -161,5 +132,14 @@ export default defineComponent({
 .configurator-activity-name {
   width: 100%;
   text-align: center;
+}
+
+.activities-section {
+  overflow-y: scroll;
+  max-height: 60vh;
+}
+
+.activities-section::-webkit-scrollbar {
+  display: block;
 }
 </style>

@@ -1,34 +1,32 @@
-import { type GeoPoint } from './GeoPoint'
 import objectHash from 'object-hash'
+import type { Feature } from 'geojson'
+import { constants } from '@/constants/constants'
 
 export class Activity {
-  readonly uid: string
+  uid: string
   name: string
-  readonly sourceName: string
-  readonly layerName: string
-  // heartRateData: number[]
-  activityGeoPoints: GeoPoint[]
+  sourceName: string
+  layerName: string
   lineColor: string
   elevationProfileColor: string
-  startTime: Date
-  endTime: Date
+  startTime?: Date
+  endTime?: Date
+  geoJsonFeature?: Feature
 
   constructor(
-    name: string,
-    activityGeoPoints: GeoPoint[],
-    lineColor: string,
-    elevationProfileColor: string,
-    startTime: Date,
-    endTime: Date
+    geoJsonFeature: Feature
   ) {
-    this.name = name
-    this.sourceName = name.toLowerCase().replace(/\s/g, '_')
+    this.lineColor = constants.defaultTextColor
+    this.elevationProfileColor = constants.defaultTextColor
+    this.geoJsonFeature = geoJsonFeature
+    this.uid = objectHash.sha1(geoJsonFeature)
+    this.name = geoJsonFeature.properties?.name
+    this.sourceName = this.uid
     this.layerName = `layer-${this.sourceName}`
-    this.activityGeoPoints = activityGeoPoints
-    this.lineColor = lineColor
-    this.elevationProfileColor = elevationProfileColor
-    this.startTime = startTime
-    this.endTime = endTime
-    this.uid = objectHash.sha1(activityGeoPoints)
+    if (geoJsonFeature.properties?.coordinateProperties?.times) {
+      const times = geoJsonFeature.properties.coordinateProperties.times
+      this.startTime = new Date(times[0])
+      this.endTime = new Date(times[times.length - 1])
+    }
   }
 }

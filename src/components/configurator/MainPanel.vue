@@ -2,7 +2,6 @@
   <div class="configurator">
     <v-expansion-panels
       theme="dark"
-      multiple
       variant="accordion"
     >
       <v-expansion-panel class="configurator-section-header" :title="$t('creator.config-panel.activities')">

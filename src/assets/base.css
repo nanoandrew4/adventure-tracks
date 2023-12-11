@@ -58,7 +58,13 @@
   font-weight: normal;
 }
 *::-webkit-scrollbar {
-  display: none;
+  /* display: none; */
+  width: 5px;
+  background: --color-background-soft;
+}
+*::-webkit-scrollbar-thumb {
+    background: white;                                 
+    border-radius: 1em;   
 }
 
 body {

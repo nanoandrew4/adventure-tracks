@@ -12,6 +12,9 @@ export default {
   UPDATE_ADVENTURE_ACTIVITIES(state: State, updatedActivities: Activity[]) {
     state.adventure.activities = updatedActivities
   },
+  ADD_ACTIVITY(state: State, activity: Activity) {
+    state.adventure.activities.push(activity)
+  },
   UPDATE_ACTIVITY(state: State, activityToMutate: Activity) {
     state.adventure.activities.forEach((activity) => {
       if (activity.name == activityToMutate.name) activity = activityToMutate
