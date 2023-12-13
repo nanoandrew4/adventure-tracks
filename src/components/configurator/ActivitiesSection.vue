@@ -41,6 +41,7 @@ import { gpxGen } from '@tmcw/togeojson'
 import ActivityCard from './ActivityCard.vue'
 import { Activity } from '../../types/Activity'
 import { useStore, type State } from '../../vuex/store'
+import { sortByDateAscending } from '../../helpers/activitySorter'
 import type { Store } from 'vuex'
 import type { Adventure } from '@/types/Adventure.type'
 
@@ -53,11 +54,7 @@ export default defineComponent({
   computed: {
     adventure: (): Adventure => store.state.adventure,
     sortedActivities: (): Activity[] => {
-      return (store.state as State).adventure.activities.sort((a, b) => {
-        if (!a.startTime) return -1
-        if (!b.startTime) return 1
-        return a.startTime.getTime() - b.startTime.getTime()
-      })
+      return (store.state as State).adventure.activities.sort(sortByDateAscending)
     }
   },
   setup() {

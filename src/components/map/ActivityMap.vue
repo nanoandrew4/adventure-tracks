@@ -13,7 +13,7 @@ import type { Activity } from '../../types/Activity'
 import { useStore } from '../../vuex/store'
 import type { Store } from 'vuex'
 import { DelayedRunner } from '../../helpers/delayedRunner'
-import { ReducedActivity } from './ReducedActivity'
+import { ReducedActivity } from '../../types/ReducedActivity'
 import { BoundingBoxCalculator } from '@/helpers/boundingBoxCalculator'
 import { mapSourceTracker } from '@/helpers/mapSourceTracker'
 
@@ -189,25 +189,7 @@ export default defineComponent({
     recalculateActivitiesBoundingBox() {
       let bboxCalculator = new BoundingBoxCalculator()
       this.activities.forEach((activity) => {
-        const geometryType = activity.geoJsonFeature?.geometry.type
-        if (geometryType == 'LineString' || geometryType == 'MultiPoint') {
-          activity.geoJsonFeature?.geometry.coordinates.forEach((position) =>
-            bboxCalculator.processPosition(position)
-          )
-        } else if (geometryType == 'MultiLineString' || geometryType == 'Polygon') {
-          activity.geoJsonFeature?.geometry.coordinates.forEach((positions) => {
-            positions.forEach((position) => bboxCalculator.processPosition(position))
-          })
-        } else if (geometryType == 'Point') {
-          const coords = activity.geoJsonFeature?.geometry.coordinates
-          if (coords) bboxCalculator.processCoordinatePair(coords[0], coords[1]) // possibly missing elevation?
-        } else if (geometryType == 'MultiPolygon') {
-          activity.geoJsonFeature?.geometry.coordinates.forEach((polygon) => {
-            polygon.forEach((positions) => {
-              positions.forEach((position) => bboxCalculator.processPosition(position))
-            })
-          })
-        }
+        activity.processCoordinates(bboxCalculator.processPosition.bind(bboxCalculator))
       })
 
       store.commit('UPDATE_BOUNDING_COORDINATE_BOX', bboxCalculator.getBoundingBox())
@@ -246,6 +228,7 @@ export default defineComponent({
   justify-content: center;
   align-items: center;
   aspect-ratio: 16/9;
-  border-radius: 12px;
+  border-radius: 1vw;
+  margin: 0.5vw;
 }
 </style>

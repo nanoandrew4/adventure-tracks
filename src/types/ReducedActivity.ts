@@ -1,4 +1,4 @@
-import { type Activity } from '../../types/Activity'
+import { type Activity } from './Activity'
 
 // Lightweight activity model to be watched deeply by ActivityMap
 export class ReducedActivity {

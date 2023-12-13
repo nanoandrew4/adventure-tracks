@@ -3,6 +3,7 @@
     <v-expansion-panels
       theme="dark"
       variant="accordion"
+      :mandatory="'force'"
     >
       <v-expansion-panel class="configurator-section-header" :title="$t('creator.config-panel.activities')">
         <v-expansion-panel-text>

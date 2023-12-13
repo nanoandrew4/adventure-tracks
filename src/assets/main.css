@@ -35,3 +35,7 @@ a,
     padding: 0 1rem;
   }
 }
+
+.v-overlay__scrim {
+  background: none !important;
+}

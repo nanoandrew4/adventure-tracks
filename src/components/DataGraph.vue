@@ -2,27 +2,28 @@
   <div
     id="data-graph-container"
     class="data-graph"
+    v-show="display"
   >
-    <svg
-      v-show="display"
-      id="data-graph"
-    ></svg>
+    <svg id="data-graph"></svg>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { type Adventure } from '../types/Adventure.type'
-import { type Activity } from '../types/Activity'
 import { useStore } from '../vuex/store'
+import { sortByDateAscending } from '../helpers/activitySorter'
 import type { Store } from 'vuex'
+import { ReducedActivity } from '@/types/ReducedActivity'
+import type { Activity } from '@/types/Activity'
+import { createElevationSvg } from '@/helpers/svgManager'
 
-const graphHeightPx = 80
 let store: Store
 
 export default defineComponent({
   computed: {
-    adventure: () => store.state.adventure
+    activities: (): Activity[] => store.state.adventure.activities,
+    reducedActivities: (): ReducedActivity[] =>
+      store.state.adventure.activities.map((activity: Activity) => new ReducedActivity(activity))
   },
   props: {
     display: {
@@ -35,87 +36,84 @@ export default defineComponent({
       isReady: false
     }
   },
-  setup(props) {
+  setup() {
     store = useStore()
   },
-  beforeMount() {
-    if (this.adventure.value) this.drawGraph(this.adventure.value.activities)
+  mounted() {
+    this.drawGraph(this.reducedActivities)
   },
   watch: {
-    adventure(newValue: Adventure) {
-      if (this.display) this.drawGraph(newValue.activities)
+    reducedActivities: {
+      deep: true,
+      handler(modifiedActivities: ReducedActivity[], oldActivities: ReducedActivity[]) {
+        this.drawGraph(modifiedActivities, oldActivities)
+      }
     }
   },
   methods: {
-    drawGraph(activities: Activity[]) {
-      let componentWidth = 0
-      let componentHeight = `${graphHeightPx}px`
-      let dataGraphContainerElement = document.getElementById('data-graph-container')
-      if (dataGraphContainerElement != null) {
-        componentWidth = dataGraphContainerElement.getBoundingClientRect().width
-      } else {
-        return
+    drawGraph(modifiedActivities: ReducedActivity[], oldActivities?: ReducedActivity[]) {
+      const activitiesMap = this.activities.reduce((result, item) => {
+        result.set(item.uid, item)
+        return result
+      }, new Map<string, Activity>())
+
+      if (this.doesGraphRequireFullRedraw(activitiesMap, oldActivities)) {
+        const activities: Activity[] = modifiedActivities
+          .map((reducedActivity) => activitiesMap.get(reducedActivity.uid))
+          .filter((activity) => activity !== undefined)
+          .sort(sortByDateAscending) as Activity[]
+
+        let componentWidth = 0
+        let dataGraphContainerElement = document.getElementById('data-graph-container')
+        if (dataGraphContainerElement != null) {
+          componentWidth = dataGraphContainerElement.getBoundingClientRect().width
+        } else {
+          return
+        }
+
+        const newSvg = createElevationSvg(activities, componentWidth)
+
+        let oldSvg = document.getElementById('data-graph')
+        if (oldSvg != null) {
+          dataGraphContainerElement.replaceChild(newSvg, oldSvg)
+        } else {
+          console.log('could not replace data graph')
+        }
+      } else if (oldActivities) {
+        oldActivities
+          .filter((oldActivity) =>
+            this.hasElevationColorChanged(activitiesMap.get(oldActivity.uid), oldActivity)
+          )
+          .forEach((reducedActivityWithChangedColor) => {
+            const activityWithChangedColor = activitiesMap.get(reducedActivityWithChangedColor.uid)
+            if (!activityWithChangedColor?.sourceName) return
+            console.log(activityWithChangedColor.sourceName)
+            const activitySvgGroup = document.getElementById(activityWithChangedColor?.sourceName)
+            if (activitySvgGroup != null) {
+              console.log('changed color')
+              activitySvgGroup.style.fill = activityWithChangedColor.elevationProfileColor
+            }
+          })
       }
-
-      let numOfElevationPoints = 0
-      let highestPoint = 0
-      activities.forEach((activity) => {
-        const elevationProfile = activity.activityGeoPoints.flatMap((geoPoint) =>
-          geoPoint.elevation() !== undefined ? [geoPoint?.elevation() as number] : []
-        )
-        numOfElevationPoints += activity.activityGeoPoints.length
-        highestPoint = Math.max(...elevationProfile, highestPoint)
-      })
-
-      console.log(highestPoint)
-
-      let newSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
-      newSvg.id = 'data-graph'
-      newSvg.setAttribute('width', `${componentWidth}px`)
-      newSvg.setAttribute('height', componentHeight)
-      newSvg.setAttribute('viewBox', `0 0 ${componentWidth} ${graphHeightPx}`)
-      let numOfProcessedElevationPoints = 0
-      activities.forEach((activity) => {
-        const elevationProfile = activity.activityGeoPoints.flatMap((geoPoint) =>
-          geoPoint.elevation() !== undefined ? [geoPoint?.elevation() as number] : []
-        )
-
-        let svgGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g')
-        svgGroup.style.width = `${
-          (elevationProfile.length / numOfElevationPoints) * componentWidth
-        }px`
-        svgGroup.style.height = componentHeight
-        let activitySvgPath = document.createElementNS('http://www.w3.org/2000/svg', 'path')
-        activitySvgPath.style.width = `${
-          (elevationProfile.length / numOfElevationPoints) * componentWidth
-        }px`
-        activitySvgPath.style.height = componentHeight
-        activitySvgPath.setAttribute('fill', activity.elevationProfileColor)
-        activitySvgPath.setAttribute('vector-effect', 'non-scaling-stroke')
-
-        const stepSize = componentWidth / numOfElevationPoints
-        let currPx = (numOfProcessedElevationPoints / numOfElevationPoints) * componentWidth
-        let d = 'M ' + currPx + ' ' + graphHeightPx
-        elevationProfile.forEach((elevationPoint) => {
-          d +=
-            ' L ' + currPx + ' ' + (graphHeightPx - (elevationPoint / highestPoint) * graphHeightPx)
-          currPx += stepSize
-        })
-        d += ' L ' + currPx + ' ' + graphHeightPx
-        activitySvgPath.setAttribute('d', d)
-        svgGroup.appendChild(activitySvgPath)
-
-        newSvg.appendChild(svgGroup)
-
-        numOfProcessedElevationPoints += elevationProfile.length
-      })
-
-      let oldSvg = document.getElementById('data-graph')
-      if (oldSvg != null) {
-        dataGraphContainerElement.replaceChild(newSvg, oldSvg)
-      } else {
-        console.log('could not replace data graph')
-      }
+    },
+    hasElevationColorChanged(
+      modifiedActivity: Activity | undefined,
+      oldActivity: ReducedActivity
+    ): boolean {
+      if (!modifiedActivity || !oldActivity) return false
+      return modifiedActivity.elevationProfileColor !== oldActivity.elevationProfileColor
+    },
+    doesGraphRequireFullRedraw(
+      currentActivitiesMap: Map<String, Activity>,
+      oldActivities?: ReducedActivity[]
+    ): boolean {
+      if (
+        !currentActivitiesMap ||
+        !oldActivities ||
+        currentActivitiesMap.size !== oldActivities.length
+      )
+        return true
+      return oldActivities.filter((activity) => !currentActivitiesMap.has(activity.uid)).length > 0
     }
   }
 })
@@ -123,8 +121,9 @@ export default defineComponent({
 
 <style>
 .data-graph {
-  width: 100%;
+  width: calc(100% - 1vw);
   height: 80px;
+  margin: 0 0.5vw 0 0.5vw;
 }
 
 svg g path {

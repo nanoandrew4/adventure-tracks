@@ -2,7 +2,7 @@
     <div id="track-creator" class="track-creator">
         <div id="adventure-track" class="adventure-track" :style="`background: ${adventure.backgroundColor};`">
             <ActivityMap ref="activityMap" />
-            <DataGraph v-if="adventure.displayElevationProfile" :display="displayGraph" />
+            <DataGraph :display="displayGraph" />
             <h1 id="main-text" :style="`color: ${adventure.mainTextColor};`">{{ adventure.mainText }}</h1>
             <h2 id="secondary-text" :style="`color: ${adventure.secondaryTextColor};`">{{ adventure.secondaryText }}</h2>
         </div>
@@ -34,7 +34,7 @@ export default defineComponent({
     computed: {
         adventure: (): Adventure => store.state.adventure,
         displayGraph: function (): boolean {
-            return this?.adventure.displayElevationProfile && this?.adventure.activities.length > 0
+            return store.state.adventure.displayElevationProfile && this?.adventure.activities.length > 0
         }
     },
     data() {
@@ -99,14 +99,6 @@ export default defineComponent({
 .adventure-track {
     width: 100%;
     border-radius: 0.5em;
-}
-
-.map-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-radius: 12px;
-    margin: 20px;
 }
 
 @media (min-width: 1024px) {
