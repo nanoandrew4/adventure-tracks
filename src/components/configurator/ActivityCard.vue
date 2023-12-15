@@ -18,7 +18,8 @@
       />
       <v-btn
         :text="$t('creator.config-panel.activity.correct-elevation')"
-        @click="correctElevationData"
+        :loading="elevationCorrectionInProgress"
+        @click="correctElevationAndUpdateRefreshFlag"
       />
     </div>
   </div>
@@ -31,6 +32,7 @@ import ColorPicker from './ColorPicker.vue'
 import { type Activity } from '../../types/Activity'
 import { useStore } from '../../vuex/store'
 import { Store } from '../../../vuex'
+import { correctElevation } from '../../helpers/correctElevation'
 
 let store: Store
 
@@ -46,7 +48,8 @@ export default defineComponent({
   },
   data() {
     return {
-      unfolded: false
+      unfolded: false,
+      elevationCorrectionInProgress: false
     }
   },
   setup() {
@@ -58,7 +61,15 @@ export default defineComponent({
       modifierFunc(updatedActivity)
       store.commit('UPDATE_ACTIVITY', updatedActivity)
     },
-    correctElevationData() {}
+    correctElevationAndUpdateRefreshFlag() {
+      const t = this
+      t.elevationCorrectionInProgress = true
+      correctElevation(this.activity).then((updated) => {
+        if (updated) store.commit('UPDATE_REFRESH_DATA_GRAPH', true)
+      }).finally(() => {
+        t.elevationCorrectionInProgress = false
+      })
+    }
   }
 })
 </script>

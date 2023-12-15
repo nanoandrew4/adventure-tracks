@@ -9,6 +9,7 @@ import mutations from './mutations'
 export interface State {
   adventure: Adventure
   boundingCoordinateBox: [number, number, number, number]
+  refreshDataGraph: boolean
 }
 
 // define injection key
@@ -19,7 +20,8 @@ export const store = createStore<State>({
     adventure: buildSampleAdventure(new Date().toLocaleDateString()),
     boundingCoordinateBox: [
       -74.04728500751165, 40.68392799015035, -73.91058699000139, 40.87764500765852
-    ]
+    ],
+    refreshDataGraph: false
   },
   mutations
 })

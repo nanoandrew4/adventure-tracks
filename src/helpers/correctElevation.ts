@@ -1,6 +1,10 @@
-import { type GeoPoint } from '../types/GeoPoint'
 import { type Activity } from '../types/Activity'
 import objectHash from 'object-hash'
+
+// Check the following for possibly better accuracy data
+// https://github.com/ajnisbet/opentopodata
+// https://github.com/sacridini/Awesome-Geospatial?tab=readme-ov-file#go
+// https://github.com/airbusgeo/godal
 
 const requestURL = import.meta.env.VITE_ELEVATION_API_ENDPOINT
 
@@ -23,26 +27,26 @@ interface ElevationResponse {
 
 const cache: Map<string, number[]> = new Map()
 
-async function correctElevation(activity: Activity) {
-  calculateElevation(activity.activityGeoPoints).then((elevationData) => {
-    if (activity.activityGeoPoints.length == elevationData.length) {
-      for (let i = 0; i < activity.activityGeoPoints.length; i++) {
-        activity.activityGeoPoints[i].setElevation(elevationData[i])
-      }
+async function correctElevation(activity: Activity): Promise<boolean | undefined> {
+  const longLatCoords = activity.getLongLatCoords()
+
+  return calculateElevation(longLatCoords).then((elevationData) => {
+    if (activity.geoJsonFeature) {
+      return activity.updateElevation(elevationData)
     }
   })
 }
 
-async function calculateElevation(activityCoordinates: GeoPoint[]): Promise<number[]> {
-  const activityCoordinatesHash = objectHash.sha1(activityCoordinates)
+async function calculateElevation(longLatCoords: number[][]): Promise<number[]> {
+  const activityCoordinatesHash = objectHash.sha1(longLatCoords)
   if (cache.has(activityCoordinatesHash)) {
     return new Promise<number[]>(() => {
       return cache.get(activityCoordinatesHash)
     })
   }
 
-  const coordsToCorrect = activityCoordinates.flatMap((geoPoint) => [
-    { longitude: geoPoint.longitude(), latitude: geoPoint.latitude() }
+  const coordsToCorrect = longLatCoords.flatMap((longLatCoord) => [
+    { longitude: longLatCoord[0], latitude: longLatCoord[1] }
   ])
   const request: RequestInfo = new Request(requestURL, {
     method: 'POST',
@@ -55,19 +59,21 @@ async function calculateElevation(activityCoordinates: GeoPoint[]): Promise<numb
     .then((res) => {
       console.log(res)
 
-      const parsedResponse: ElevationResponse = JSON.parse(res)
+      const parsedResponse: ElevationResponse = res
       const elevationPoints: number[] = []
 
       parsedResponse.results.forEach((result) => {
         elevationPoints.push(result.elevation)
       })
 
-      if (activityCoordinates.length == elevationPoints.length)
+      if (longLatCoords.length == elevationPoints.length)
         cache.set(activityCoordinatesHash, elevationPoints)
-      else
-        alert(
+      else {
+        const rejectionMessage =
           'Elevation correction failed due to not being supplied with enough data from the server'
-        )
+        alert(rejectionMessage)
+        Promise.reject(rejectionMessage)
+      }
 
       return elevationPoints
     })

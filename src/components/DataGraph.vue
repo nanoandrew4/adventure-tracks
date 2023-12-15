@@ -23,7 +23,8 @@ export default defineComponent({
   computed: {
     activities: (): Activity[] => store.state.adventure.activities,
     reducedActivities: (): ReducedActivity[] =>
-      store.state.adventure.activities.map((activity: Activity) => new ReducedActivity(activity))
+      store.state.adventure.activities.map((activity: Activity) => new ReducedActivity(activity)),
+    refreshDataGraph: (): boolean => store.state.refreshDataGraph
   },
   props: {
     display: {
@@ -48,16 +49,26 @@ export default defineComponent({
       handler(modifiedActivities: ReducedActivity[], oldActivities: ReducedActivity[]) {
         this.drawGraph(modifiedActivities, oldActivities)
       }
+    },
+    refreshDataGraph(newVal: boolean) {
+      if (newVal) {
+        this.drawGraph(this.reducedActivities, undefined, true)
+        store.commit('UPDATE_REFRESH_DATA_GRAPH', false)
+      }
     }
   },
   methods: {
-    drawGraph(modifiedActivities: ReducedActivity[], oldActivities?: ReducedActivity[]) {
+    drawGraph(
+      modifiedActivities: ReducedActivity[],
+      oldActivities?: ReducedActivity[],
+      force?: boolean
+    ) {
       const activitiesMap = this.activities.reduce((result, item) => {
         result.set(item.uid, item)
         return result
       }, new Map<string, Activity>())
 
-      if (this.doesGraphRequireFullRedraw(activitiesMap, oldActivities)) {
+      if (force || this.doesGraphRequireFullRedraw(activitiesMap, oldActivities)) {
         const activities: Activity[] = modifiedActivities
           .map((reducedActivity) => activitiesMap.get(reducedActivity.uid))
           .filter((activity) => activity !== undefined)

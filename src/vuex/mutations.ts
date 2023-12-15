@@ -19,5 +19,8 @@ export default {
     state.adventure.activities.forEach((activity) => {
       if (activity.name == activityToMutate.name) activity = activityToMutate
     })
+  },
+  UPDATE_REFRESH_DATA_GRAPH(state: State, newVal: boolean) {
+    state.refreshDataGraph = newVal
   }
 }
