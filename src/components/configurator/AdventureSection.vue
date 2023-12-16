@@ -91,13 +91,13 @@ export default defineComponent({
     updateAdventure(modifierFunc: (adventureToUpdate: Adventure) => void) {
       const updatedAdventure = this.adventure
       modifierFunc(updatedAdventure)
-      store.commit('UPDATE_ADVENTURE', updatedAdventure)
+      store.commit('SET_ADVENTURE', updatedAdventure)
     },
     updateAdventureLineWidth(lineWidthStr: string) {
       const updatedAdventure = this.adventure
       const lineWidth = Number(lineWidthStr)
       updatedAdventure.lineWidth = lineWidth >= 0 ? lineWidth : 0
-      store.commit('UPDATE_ADVENTURE', updatedAdventure)
+      store.commit('SET_ADVENTURE', updatedAdventure)
     }
   }
 })

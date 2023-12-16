@@ -4,12 +4,14 @@ import { createStore, useStore as baseUseStore, Store } from 'vuex'
 import { type Adventure } from '../types/Adventure.type'
 import { buildSampleAdventure } from '../helpers/buildSampleAdventure'
 import mutations from './mutations'
+import type { ActivityLoadProgress } from '@/types/ActivityLoadProgress'
 
 // define your typings for the store state
 export interface State {
   adventure: Adventure
   boundingCoordinateBox: [number, number, number, number]
   refreshDataGraph: boolean
+  activitiesLoadProgress: ActivityLoadProgress | undefined
 }
 
 // define injection key

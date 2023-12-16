@@ -53,7 +53,7 @@ export default defineComponent({
     refreshDataGraph(newVal: boolean) {
       if (newVal) {
         this.drawGraph(this.reducedActivities, undefined, true)
-        store.commit('UPDATE_REFRESH_DATA_GRAPH', false)
+        store.commit('SET_REFRESH_DATA_GRAPH', false)
       }
     }
   },

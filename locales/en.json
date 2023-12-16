@@ -7,10 +7,13 @@
   "creator": {
     "config-panel": {
       "activities": "Activities",
-      "activity": {
-        "line-color": "Line color",
-        "elevation-color": "Elevation profile color",
-        "correct-elevation": "Correct elevation data"
+      "activities-section": {
+        "file-errors": "There were errors parsing the following files: { files }",
+        "activity": {
+          "line-color": "Line color",
+          "elevation-color": "Elevation profile color",
+          "correct-elevation": "Correct elevation data"
+        }
       },
       "select-gpx-files": "Select GPX files",
       "map-styles": "Map styles",

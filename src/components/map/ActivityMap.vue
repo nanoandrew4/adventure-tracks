@@ -192,7 +192,7 @@ export default defineComponent({
         activity.processCoordinates(bboxCalculator.processPosition.bind(bboxCalculator))
       })
 
-      store.commit('UPDATE_BOUNDING_COORDINATE_BOX', bboxCalculator.getBoundingBox())
+      store.commit('SET_BOUNDING_COORDINATE_BOX', bboxCalculator.getBoundingBox())
     },
     recenter() {
       const calculatedZoomAndCenter = this.calculateZoomAndCenter()

@@ -44,8 +44,10 @@ import { useStore, type State } from '../../vuex/store'
 import { sortByDateAscending } from '../../helpers/activitySorter'
 import type { Store } from 'vuex'
 import type { Adventure } from '@/types/Adventure.type'
+import type { ActivityLoadProgress } from '@/types/ActivityLoadProgress'
 
 let store: Store
+let state: State
 
 export default defineComponent({
   components: {
@@ -54,18 +56,19 @@ export default defineComponent({
   computed: {
     adventure: (): Adventure => store.state.adventure,
     sortedActivities: (): Activity[] => {
-      return (store.state as State).adventure.activities.sort(sortByDateAscending)
+      return state.adventure.activities.sort(sortByDateAscending)
     }
   },
   setup() {
     store = useStore()
+    state = store.state
   },
   methods: {
     deleteActivity(uidToDelete: string) {
       const modifiedActivities = this.adventure.activities.flatMap((activity: Activity) =>
         activity.uid != uidToDelete ? [activity] : []
       )
-      store.commit('UPDATE_ADVENTURE_ACTIVITIES', modifiedActivities)
+      store.commit('SET_ADVENTURE_ACTIVITIES', modifiedActivities)
     },
     handleFilesValidated(result: FsValidationResult, files: File[]) {
       console.log('Validation result: ' + result)
@@ -84,24 +87,40 @@ export default defineComponent({
         const rawFile = response.target?.result as string
         let geoJsonGen = gpxGen(new DOMParser().parseFromString(rawFile, 'text/xml'))
         let nextFeature = geoJsonGen.next()
-        while (!nextFeature.done) {
-          console.log(nextFeature.value)
-          store.commit('ADD_ACTIVITY', new Activity(nextFeature.value))
-          nextFeature = geoJsonGen.next()
+
+        const activityLoadProgress = state.activitiesLoadProgress!
+        if (nextFeature.done) {
+          // No feature means the file contained no valid data
+          activityLoadProgress.filesWithErrors.push(file.name)
+        } else {
+          while (!nextFeature.done) {
+            console.log(nextFeature.value)
+            store.commit('ADD_ACTIVITY', new Activity(nextFeature.value))
+            nextFeature = geoJsonGen.next()
+          }
         }
+
+        activityLoadProgress.numOfActivitiesProcessed++
+        store.commit('SET_ACTIVITY_LOAD_PROGRESS', activityLoadProgress)
       }
 
-      reader.onloadend = () => {
+      reader.onloadend = (e) => {
+        console.log(e)
         const adventure = store.state.adventure as Adventure
         let startDate = adventure.activities
           .filter((activity: Activity) => activity.startTime)
           .map((activity) => activity.startTime)
           .pop()
         if (startDate) adventure.secondaryText = startDate.toDateString()
-        store.commit('UPDATE_ADVENTURE', adventure)
+        store.commit('SET_ADVENTURE', adventure)
       }
     },
     processFiles(files: File[]) {
+      store.commit('SET_ACTIVITY_LOAD_PROGRESS', {
+        numOfActivitiesToLoad: files.length,
+        numOfActivitiesProcessed: 0,
+        filesWithErrors: []
+      })
       files.forEach((file) => {
         this.processIntoGeoJson(file)
       })

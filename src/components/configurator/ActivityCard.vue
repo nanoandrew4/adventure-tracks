@@ -2,14 +2,14 @@
   <div class="activity-card">
     <div class="activity-details">
       <ColorPicker
-        :label="$t('creator.config-panel.activity.line-color')"
+        :label="$t('creator.config-panel.activities-section.activity.line-color')"
         :color="activity.lineColor"
         @color-updated="
           (color) => updateActivity((activity: Activity) => (activity.lineColor = color))
         "
       />
       <ColorPicker
-        :label="$t('creator.config-panel.activity.elevation-color')"
+        :label="$t('creator.config-panel.activities-section.activity.elevation-color')"
         :color="activity.elevationProfileColor"
         @color-updated="
           (color) =>
@@ -17,7 +17,7 @@
         "
       />
       <v-btn
-        :text="$t('creator.config-panel.activity.correct-elevation')"
+        :text="$t('creator.config-panel.activities-section.activity.correct-elevation')"
         :loading="elevationCorrectionInProgress"
         @click="correctElevationAndUpdateRefreshFlag"
       />
@@ -59,16 +59,18 @@ export default defineComponent({
     updateActivity(modifierFunc: (activityToUpdate: Activity) => void) {
       const updatedActivity = this.activity
       modifierFunc(updatedActivity)
-      store.commit('UPDATE_ACTIVITY', updatedActivity)
+      store.commit('SET_ACTIVITY', updatedActivity)
     },
     correctElevationAndUpdateRefreshFlag() {
       const t = this
       t.elevationCorrectionInProgress = true
-      correctElevation(this.activity).then((updated) => {
-        if (updated) store.commit('UPDATE_REFRESH_DATA_GRAPH', true)
-      }).finally(() => {
-        t.elevationCorrectionInProgress = false
-      })
+      correctElevation(this.activity)
+        .then((updated) => {
+          if (updated) store.commit('SET_REFRESH_DATA_GRAPH', true)
+        })
+        .finally(() => {
+          t.elevationCorrectionInProgress = false
+        })
     }
   }
 })
