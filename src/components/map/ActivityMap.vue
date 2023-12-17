@@ -233,13 +233,20 @@ export default defineComponent({
       const ne = bounds.getNorthEast()
       const sw = bounds.getSouthWest()
 
+      console.log((bounds.getNorth() - bounds.getSouth()) / (bounds.getEast() - bounds.getWest()))
+      let containerSize = 0
+      if ((bounds.getNorth() - bounds.getSouth()) / (bounds.getEast() - bounds.getWest()) > 9/16) {
+        containerSize = map.getCanvas().clientHeight
+      } else {
+        containerSize = map.getCanvas().clientWidth
+      }
       // Calculate the zoom level based on the bounding box dimensions
-      const zoom = this.getZoom(ne.lng - sw.lng, map.getCanvas().clientWidth)
+      const zoom = this.getZoom(ne.lng - sw.lng, containerSize)
 
       return { center: [lng, lat], zoom }
     },
-    getZoom(width: number, containerWidth: number) {
-      const zoom = Math.log2(containerWidth / width) - 0.75
+    getZoom(width: number, containerSize: number) {
+      const zoom = Math.log2(containerSize / width) - 0.75
       return zoom
     }
   }
