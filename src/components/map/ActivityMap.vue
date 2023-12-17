@@ -10,29 +10,40 @@ import mapboxgl from 'mapbox-gl'
 import { defineComponent } from 'vue'
 
 import type { Activity } from '../../types/Activity'
-import { useStore } from '../../vuex/store'
+import { useStore, type State } from '../../vuex/store'
 import type { Store } from 'vuex'
 import { DelayedRunner } from '../../helpers/delayedRunner'
 import { ReducedActivity } from '../../types/ReducedActivity'
 import { BoundingBoxCalculator } from '@/helpers/boundingBoxCalculator'
 import { mapSourceTracker } from '@/helpers/mapSourceTracker'
+import type { MapStyle } from '@/types/MapStyle'
 
 const TARGET_REFRESH_RATE = 10.0
 const MILLISECONDS_BETWEEN_FRAMES = 1000.0 / TARGET_REFRESH_RATE
 
 let store: Store
+let state: State
 let map: mapboxgl.Map
 
 export default defineComponent({
   computed: {
-    lineWidth: (): number => store.state.adventure.lineWidth,
-    activities: (): Activity[] => store.state.adventure.activities,
+    lineWidth: (): number => state.adventure.lineWidth,
+    activities: (): Activity[] => state.adventure.activities,
     reducedActivities: (): ReducedActivity[] =>
-      store.state.adventure.activities.map((activity: Activity) => new ReducedActivity(activity)),
-    boundingCoordinateBox: (): [number, number, number, number] => store.state.boundingCoordinateBox
+      state.adventure.activities.map((activity: Activity) => new ReducedActivity(activity)),
+    boundingCoordinateBox: (): [number, number, number, number] => state.boundingCoordinateBox,
+    activeMapStyle: (): MapStyle => state.activeMapStyle
   },
   setup() {
+    const basePixelRatio = window.devicePixelRatio
+    Object.defineProperty(window, 'devicePixelRatio', {
+      get() {
+        return basePixelRatio > 1 ? basePixelRatio : 2
+      }
+    })
+
     store = useStore()
+    state = store.state
     mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN
   },
   data() {
@@ -49,7 +60,9 @@ export default defineComponent({
     const bounds = new mapboxgl.LngLatBounds(this.boundingCoordinateBox)
     map = new mapboxgl.Map({
       container: mapContainerElement,
-      style: 'mapbox://styles/nanoandrew4/clppmhvwn00zp01qt8lcsh6py',
+      style: 'mapbox://styles/nanoandrew4/clq85wo0o000z01qyfu4j338x',
+      antialias: true,
+      trackResize: true,
       center: bounds.getCenter(),
       bearing: 0,
       pitch: 0,
@@ -81,6 +94,14 @@ export default defineComponent({
     map.remove()
   },
   watch: {
+    activeMapStyle(newMapStyle: MapStyle) {
+      map.setStyle(`mapbox://styles/${newMapStyle.username}/${newMapStyle.styleID}`)
+      const t = this
+      map.on('style.load', () => {
+        t.removeSourcesAndLayers(this.sourceTracker.getAllSources())
+        t.activities.forEach((activity) => this.addSourceAndLayer(activity))
+      })
+    },
     boundingCoordinateBox() {
       const calculatedZoomAndCenter = this.calculateZoomAndCenter()
       map.setCenter({
@@ -151,6 +172,11 @@ export default defineComponent({
         data: activity.geoJsonFeature
       })
 
+      this.addLayer(activity)
+
+      this.sourceTracker.registerActivity(activity)
+    },
+    addLayer(activity: Activity) {
       map.addLayer({
         id: activity.layerName,
         type: 'line',
@@ -164,8 +190,6 @@ export default defineComponent({
           'line-width': this.lineWidth * 0.25
         }
       })
-
-      this.sourceTracker.registerActivity(activity)
     },
     arraysEqual<T>(a: T[], b: T[]): boolean {
       if (a.length !== b.length) {

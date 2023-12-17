@@ -57,8 +57,6 @@ async function calculateElevation(longLatCoords: number[][]): Promise<number[]> 
   return fetch(request)
     .then((res) => res.json())
     .then((res) => {
-      console.log(res)
-
       const parsedResponse: ElevationResponse = res
       const elevationPoints: number[] = []
 

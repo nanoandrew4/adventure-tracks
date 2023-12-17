@@ -2,6 +2,7 @@ import type { State } from './store'
 import type { Adventure } from '../types/Adventure.type'
 import type { Activity } from '../types/Activity'
 import type { ActivityLoadProgress } from '@/types/ActivityLoadProgress'
+import type { MapStyle } from '@/types/MapStyle'
 
 export default {
   SET_BOUNDING_COORDINATE_BOX(state: State, newBoundingBox: [number, number, number, number]) {
@@ -26,5 +27,8 @@ export default {
   },
   SET_ACTIVITY_LOAD_PROGRESS(state: State, newLoadProgress: ActivityLoadProgress) {
     state.activitiesLoadProgress = newLoadProgress
+  },
+  SET_ACTIVE_MAP_STYLE(state: State, activeMapStyle: MapStyle) {
+    state.activeMapStyle = activeMapStyle
   }
 }

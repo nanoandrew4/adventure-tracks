@@ -1,4 +1,4 @@
-import type { ReducedActivity } from '@/components/map/ReducedActivity'
+import type { ReducedActivity } from '@/types/ReducedActivity'
 import type { Activity } from '@/types/Activity'
 
 export class mapSourceTracker {
@@ -23,6 +23,10 @@ export class mapSourceTracker {
       if (!activitiesMap.has(k)) missingSources.push(k)
     })
     return missingSources
+  }
+
+  getAllSources(): string[] {
+    return Array.from(this.sourceIDsMap)
   }
 
   getNewActivities(activities: ReducedActivity[]): ReducedActivity[] {
