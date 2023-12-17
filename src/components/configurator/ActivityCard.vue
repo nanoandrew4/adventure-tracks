@@ -1,21 +1,45 @@
 <template>
   <div class="activity-card">
     <div class="activity-details">
-      <ColorPicker
-        :label="$t('creator.config-panel.activities-section.activity.line-color')"
-        :color="activity.lineColor"
-        @color-updated="
-          (color) => updateActivity((activity: Activity) => (activity.lineColor = color))
-        "
+      <v-checkbox
+        class="activity-checkbox"
+        :true-icon="'mdi-toggle-switch'"
+        :false-icon="'mdi-toggle-switch-off'"
+        :hide-details="true"
+        :density="'compact'"
+        :label="$t('creator.config-panel.activities-section.activity.use-same-color')"
+        v-model:model-value="useSameColor"
       />
-      <ColorPicker
-        :label="$t('creator.config-panel.activities-section.activity.elevation-color')"
-        :color="activity.elevationProfileColor"
-        @color-updated="
-          (color) =>
-            updateActivity((activity: Activity) => (activity.elevationProfileColor = color))
-        "
-      />
+      <div v-if="useSameColor">
+        <ColorPicker
+          :label="$t('creator.config-panel.activities-section.activity.activity-color')"
+          :color="activity.lineColor"
+          @color-updated="
+            (color) =>
+              updateActivity(
+                (activity: Activity) =>
+                  (activity.lineColor = activity.elevationProfileColor = color)
+              )
+          "
+        />
+      </div>
+      <div v-else>
+        <ColorPicker
+          :label="$t('creator.config-panel.activities-section.activity.line-color')"
+          :color="activity.lineColor"
+          @color-updated="
+            (color) => updateActivity((activity: Activity) => (activity.lineColor = color))
+          "
+        />
+        <ColorPicker
+          :label="$t('creator.config-panel.activities-section.activity.elevation-color')"
+          :color="activity.elevationProfileColor"
+          @color-updated="
+            (color) =>
+              updateActivity((activity: Activity) => (activity.elevationProfileColor = color))
+          "
+        />
+      </div>
       <v-btn
         :text="$t('creator.config-panel.activities-section.activity.correct-elevation')"
         :loading="elevationCorrectionInProgress"
@@ -49,7 +73,8 @@ export default defineComponent({
   data() {
     return {
       unfolded: false,
-      elevationCorrectionInProgress: false
+      elevationCorrectionInProgress: false,
+      useSameColor: false
     }
   },
   setup() {
@@ -76,4 +101,19 @@ export default defineComponent({
 })
 </script>
 
-<style></style>
+<style>
+.activity-checkbox {
+  .v-input__control {
+    .v-selection-control {
+      height: fit-content;
+      font-size: 1vw;
+      div {
+        width: 1.5vw;
+      }
+      label {
+        margin-left: 1vw;
+      }
+    }
+  }
+}
+</style>

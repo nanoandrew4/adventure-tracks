@@ -10,9 +10,11 @@
       "activities-section": {
         "file-errors": "There were errors parsing the following files: { files }",
         "activity": {
+          "activity-color": "Activity color",
           "line-color": "Line color",
           "elevation-color": "Elevation profile color",
-          "correct-elevation": "Correct elevation data"
+          "correct-elevation": "Correct elevation data",
+          "use-same-color": "Use same color"
         }
       },
       "select-gpx-files": "Select GPX files",

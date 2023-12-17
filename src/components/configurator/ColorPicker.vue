@@ -49,13 +49,13 @@ export default defineComponent({
 
 <style scoped>
 .color-picker {
-  & > p {
+  p {
     margin: 0 0 0 1vw;
   }
   display: flex;
   align-items: center;
   cursor: pointer;
-  margin: 0.5em 0 0.5em 5px;
+  margin: 0.5vh 0 1vh 0;
 }
 
 .color-picker-circle {
@@ -73,14 +73,14 @@ export default defineComponent({
 
   right: -32vw;
 
-  & > i {
+  i {
     right: 0;
     color: black;
     position: absolute;
     z-index: 1;
   }
 
-  & > div {
+  div {
     padding: 20px;
     margin: 0px;
     background-color: white;

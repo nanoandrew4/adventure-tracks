@@ -2,7 +2,7 @@
   <div
     id="data-graph-container"
     class="data-graph"
-    v-show="display"
+    v-show="display && hasSvgBeenDrawn"
   >
     <svg id="data-graph"></svg>
   </div>
@@ -34,7 +34,8 @@ export default defineComponent({
   },
   data() {
     return {
-      isReady: false
+      isReady: false,
+      hasSvgBeenDrawn: false
     }
   },
   setup() {
@@ -85,10 +86,12 @@ export default defineComponent({
         const newSvg = createElevationSvg(activities, componentWidth)
 
         let oldSvg = document.getElementById('data-graph')
-        if (oldSvg != null) {
+        if (oldSvg && newSvg) {
           dataGraphContainerElement.replaceChild(newSvg, oldSvg)
+          this.hasSvgBeenDrawn = true
         } else {
           console.log('could not replace data graph')
+          this.hasSvgBeenDrawn = false
         }
       } else if (oldActivities) {
         oldActivities

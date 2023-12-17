@@ -3,7 +3,7 @@ import type { Activity } from '@/types/Activity'
 const svgHeightPx = 80
 const svgHeightPxCss = `${svgHeightPx}px`
 
-function createElevationSvg(activities: Activity[], componentWidth: number): SVGSVGElement {
+function createElevationSvg(activities: Activity[], componentWidth: number): SVGSVGElement | null {
   let highestPoint = 0
   let totalDuration = 0
   activities.forEach((activity) => {
@@ -12,6 +12,10 @@ function createElevationSvg(activities: Activity[], componentWidth: number): SVG
       totalDuration += activity.endTime.getTime() - activity.startTime.getTime()
     highestPoint = Math.max(...elevationProfile, highestPoint)
   })
+
+  if (highestPoint === 0) {
+    return null
+  }
 
   const newSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
   newSvg.id = 'data-graph'
