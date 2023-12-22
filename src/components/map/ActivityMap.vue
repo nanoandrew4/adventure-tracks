@@ -235,7 +235,10 @@ export default defineComponent({
 
       console.log((bounds.getNorth() - bounds.getSouth()) / (bounds.getEast() - bounds.getWest()))
       let containerSize = 0
-      if ((bounds.getNorth() - bounds.getSouth()) / (bounds.getEast() - bounds.getWest()) > 9/16) {
+      if (
+        (bounds.getNorth() - bounds.getSouth()) / (bounds.getEast() - bounds.getWest()) >
+        9 / 16
+      ) {
         containerSize = map.getCanvas().clientHeight
       } else {
         containerSize = map.getCanvas().clientWidth
@@ -255,11 +258,11 @@ export default defineComponent({
 
 <style>
 .map-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  aspect-ratio: 16/9;
-  border-radius: 1vw;
-  margin: 0.5vw;
+  .mapboxgl-canvas-container {
+    canvas {
+      border-radius: 12px;
+      position: unset;
+    }
+  }
 }
 </style>
