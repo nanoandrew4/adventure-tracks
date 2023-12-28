@@ -1,10 +1,15 @@
 <template>
   <div
-    id="data-graph-container"
-    class="data-graph"
-    v-show="display && hasSvgBeenDrawn"
+    id="data-graph-root"
+    class="data-graph-root"
   >
-    <svg id="data-graph"></svg>
+    <div
+      id="data-graph-container"
+      class="data-graph-container"
+      v-show="display && hasSvgBeenDrawn"
+    >
+      <svg id="data-graph"></svg>
+    </div>
   </div>
 </template>
 
@@ -76,9 +81,10 @@ export default defineComponent({
           .sort(sortByDateAscending) as Activity[]
 
         let componentWidth = 0
+        let dataGraphRootElement = document.getElementById('data-graph-root')
         let dataGraphContainerElement = document.getElementById('data-graph-container')
-        if (dataGraphContainerElement != null) {
-          componentWidth = dataGraphContainerElement.getBoundingClientRect().width
+        if (dataGraphRootElement != null && dataGraphContainerElement != null) {
+          componentWidth = dataGraphRootElement.getBoundingClientRect().width
         } else {
           return
         }
@@ -134,8 +140,12 @@ export default defineComponent({
 </script>
 
 <style>
-.data-graph {
+.data-graph-root {
   width: calc(100% - 1vw);
+  height: fit-content;
+}
+
+.data-graph-container {
   height: 80px;
   margin: 0 0.5vw 0 0.5vw;
 }

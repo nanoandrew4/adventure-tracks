@@ -49,6 +49,7 @@ export default defineComponent({
   data() {
     return {
       lastRefreshTimestamp: 0,
+      attribution: new mapboxgl.AttributionControl(),
       sourceTracker: new mapSourceTracker(),
       delayedRunner: new DelayedRunner()
     }
@@ -68,13 +69,14 @@ export default defineComponent({
       pitch: 0,
       zoom: 9,
       preserveDrawingBuffer: true,
-      attributionControl: true
+      attributionControl: false
     })
 
     map.addControl(new mapboxgl.NavigationControl({ showCompass: false, showZoom: false }))
     // map.addControl(new mapboxgl.AttributionControl({
     //     customAttribution: "© Mapbox, © OpenStreetMap"
     // }))
+    map.addControl(this.attribution)
 
     const calculatedZoomAndCenter = this.calculateZoomAndCenter()
     map.setCenter({
@@ -209,6 +211,7 @@ export default defineComponent({
     },
     resizeMap() {
       map.resize()
+      map.repaint = true
     },
     recalculateActivitiesBoundingBox() {
       let bboxCalculator = new BoundingBoxCalculator()
@@ -258,11 +261,26 @@ export default defineComponent({
 
 <style>
 .map-container {
+  /*
+   Solves the issue of attribution and map jumping around on resize.
+   References:
+   - https://developer.mozilla.org/en-US/docs/Web/CSS/Containing_block#identifying_the_containing_block
+   - https://developer.mozilla.org/en-US/docs/Web/CSS/contain
+  */
+  contain: layout;
   .mapboxgl-canvas-container {
     canvas {
       border-radius: 12px;
-      position: unset;
     }
   }
+}
+
+.mapboxgl-ctrl-attrib {
+  border-radius: 12px;
+  font-size: small;
+}
+
+.mapbox-improve-map {
+  display: none;
 }
 </style>
