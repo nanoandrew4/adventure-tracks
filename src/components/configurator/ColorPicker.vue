@@ -2,6 +2,7 @@
   <div class="color-picker">
     <div
       :style="`background: ${color}`"
+      ref="circle"
       class="color-picker-circle"
     />
     <p>{{ label }}</p>
@@ -10,7 +11,10 @@
       width="fit-content"
       v-model="open"
     >
-      <div class="color-picker-modal">
+      <div
+        class="color-picker-modal"
+        :style="`top: calc(${circleBoundingClient?.y}px - 50vh); left: calc(${circleBoundingClient?.x}px - 65vw);`"
+      >
         <v-icon
           @click="open = false"
           icon="mdi-close-circle-outline"
@@ -39,9 +43,20 @@ export default defineComponent({
       required: true
     }
   },
+  mounted() {
+    const t = this
+    this.$nextTick(() => {
+      t.circleBoundingClient = (this.$refs?.circle as HTMLElement)?.getBoundingClientRect()
+    })
+    addEventListener("resize", () => {
+      t.circleBoundingClient = (this.$refs?.circle as HTMLElement)?.getBoundingClientRect()
+    });
+  },
   data() {
+    let circleBoundingClient: DOMRect | undefined
     return {
       open: false,
+      circleBoundingClient
     }
   }
 })
@@ -70,8 +85,6 @@ export default defineComponent({
 .color-picker-modal {
   position: absolute;
   overflow-x: hidden;
-
-  right: -32vw;
 
   i {
     right: 0;
