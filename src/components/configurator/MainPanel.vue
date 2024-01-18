@@ -69,6 +69,14 @@
           <AdventureSection />
         </v-expansion-panel-text>
       </v-expansion-panel>
+      <v-expansion-panel
+        class="configurator-section-header"
+        :title="$t('creator.config-panel.labels')"
+      >
+        <v-expansion-panel-text>
+          <LabelsSection />
+        </v-expansion-panel-text>
+      </v-expansion-panel>
     </v-expansion-panels>
 
     <v-btn
@@ -83,6 +91,7 @@
 import { defineComponent } from 'vue'
 
 import ActivitiesSection from './ActivitiesSection.vue'
+import LabelsSection from './LabelsSection.vue'
 import AdventureSection from './AdventureSection.vue'
 import MapStyleView from './MapStyleView.vue'
 import { Store } from 'vuex'
@@ -111,6 +120,7 @@ export default defineComponent({
   components: {
     ActivitiesSection,
     AdventureSection,
+    LabelsSection,
     MapStyleView
   },
   setup() {

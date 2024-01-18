@@ -44,7 +44,6 @@ import { useStore, type State } from '../../vuex/store'
 import { sortByDateAscending } from '../../helpers/activitySorter'
 import type { Store } from 'vuex'
 import type { Adventure } from '@/types/Adventure.type'
-import type { ActivityLoadProgress } from '@/types/ActivityLoadProgress'
 
 let store: Store
 let state: State

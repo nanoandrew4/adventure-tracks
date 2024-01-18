@@ -4,6 +4,7 @@ import { constants } from '../constants/constants'
 export function buildSampleAdventure(secondaryText: string): Adventure {
   return {
     activities: [],
+    labels: [],
     backgroundColor: constants.defaultBackgroundColor,
     lineWidth: 4,
     mainText: 'Sample Adventure',

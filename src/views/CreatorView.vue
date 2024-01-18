@@ -29,6 +29,17 @@
         >
           {{ adventure.secondaryText }}
         </h2>
+
+        <div class="labels-container">
+          <div
+            class="label-container"
+            :key="idx"
+            v-for="(label, idx) in labels"
+          >
+            <p class="label-name">{{ label.name }}</p>
+            <p class="label-value">{{ label.value }}</p>
+          </div>
+        </div>
       </div>
     </div>
     <ConfigurationPanel @capture="capture" />
@@ -47,6 +58,7 @@ import html2canvas from 'html2canvas'
 import { type Adventure } from '../types/Adventure.type'
 import { useStore } from '../vuex/store'
 import type { Store } from 'vuex'
+import type { Label } from '@/types/Label'
 
 let store: Store
 
@@ -63,7 +75,11 @@ export default defineComponent({
     },
     adventureTrackStyleSuffix: function (): string {
       return this.displayGraph ? '--with-elevation' : '--without-elevation'
-    }
+    },
+    labels: () =>
+      store.state.adventure.labels.filter(
+        (label: Label) => label.name.length > 0 && label.value.length > 0
+      )
   },
   data() {
     const rawGpxFiles: string[] = []
@@ -141,22 +157,22 @@ export default defineComponent({
 }
 
 .adventure-track-map--with-elevation {
-  height: calc(75% - 0.5vw);
+  height: calc(70% - 0.5vw);
   margin: 0.5vw;
 }
 
 .adventure-track-map--without-elevation {
-  height: calc(80% - 0.5vw);
+  height: calc(75% - 0.5vw);
   margin: 0.5vw;
 }
 
 .adventure-track-details--with-elevation {
-  height: calc(25% - 0.5vw * 2);
+  height: calc(30% - 0.5vw * 2);
   margin: 0.5vw;
 }
 
 .adventure-track-details--without-elevation {
-  height: calc(20% - 0.5vw * 2);
+  height: calc(25% - 0.5vw * 2);
   margin: 0.5vw;
 }
 
@@ -172,6 +188,33 @@ export default defineComponent({
   }
   h2 {
     width: 100%;
+  }
+
+  .labels-container {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: center;
+    width: 90%;
+  }
+
+  .label-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    margin: 0 1vw 0 1vw;
+  }
+
+  .label-name {
+    color: black;
+    padding-top: 2px;
+    margin-right: 0.5vw;
+  }
+
+  .label-value {
+    color: black;
+    font-size: large;
   }
 }
 </style>

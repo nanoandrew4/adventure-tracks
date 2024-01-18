@@ -1,4 +1,5 @@
 import {type Activity} from './Activity'
+import {type Label} from './Label'
 
 export interface Adventure {
     mainText: string;
@@ -8,6 +9,7 @@ export interface Adventure {
     lineWidth: number;
     backgroundColor: string;
     activities: Activity[];
+    labels: Label[];
 
     displayElevationProfile: boolean;
     displayHeartRateGraph: boolean;
