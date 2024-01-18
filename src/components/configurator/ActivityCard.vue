@@ -96,6 +96,15 @@ export default defineComponent({
         .finally(() => {
           t.elevationCorrectionInProgress = false
         })
+    },
+  },
+  watch: {
+    useSameColor(newVal: boolean) {
+      if (newVal) {
+        const updatedActivity = this.activity
+        updatedActivity.lineColor = updatedActivity.elevationProfileColor = this.activity.lineColor
+        store.commit('SET_ACTIVITY', updatedActivity)
+      }
     }
   }
 })

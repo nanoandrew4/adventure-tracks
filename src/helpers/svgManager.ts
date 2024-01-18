@@ -4,14 +4,18 @@ const svgHeightPx = 80
 const svgHeightPxCss = `${svgHeightPx}px`
 
 function createElevationSvg(activities: Activity[], componentWidth: number): SVGSVGElement | null {
-  let highestPoint = 0
+  let highestPoint = 0, lowestPoint = 0
   let totalDuration = 0
   activities.forEach((activity) => {
     const elevationProfile = activity.getElevation()
     if (activity.startTime && activity.endTime)
       totalDuration += activity.endTime.getTime() - activity.startTime.getTime()
     highestPoint = Math.max(...elevationProfile, highestPoint)
+    lowestPoint = Math.min(...elevationProfile, lowestPoint)
   })
+  
+  const yNormalizationOffset = -lowestPoint + 1
+  highestPoint += yNormalizationOffset
 
   if (highestPoint === 0) {
     return null
@@ -44,7 +48,8 @@ function createElevationSvg(activities: Activity[], componentWidth: number): SVG
     const stepSize = activityWidth / elevationProfile.length
     let d = 'M ' + currPx + ' ' + svgHeightPx
     elevationProfile.forEach((elevationPoint) => {
-      d += ' L ' + currPx + ' ' + (svgHeightPx - (elevationPoint / highestPoint) * svgHeightPx)
+      // console.log("elevation: " + elevationPoint + " | highestPoint: " + highestPoint)
+      d += ' L ' + currPx + ' ' + (svgHeightPx - ((elevationPoint + yNormalizationOffset) / highestPoint) * svgHeightPx)
       currPx += stepSize
     })
     d += ' L ' + currPx + ' ' + svgHeightPx
