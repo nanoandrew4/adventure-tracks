@@ -236,7 +236,6 @@ export default defineComponent({
       const ne = bounds.getNorthEast()
       const sw = bounds.getSouthWest()
 
-      console.log((bounds.getNorth() - bounds.getSouth()) / (bounds.getEast() - bounds.getWest()))
       let containerSize = 0
       if (
         (bounds.getNorth() - bounds.getSouth()) / (bounds.getEast() - bounds.getWest()) >

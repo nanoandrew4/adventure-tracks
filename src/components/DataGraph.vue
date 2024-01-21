@@ -21,8 +21,12 @@ import type { Store } from 'vuex'
 import { ReducedActivity } from '@/types/ReducedActivity'
 import type { Activity } from '@/types/Activity'
 import { createElevationSvg } from '@/helpers/svgManager'
+import { DelayedRunner } from '@/helpers/delayedRunner'
 
 let store: Store
+
+const TARGET_REFRESH_RATE = 10.0
+const MILLISECONDS_BETWEEN_FRAMES = 1000.0 / TARGET_REFRESH_RATE
 
 export default defineComponent({
   computed: {
@@ -40,13 +44,35 @@ export default defineComponent({
   data() {
     return {
       isReady: false,
-      hasSvgBeenDrawn: false
+      hasSvgBeenDrawn: false,
+      lastDrawTimestamp: new Date().getTime(),
+      delayedRunner: new DelayedRunner()
     }
   },
   setup() {
     store = useStore()
   },
   mounted() {
+    const rootElem = document.getElementById('data-graph-root')
+    if (rootElem != null) {
+      const t = this
+      let onResize = function () {
+        if (t.display) {
+          if (new Date().getTime() - t.lastDrawTimestamp < MILLISECONDS_BETWEEN_FRAMES) {
+            t.delayedRunner.runDelayedFunction(() => {
+              t.drawGraph(t.reducedActivities, undefined, true)
+            }, MILLISECONDS_BETWEEN_FRAMES)
+          } else {
+            t.delayedRunner.clearTimeout()
+            t.drawGraph(t.reducedActivities, undefined, true)
+          }
+        }
+      }
+
+      new ResizeObserver(onResize).observe(rootElem)
+    } else {
+      console.log('no resize event')
+    }
     this.drawGraph(this.reducedActivities)
   },
   watch: {

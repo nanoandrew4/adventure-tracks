@@ -93,7 +93,6 @@ export default defineComponent({
           activityLoadProgress.filesWithErrors.push(file.name)
         } else {
           while (!nextFeature.done) {
-            console.log(nextFeature.value)
             store.commit('ADD_ACTIVITY', new Activity(nextFeature.value))
             nextFeature = geoJsonGen.next()
           }

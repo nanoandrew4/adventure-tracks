@@ -66,6 +66,10 @@ import type { Label } from '@/types/Label'
 
 let store: Store
 
+const ANIMATE_MAP_RESIZE_DURATION = 500
+const ANIMATE_MAP_RESIZE_FRAME_TIME = 16
+const ANIMATE_MAP_RESIZE_FRAMES = ANIMATE_MAP_RESIZE_DURATION / ANIMATE_MAP_RESIZE_FRAME_TIME
+
 export default defineComponent({
   components: {
     ActivityMap,
@@ -135,14 +139,21 @@ export default defineComponent({
     }
   },
   updated: function () {
-    setTimeout(() => {
-      if (this.lastStyleSuffix !== this.adventureTrackStyleSuffix || this.lastConfigurationPanelState !== this.showConfigurationPanel) {
+    this.$nextTick(async () => {
+      if (this.lastStyleSuffix !== this.adventureTrackStyleSuffix) {
         let activityMapRef = this.$refs.activityMap as typeof ActivityMap
         activityMapRef.resizeMap()
         this.lastStyleSuffix = this.adventureTrackStyleSuffix
+      } else if (this.lastConfigurationPanelState !== this.showConfigurationPanel) {
+        let activityMapRef = this.$refs.activityMap as typeof ActivityMap
+
+        for (let i = 0; i < ANIMATE_MAP_RESIZE_FRAMES; i++) {
+          await new Promise((resolve) => setTimeout(resolve, ANIMATE_MAP_RESIZE_FRAME_TIME))
+          activityMapRef.resizeMap()
+        }
         this.lastConfigurationPanelState = this.showConfigurationPanel
       }
-    }, 500)
+    })
   }
 })
 </script>
@@ -171,7 +182,7 @@ export default defineComponent({
 
 .adventure-track--full {
   width: 100%;
-  left: min(calc((100% - 94vh * (16 / 9)) / 2), calc((100vw - (100%/2)) / 2));
+  left: min(calc((100% - 94vh * (16 / 9)) / 2), calc((100vw - (100% / 2)) / 2));
 }
 
 .adventure-track-map--with-elevation {
