@@ -170,19 +170,20 @@ export default defineComponent({
   position: absolute;
   transition: all 0.5s ease;
   transition-property: width, left;
-  max-width: calc(94vh * (16 / 9));
+  max-width: calc(94vh * sqrt(2));
   max-height: 94vh;
   border-radius: 12px;
-  aspect-ratio: 16/9;
+  aspect-ratio: sqrt(2);
 }
 .adventure-track {
   left: 0;
   width: 75%;
+  left: min(calc((75% - 94vh * sqrt(2)) / 2), calc((75vw - (75% / 2)) / 2));
 }
 
 .adventure-track--full {
   width: 100%;
-  left: min(calc((100% - 94vh * (16 / 9)) / 2), calc((100vw - (100% / 2)) / 2));
+  left: min(calc((100% - 94vh * sqrt(2)) / 2), calc((100vw - (100% / 2)) / 2));
 }
 
 .adventure-track-map--with-elevation {

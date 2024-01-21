@@ -242,7 +242,6 @@ export default defineComponent({
 
 .show-configurator-btn--hidden {
   right: calc(-32px * 2);
-  transition: right 0.1s ease;
 }
 
 .configurator-section-header {
