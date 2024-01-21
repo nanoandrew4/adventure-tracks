@@ -41,6 +41,7 @@
         />
       </div>
       <v-btn
+        v-if="ENABLE_ELEVATION_CORRECTION"
         :text="$t('creator.config-panel.activities-section.activity.correct-elevation')"
         :loading="elevationCorrectionInProgress"
         @click="correctElevationAndUpdateRefreshFlag"
@@ -59,6 +60,7 @@ import { Store } from '../../../vuex'
 import { correctElevation } from '../../helpers/correctElevation'
 
 let store: Store
+const ENABLE_ELEVATION_CORRECTION = import.meta.env.VITE_ENABLE_ELEVATION_CORRECTION == "true"
 
 export default defineComponent({
   components: {
@@ -74,7 +76,8 @@ export default defineComponent({
     return {
       unfolded: false,
       elevationCorrectionInProgress: false,
-      useSameColor: false
+      useSameColor: false,
+      ENABLE_ELEVATION_CORRECTION
     }
   },
   setup() {
@@ -96,7 +99,7 @@ export default defineComponent({
         .finally(() => {
           t.elevationCorrectionInProgress = false
         })
-    },
+    }
   },
   watch: {
     useSameColor(newVal: boolean) {
