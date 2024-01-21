@@ -5,7 +5,7 @@
   >
     <div
       id="adventure-track"
-      class="adventure-track"
+      :class="showConfigurationPanel ? 'adventure-track' : 'adventure-track--full'"
       :style="`background: ${adventure.backgroundColor};`"
     >
       <ActivityMap
@@ -42,7 +42,11 @@
         </div>
       </div>
     </div>
-    <ConfigurationPanel @capture="capture" />
+    <ConfigurationPanel
+      @capture="capture"
+      @change-visibility="showConfigurationPanel = !showConfigurationPanel"
+      :show="showConfigurationPanel"
+    />
   </div>
   <div id="output"></div>
 </template>
@@ -86,7 +90,9 @@ export default defineComponent({
     return {
       lastStyleSuffix: '',
       activityMap: ref<InstanceType<typeof ActivityMap>>(),
-      rawGpxFiles
+      rawGpxFiles,
+      showConfigurationPanel: true,
+      lastConfigurationPanelState: true
     }
   },
   setup() {
@@ -129,13 +135,14 @@ export default defineComponent({
     }
   },
   updated: function () {
-    this.$nextTick(function () {
-      if (this.lastStyleSuffix !== this.adventureTrackStyleSuffix) {
+    setTimeout(() => {
+      if (this.lastStyleSuffix !== this.adventureTrackStyleSuffix || this.lastConfigurationPanelState !== this.showConfigurationPanel) {
         let activityMapRef = this.$refs.activityMap as typeof ActivityMap
         activityMapRef.resizeMap()
         this.lastStyleSuffix = this.adventureTrackStyleSuffix
+        this.lastConfigurationPanelState = this.showConfigurationPanel
       }
-    })
+    }, 500)
   }
 })
 </script>
@@ -144,26 +151,35 @@ export default defineComponent({
 .track-creator {
   width: 100%;
   height: fit-content;
-  display: grid;
-  grid-template-columns: 75% 25%;
-  align-items: center;
-  justify-content: center;
+  contain: layout;
 }
 
-.adventure-track {
-  width: 100%;
-  height: 90vh;
+.adventure-track,
+.adventure-track--full {
+  position: absolute;
+  transition: all 0.5s ease;
+  transition-property: width, left;
+  max-width: calc(94vh * (16 / 9));
+  max-height: 94vh;
   border-radius: 12px;
+  aspect-ratio: 16/9;
+}
+.adventure-track {
+  left: 0;
+  width: 75%;
+}
+
+.adventure-track--full {
+  width: 100%;
+  left: min(calc((100% - 94vh * (16 / 9)) / 2), calc((100vw - (100%/2)) / 2));
 }
 
 .adventure-track-map--with-elevation {
   height: calc(70% - 0.5vw);
-  margin: 0.5vw;
 }
 
 .adventure-track-map--without-elevation {
   height: calc(75% - 0.5vw);
-  margin: 0.5vw;
 }
 
 .adventure-track-details--with-elevation {

@@ -32,13 +32,13 @@ const { t } = useI18n()
 <style scoped>
 header {
     line-height: 1.5;
-    max-height: 20vh;
+    min-height: 5vh;
+    max-height: 5vh;
     width: 100%;
 }
 
 .logo {
     display: block;
-    margin: 0 auto 2rem;
     max-height: 100%;
 }
 
@@ -69,11 +69,12 @@ nav a:first-of-type {
 @media (min-width: 1024px) {
     header {
         display: flex;
+        align-items: center;
         padding-right: calc(var(--section-gap) / 2);
     }
 
     .logo {
-        margin: 1rem 1rem 0 1rem;
+        /* margin: 1rem 1rem 0 1rem; */
     }
 
     header .wrapper {
@@ -89,7 +90,7 @@ nav a:first-of-type {
         margin-left: -1rem;
         font-size: 1rem;
 
-        padding: 1rem 0;
+        /* padding: 1rem 0; */
     }
 }
 </style>

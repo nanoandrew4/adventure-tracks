@@ -6,6 +6,7 @@
   },
   "creator": {
     "config-panel": {
+      "title": "Configuration panel",
       "activities": "Activities",
       "activities-section": {
         "file-errors": "There were errors parsing the following files: { files }",

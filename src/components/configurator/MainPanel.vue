@@ -1,5 +1,13 @@
 <template>
-  <div class="configurator">
+  <div :class="show ? 'configurator' : 'configurator configurator--hidden'">
+    <div class="title">
+      <h2>{{ $t('creator.config-panel.title') }}</h2>
+      <v-icon
+        class="configurator-hide"
+        icon="mdi-arrow-collapse-right"
+        @click.stop="$emit('change-visibility')"
+      />
+    </div>
     <v-expansion-panels
       theme="dark"
       variant="accordion"
@@ -85,6 +93,17 @@
       @click="$emit('capture')"
     />
   </div>
+  <div
+    :class="!show ? 'show-configurator-btn' : 'show-configurator-btn--hidden'"
+    @click.stop="$emit('change-visibility')"
+  >
+    <v-icon
+      class="configurator-hide"
+      icon="mdi-cog"
+      @click.stop="$emit('change-visibility')"
+    />
+    <!-- <p>{{ $t('creator.config-panel.title') }}</p> -->
+  </div>
 </template>
 
 <script lang="ts">
@@ -103,6 +122,7 @@ let store: Store
 let state: State
 
 export default defineComponent({
+  emits: ['capture', 'change-visibility'],
   computed: {
     filesWithErrors(): string {
       if (!state.activitiesLoadProgress) return ''
@@ -122,6 +142,12 @@ export default defineComponent({
     AdventureSection,
     LabelsSection,
     MapStyleView
+  },
+  props: {
+    show: {
+      type: Boolean,
+      default: true
+    }
   },
   setup() {
     store = useStore()
@@ -152,19 +178,71 @@ export default defineComponent({
           this.activityLoadCompletedWithErrors = true
         }
       }
-    }
+    },
   }
 })
 </script>
 
 <style>
 .configurator {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: calc(25% - 1rem);
+  height: 90vh;
+  transition: right 0.5s ease;
+
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
   align-items: center;
-  height: 100%;
-  margin-left: 1em;
+
+  .title {
+    h2 {
+      text-align: center;
+    }
+    .configurator-hide {
+      position: absolute;
+      right: 1%;
+      top: 4px;
+      font-size: x-large;
+    }
+  }
+}
+
+.configurator--hidden {
+  right: -30%;
+}
+
+.show-configurator-btn,
+.show-configurator-btn--hidden {
+  position: fixed;
+  top: calc(-3.5vh);
+  transition: right 0.5s 0.25s ease;
+
+  display: flex;
+  flex-direction: column;
+  align-items: end;
+
+  p {
+    writing-mode: vertical-lr;
+    text-wrap: nowrap;
+    border: 2px solid white;
+    padding: 8px 2px 8px 2px;
+    border-radius: 1vw;
+  }
+
+  .configurator-show-btn {
+    font-size: large;
+  }
+}
+
+.show-configurator-btn {
+  right: 0;
+}
+
+.show-configurator-btn--hidden {
+  right: calc(-32px * 2);
+  transition: right 0.1s ease;
 }
 
 .configurator-section-header {
