@@ -1,7 +1,8 @@
 <template>
   <div
     id="data-graph-root"
-    class="data-graph-root"
+    resizable
+    class="data-graph-root resizable-container"
   >
     <div
       id="data-graph-container"
@@ -22,6 +23,7 @@ import { ReducedActivity } from '@/types/ReducedActivity'
 import type { Activity } from '@/types/Activity'
 import { createElevationSvg } from '@/helpers/svgManager'
 import { DelayedRunner } from '@/helpers/delayedRunner'
+import { registerResizableAdventureTrackElement } from '@/helpers/resizableManager'
 
 let store: Store
 
@@ -69,7 +71,7 @@ export default defineComponent({
         }
       }
 
-      new ResizeObserver(onResize).observe(rootElem)
+      registerResizableAdventureTrackElement(rootElem, onResize)
     } else {
       console.log('no resize event')
     }
@@ -106,16 +108,17 @@ export default defineComponent({
           .filter((activity) => activity !== undefined)
           .sort(sortByDateAscending) as Activity[]
 
-        let componentWidth = 0
+        let componentWidth = 0, componentHeight = 0
         let dataGraphRootElement = document.getElementById('data-graph-root')
         let dataGraphContainerElement = document.getElementById('data-graph-container')
         if (dataGraphRootElement != null && dataGraphContainerElement != null) {
           componentWidth = dataGraphRootElement.getBoundingClientRect().width
+          componentHeight = dataGraphRootElement.getBoundingClientRect().height
         } else {
           return
         }
 
-        const newSvg = createElevationSvg(activities, componentWidth)
+        const newSvg = createElevationSvg(activities, componentWidth, componentHeight)
 
         let oldSvg = document.getElementById('data-graph')
         if (oldSvg && newSvg) {
@@ -133,10 +136,8 @@ export default defineComponent({
           .forEach((reducedActivityWithChangedColor) => {
             const activityWithChangedColor = activitiesMap.get(reducedActivityWithChangedColor.uid)
             if (!activityWithChangedColor?.sourceName) return
-            console.log(activityWithChangedColor.sourceName)
             const activitySvgGroup = document.getElementById(activityWithChangedColor?.sourceName)
             if (activitySvgGroup != null) {
-              console.log('changed color')
               activitySvgGroup.style.fill = activityWithChangedColor.elevationProfileColor
             }
           })

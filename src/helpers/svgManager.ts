@@ -1,9 +1,6 @@
 import type { Activity } from '@/types/Activity'
 
-const svgHeightPx = 80
-const svgHeightPxCss = `${svgHeightPx}px`
-
-function createElevationSvg(activities: Activity[], componentWidth: number): SVGSVGElement | null {
+function createElevationSvg(activities: Activity[], componentWidth: number, componentHeight: number): SVGSVGElement | null {
   let highestPoint = 0, lowestPoint = 0
   let totalDuration = 0
   activities.forEach((activity) => {
@@ -24,8 +21,8 @@ function createElevationSvg(activities: Activity[], componentWidth: number): SVG
   const newSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
   newSvg.id = 'data-graph'
   newSvg.setAttribute('width', `${componentWidth}px`)
-  newSvg.setAttribute('height', svgHeightPxCss)
-  newSvg.setAttribute('viewBox', `0 0 ${componentWidth} ${svgHeightPx}`)
+  newSvg.setAttribute('height', `${componentHeight}px`)
+  newSvg.setAttribute('viewBox', `0 0 ${componentWidth} ${componentHeight}`)
   let currPx = 0
   for (const activity of activities) {
     if (!activity.startTime || !activity.endTime) continue
@@ -36,23 +33,23 @@ function createElevationSvg(activities: Activity[], componentWidth: number): SVG
 
     const svgGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g')
     svgGroup.style.width = `${activityWidth}px`
-    svgGroup.style.height = svgHeightPxCss
+    svgGroup.style.height = `${componentHeight}px`
 
     const activitySvgPath = document.createElementNS('http://www.w3.org/2000/svg', 'path')
     activitySvgPath.id = activity.sourceName
     activitySvgPath.style.width = `${activityWidth}px`
-    activitySvgPath.style.height = svgHeightPxCss
+    activitySvgPath.style.height = `${componentHeight}px`
     activitySvgPath.setAttribute('fill', activity.elevationProfileColor)
     activitySvgPath.setAttribute('vector-effect', 'non-scaling-stroke')
 
     const stepSize = activityWidth / elevationProfile.length
-    let d = 'M ' + currPx + ' ' + svgHeightPx
+    let d = 'M ' + currPx + ' ' + componentHeight
     elevationProfile.forEach((elevationPoint) => {
       // console.log("elevation: " + elevationPoint + " | highestPoint: " + highestPoint)
-      d += ' L ' + currPx + ' ' + (svgHeightPx - ((elevationPoint + yNormalizationOffset) / highestPoint) * svgHeightPx)
+      d += ' L ' + currPx + ' ' + (componentHeight - ((elevationPoint + yNormalizationOffset) / highestPoint) * componentHeight)
       currPx += stepSize
     })
-    d += ' L ' + currPx + ' ' + svgHeightPx
+    d += ' L ' + currPx + ' ' + componentHeight
 
     activitySvgPath.setAttribute('d', d)
     svgGroup.appendChild(activitySvgPath)

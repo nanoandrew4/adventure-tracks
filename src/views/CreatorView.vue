@@ -9,36 +9,52 @@
       :style="`background: ${adventure.backgroundColor};`"
     >
       <ActivityMap
-        :class="`adventure-track-map${adventureTrackStyleSuffix}`"
+        :class="`adventure-track-map${adventureTrackStyleSuffix} resizable`"
         ref="activityMap"
       />
       <div
         class="adventure-track-details adventure-track-details"
         :class="`adventure track-details adventure-track-details${adventureTrackStyleSuffix}`"
       >
-        <DataGraph :display="displayGraph" />
-        <h1
-          id="main-text"
-          :style="`color: ${adventure.mainTextColor};`"
+        <DataGraph
+          :display="displayGraph"
+          class="draggable"
+          draggable
+        />
+        <div
+          id="main-text-container"
+          class="resizable-container draggable"
+          draggable
+          resizable
         >
-          {{ adventure.mainText }}
-        </h1>
-        <h2
-          id="secondary-text"
-          :style="`color: ${adventure.secondaryTextColor};`"
+          <h1
+            id="main-text"
+            :style="`color: ${adventure.mainTextColor};`"
+          >
+            {{ adventure.mainText }}
+          </h1>
+        </div>
+        <div
+          id="secondary-text-container"
+          class="resizable-container draggable"
+          draggable
+          resizable
         >
-          {{ adventure.secondaryText }}
-        </h2>
+          <h2
+            id="secondary-text"
+            :style="`color: ${adventure.secondaryTextColor};`"
+          >
+            {{ adventure.secondaryText }}
+          </h2>
+        </div>
 
         <div class="labels-container">
-          <div
-            class="label-container"
+          <LabelItem
             :key="idx"
+            :index="idx"
+            :label="label"
             v-for="(label, idx) in labels"
-          >
-            <p class="label-name">{{ label.name }}</p>
-            <p class="label-value">{{ label.value }}</p>
-          </div>
+          />
         </div>
       </div>
     </div>
@@ -56,6 +72,7 @@ import { ref, defineComponent } from 'vue'
 import ActivityMap from '../components/map/ActivityMap.vue'
 import DataGraph from '../components/DataGraph.vue'
 import ConfigurationPanel from '../components/configurator/MainPanel.vue'
+import LabelItem from '../components/LabelItem.vue'
 import '../../node_modules/mapbox-gl/dist/mapbox-gl.css'
 import html2canvas from 'html2canvas'
 
@@ -63,6 +80,11 @@ import { type Adventure } from '../types/Adventure.type'
 import { useStore } from '../vuex/store'
 import type { Store } from 'vuex'
 import type { Label } from '@/types/Label'
+import { registerDraggableTaggedElements } from '@/helpers/draggableManager'
+import {
+  adjustAllRegisteredElementDimensionsIfNecessary,
+  registerResizableTaggedElements
+} from '@/helpers/resizableManager'
 
 let store: Store
 
@@ -74,7 +96,8 @@ export default defineComponent({
   components: {
     ActivityMap,
     DataGraph,
-    ConfigurationPanel
+    ConfigurationPanel,
+    LabelItem
   },
   computed: {
     adventure: (): Adventure => store.state.adventure,
@@ -82,6 +105,7 @@ export default defineComponent({
       return store.state.adventure.displayElevationProfile && this?.adventure.activities.length > 0
     },
     adventureTrackStyleSuffix: function (): string {
+      adjustAllRegisteredElementDimensionsIfNecessary() // to adjust size when graph is added
       return this.displayGraph ? '--with-elevation' : '--without-elevation'
     },
     labels: () =>
@@ -101,6 +125,10 @@ export default defineComponent({
   },
   setup() {
     store = useStore()
+  },
+  mounted() {
+    registerResizableTaggedElements()
+    registerDraggableTaggedElements()
   },
   methods: {
     async capture() {
@@ -178,12 +206,12 @@ export default defineComponent({
 .adventure-track {
   left: 0;
   width: 75%;
-  left: min(calc((75% - 94vh * sqrt(2)) / 2), calc((75vw - (75% / 2)) / 2));
+  left: max(calc((75% - 94vh * sqrt(2)) / 2), 0px);
 }
 
 .adventure-track--full {
   width: 100%;
-  left: min(calc((100% - 94vh * sqrt(2)) / 2), calc((100vw - (100% / 2)) / 2));
+  left: max(calc((100% - 94vh * sqrt(2)) / 2), 0px);
 }
 
 .adventure-track-map--with-elevation {
@@ -195,13 +223,13 @@ export default defineComponent({
 }
 
 .adventure-track-details--with-elevation {
-  height: calc(30% - 0.5vw * 2);
-  margin: 0.5vw;
+  max-height: calc(30% - 0.5vw * 2);
+  /* margin: 0.5vw; */
 }
 
 .adventure-track-details--without-elevation {
-  height: calc(25% - 0.5vw * 2);
-  margin: 0.5vw;
+  max-height: calc(25% - 0.5vw * 2);
+  /* margin: 0.5vw; */
 }
 
 .adventure-track-details {
@@ -210,13 +238,7 @@ export default defineComponent({
   align-items: center;
   justify-content: center;
   text-align: center;
-
-  h1 {
-    width: 100%;
-  }
-  h2 {
-    width: 100%;
-  }
+  /* height: 100%; */
 
   .labels-container {
     display: flex;
@@ -225,24 +247,28 @@ export default defineComponent({
     justify-content: center;
     width: 90%;
   }
+}
 
-  .label-container {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    margin: 0 1vw 0 1vw;
+.labels-container {
+  flex-direction: row;
+}
+
+div#main-text-container,
+div#secondary-text-container {
+  width: 25%;
+}
+
+.resizable-container {
+  container-type: inline-size;
+
+  h1 {
+    text-wrap: wrap;
+    font-size: 10cqw;
   }
 
-  .label-name {
-    color: black;
-    padding-top: 2px;
-    margin-right: 0.5vw;
-  }
-
-  .label-value {
-    color: black;
-    font-size: large;
+  h2 {
+    font-size: 7.5cqw;
   }
 }
+
 </style>

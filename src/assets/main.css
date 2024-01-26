@@ -29,3 +29,12 @@ a,
 .v-overlay__scrim {
   background: none !important;
 }
+
+.resizable {
+  resize: both;
+  overflow: hidden;
+}
+
+.draggable {
+  cursor: grab;
+}

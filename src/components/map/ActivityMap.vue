@@ -16,10 +16,13 @@ import { DelayedRunner } from '../../helpers/delayedRunner'
 import { ReducedActivity } from '../../types/ReducedActivity'
 import { BoundingBoxCalculator } from '@/helpers/boundingBoxCalculator'
 import { mapSourceTracker } from '@/helpers/mapSourceTracker'
+import { registerResizableAdventureTrackElement } from '@/helpers/resizableManager'
 import type { MapStyle } from '@/types/MapStyle'
 
-const TARGET_REFRESH_RATE = 10.0
-const MILLISECONDS_BETWEEN_FRAMES = 1000.0 / TARGET_REFRESH_RATE
+const TARGET_DRAW_REFRESH_RATE = 10.0
+const TARGET_DRAW_RESIZE_RATE = 2.0
+const DRAW_MILLISECONDS_BETWEEN_FRAMES = 1000.0 / TARGET_DRAW_REFRESH_RATE
+const RESIZE_MILLISECONDS_BETWEEN_FRAMES = 1000.0 / TARGET_DRAW_RESIZE_RATE
 
 let store: Store
 let state: State
@@ -49,6 +52,7 @@ export default defineComponent({
   data() {
     return {
       lastRefreshTimestamp: 0,
+      lastResizeTimestamp: 0,
       attribution: new mapboxgl.AttributionControl(),
       sourceTracker: new mapSourceTracker(),
       delayedRunner: new DelayedRunner()
@@ -91,6 +95,21 @@ export default defineComponent({
     map.on('pitch', () => {
       map.setPitch(0)
     })
+
+    const t = this
+    const rootElem = document.getElementById('mapContainer')
+    if (rootElem) {
+      registerResizableAdventureTrackElement(rootElem, () => {
+        if (new Date().getTime() - t.lastResizeTimestamp < RESIZE_MILLISECONDS_BETWEEN_FRAMES) {
+          t.delayedRunner.runDelayedFunction(() => {
+            t.resizeMap()
+          }, RESIZE_MILLISECONDS_BETWEEN_FRAMES)
+        } else {
+          t.delayedRunner.clearTimeout()
+          t.resizeMap()
+        }
+      })
+    }
   },
   unmounted() {
     map.remove()
@@ -126,10 +145,10 @@ export default defineComponent({
   },
   methods: {
     fpsCappedMapRefresh(modifiedActivities: ReducedActivity[]) {
-      if (new Date().getTime() - this.lastRefreshTimestamp < MILLISECONDS_BETWEEN_FRAMES) {
+      if (new Date().getTime() - this.lastRefreshTimestamp < DRAW_MILLISECONDS_BETWEEN_FRAMES) {
         this.delayedRunner.runDelayedFunction(() => {
           this.refreshMap(modifiedActivities)
-        }, MILLISECONDS_BETWEEN_FRAMES)
+        }, DRAW_MILLISECONDS_BETWEEN_FRAMES)
       } else {
         this.delayedRunner.clearTimeout()
         this.refreshMap(modifiedActivities)
@@ -212,6 +231,7 @@ export default defineComponent({
     resizeMap() {
       map.resize()
       map.repaint = true
+      this.lastResizeTimestamp = new Date().getTime()
     },
     recalculateActivitiesBoundingBox() {
       let bboxCalculator = new BoundingBoxCalculator()
@@ -267,6 +287,9 @@ export default defineComponent({
    - https://developer.mozilla.org/en-US/docs/Web/CSS/contain
   */
   contain: layout;
+
+  max-width: 100%;
+  max-height: inherit;
   .mapboxgl-canvas-container {
     canvas {
       border-radius: 12px;
