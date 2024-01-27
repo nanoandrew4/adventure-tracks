@@ -27,7 +27,13 @@
         "main-text-color": "Main text color",
         "secondary-text-color": "Secondary text color",
         "line-width": "Activity line thickness",
-        "show-elevation": "Draw elevation profile"
+        "show-elevation": "Draw elevation profile",
+        "enable-customization": "Enable customization",
+        "disable-customization-dialog": {
+          "text": "Disabling customization will reset all dragged and resized elements, are you sure you want to continue?",
+          "cancel": "Cancel",
+          "confirm": "Confirm"
+        }
       },
       "labels": "Labels",
       "labels-section": {

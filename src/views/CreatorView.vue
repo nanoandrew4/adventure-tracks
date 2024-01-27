@@ -9,7 +9,7 @@
       :style="`background: ${adventure.backgroundColor};`"
     >
       <ActivityMap
-        :class="`adventure-track-map${adventureTrackStyleSuffix} resizable`"
+        :class="`adventure-track-map${adventureTrackStyleSuffix}`"
         ref="activityMap"
       />
       <div
@@ -23,7 +23,7 @@
         />
         <div
           id="main-text-container"
-          class="resizable-container draggable"
+          class="resizable-container"
           draggable
           resizable
         >
@@ -36,7 +36,7 @@
         </div>
         <div
           id="secondary-text-container"
-          class="resizable-container draggable"
+          class="resizable-container"
           draggable
           resizable
         >
@@ -80,10 +80,14 @@ import { type Adventure } from '../types/Adventure.type'
 import { useStore } from '../vuex/store'
 import type { Store } from 'vuex'
 import type { Label } from '@/types/Label'
-import { registerDraggableTaggedElements } from '@/helpers/draggableManager'
+import {
+  registerDraggableTaggedElements,
+  unregisterAllDraggableElements
+} from '@/helpers/draggableManager'
 import {
   adjustAllRegisteredElementDimensionsIfNecessary,
-  registerResizableTaggedElements
+  registerResizableTaggedElements,
+  unregisterAllResizableElements
 } from '@/helpers/resizableManager'
 
 let store: Store
@@ -101,6 +105,7 @@ export default defineComponent({
   },
   computed: {
     adventure: (): Adventure => store.state.adventure,
+    customizationEnabled: (): boolean => store.state.adventure.customizationEnabled,
     displayGraph: function (): boolean {
       return store.state.adventure.displayElevationProfile && this?.adventure.activities.length > 0
     },
@@ -125,10 +130,6 @@ export default defineComponent({
   },
   setup() {
     store = useStore()
-  },
-  mounted() {
-    registerResizableTaggedElements()
-    registerDraggableTaggedElements()
   },
   methods: {
     async capture() {
@@ -164,13 +165,28 @@ export default defineComponent({
       } else {
         alert('Adventure track to save could not be located')
       }
+    },
+    resizeMap() {
+      let activityMapRef = this.$refs.activityMap as typeof ActivityMap
+      activityMapRef.resizeMap()
+    }
+  },
+  watch: {
+    customizationEnabled(enabled: boolean) {
+      if (enabled) {
+        registerResizableTaggedElements()
+        registerDraggableTaggedElements()
+      } else {
+        unregisterAllResizableElements()
+        unregisterAllDraggableElements()
+        this.resizeMap()
+      }
     }
   },
   updated: function () {
     this.$nextTick(async () => {
       if (this.lastStyleSuffix !== this.adventureTrackStyleSuffix) {
-        let activityMapRef = this.$refs.activityMap as typeof ActivityMap
-        activityMapRef.resizeMap()
+        this.resizeMap()
         this.lastStyleSuffix = this.adventureTrackStyleSuffix
       } else if (this.lastConfigurationPanelState !== this.showConfigurationPanel) {
         let activityMapRef = this.$refs.activityMap as typeof ActivityMap
@@ -270,5 +286,4 @@ div#secondary-text-container {
     font-size: 7.5cqw;
   }
 }
-
 </style>

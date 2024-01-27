@@ -1,6 +1,6 @@
 let offset = [0, 0]
 
-const registeredElements: HTMLElement[] = []
+let registeredElements: HTMLElement[] = []
 let lastTouchedElement: HTMLElement | undefined
 let lastMovedElement: HTMLElement | undefined
 
@@ -71,10 +71,12 @@ function registerDraggableElement(elem: HTMLElement) {
   }
 }
 
-function restoreAllElements() {
+function unregisterAllDraggableElements() {
   registeredElements.forEach((elem) => {
     restoreElement(elem)
+    elem.classList.remove('draggable')
   })
+  registeredElements = []
 }
 
 function restoreElement(elem: HTMLElement) {
@@ -86,5 +88,6 @@ function restoreElement(elem: HTMLElement) {
 
 export {
   registerDraggableTaggedElements,
-  registerDraggableElement
+  registerDraggableElement,
+  unregisterAllDraggableElements
 }

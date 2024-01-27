@@ -16,6 +16,10 @@ import { defineComponent, type PropType } from 'vue'
 import type { Label } from '@/types/Label'
 import { registerResizableAdventureTrackElement } from '@/helpers/resizableManager'
 import { registerDraggableElement } from '@/helpers/draggableManager'
+import type { Store } from 'vuex'
+import { useStore } from '@/vuex/store'
+
+let store: Store
 
 export default defineComponent({
   props: {
@@ -28,11 +32,21 @@ export default defineComponent({
       required: true
     }
   },
-  mounted() {
-    const rootElem = document.getElementById('label-container-' + this.index)
-    if (rootElem) {
-      registerResizableAdventureTrackElement(rootElem, () => {})
-      registerDraggableElement(rootElem)
+  setup() {
+    store = useStore()
+  },
+  computed: {
+    customizationEnabled: (): boolean => store.state.adventure.customizationEnabled
+  },
+  watch: {
+    customizationEnabled(enabled: boolean) {
+      if (enabled) {
+        const rootElem = document.getElementById('label-container-' + this.index)
+        if (rootElem) {
+          registerResizableAdventureTrackElement(rootElem, () => {})
+          registerDraggableElement(rootElem)
+        }
+      }
     }
   }
 })

@@ -54,6 +54,56 @@
     "
   />
 
+  <v-checkbox
+    :label="$t('creator.config-panel.adventure-section.enable-customization')"
+    hide-details
+    v-model="adventure.customizationEnabled"
+    @click="() => (showDisableCustomizationDialog = adventure.customizationEnabled)"
+    @update:model-value="
+      (enable) =>
+        updateAdventure((adventure) => {
+          if (!adventure.customizationEnabled) {
+            showDisableCustomizationDialog = true
+          }
+          adventure.customizationEnabled = true
+        })
+    "
+  />
+
+  <v-dialog
+    width="500"
+    v-model="showDisableCustomizationDialog"
+  >
+    <v-card>
+      <v-card-text>
+        {{ $t('creator.config-panel.adventure-section.disable-customization-dialog.text') }}
+      </v-card-text>
+
+      <v-card-actions>
+        <v-spacer></v-spacer>
+
+        <v-btn
+          :text="$t('creator.config-panel.adventure-section.disable-customization-dialog.cancel')"
+          @click="
+            () => {
+              showDisableCustomizationDialog = false
+              adventure.customizationEnabled = true
+            }
+          "
+        />
+        <v-btn
+          :text="$t('creator.config-panel.adventure-section.disable-customization-dialog.confirm')"
+          @click="
+            () => {
+              showDisableCustomizationDialog = false
+              adventure.customizationEnabled = false
+            }
+          "
+        />
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
+
   <v-text-field
     class="text-field"
     :label="$t('creator.config-panel.adventure-section.line-width')"
@@ -86,6 +136,11 @@ export default defineComponent({
   },
   setup() {
     store = useStore()
+  },
+  data() {
+    return {
+      showDisableCustomizationDialog: false
+    }
   },
   methods: {
     updateAdventure(modifierFunc: (adventureToUpdate: Adventure) => void) {

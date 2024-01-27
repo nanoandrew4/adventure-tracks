@@ -32,6 +32,7 @@ export default defineComponent({
   computed: {
     lineWidth: (): number => state.adventure.lineWidth,
     activities: (): Activity[] => state.adventure.activities,
+    customizationEnabled: (): boolean => store.state.adventure.customizationEnabled,
     reducedActivities: (): ReducedActivity[] =>
       state.adventure.activities.map((activity: Activity) => new ReducedActivity(activity)),
     boundingCoordinateBox: (): [number, number, number, number] => state.boundingCoordinateBox,
@@ -95,21 +96,6 @@ export default defineComponent({
     map.on('pitch', () => {
       map.setPitch(0)
     })
-
-    const t = this
-    const rootElem = document.getElementById('mapContainer')
-    if (rootElem) {
-      registerResizableAdventureTrackElement(rootElem, () => {
-        if (new Date().getTime() - t.lastResizeTimestamp < RESIZE_MILLISECONDS_BETWEEN_FRAMES) {
-          t.delayedRunner.runDelayedFunction(() => {
-            t.resizeMap()
-          }, RESIZE_MILLISECONDS_BETWEEN_FRAMES)
-        } else {
-          t.delayedRunner.clearTimeout()
-          t.resizeMap()
-        }
-      })
-    }
   },
   unmounted() {
     map.remove()
@@ -130,6 +116,24 @@ export default defineComponent({
         lat: calculatedZoomAndCenter.center[1]
       })
       map.setZoom(calculatedZoomAndCenter.zoom)
+    },
+    customizationEnabled(enabled: boolean) {
+      if (enabled) {
+        const t = this
+        const rootElem = document.getElementById('mapContainer')
+        if (rootElem) {
+          registerResizableAdventureTrackElement(rootElem, () => {
+            if (new Date().getTime() - t.lastResizeTimestamp < RESIZE_MILLISECONDS_BETWEEN_FRAMES) {
+              t.delayedRunner.runDelayedFunction(() => {
+                t.resizeMap()
+              }, RESIZE_MILLISECONDS_BETWEEN_FRAMES)
+            } else {
+              t.delayedRunner.clearTimeout()
+              t.resizeMap()
+            }
+          })
+        }
+      }
     },
     lineWidth() {
       this.activities.forEach((activity) => {

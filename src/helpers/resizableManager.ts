@@ -10,7 +10,7 @@ enum ResizeStates {
   MAYBE_RESIZING
 }
 
-const managedElements: HTMLElement[] = []
+let managedElements: HTMLElement[] = []
 const resizableElementState = new Map<HTMLElement, ResizeStates>()
 function registerResizableAdventureTrackElement(htmlElem: HTMLElement, resizeCallback: () => void) {
   managedElements.push(htmlElem)
@@ -74,8 +74,20 @@ function adjustAllRegisteredElementDimensionsIfNecessary() {
   })
 }
 
+function unregisterAllResizableElements() {
+  managedElements.forEach((elem) => {
+    elem.style.width = ''
+    elem.style.height = ''
+    elem.classList.remove('resizable')
+  })
+
+  managedElements = []
+  resizableElementState.clear()
+}
+
 export {
   registerResizableTaggedElements,
   registerResizableAdventureTrackElement,
-  adjustAllRegisteredElementDimensionsIfNecessary
+  adjustAllRegisteredElementDimensionsIfNecessary,
+  unregisterAllResizableElements
 }
