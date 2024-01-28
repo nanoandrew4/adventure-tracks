@@ -29,9 +29,9 @@
         >
           <h1
             id="main-text"
-            :style="`color: ${adventure.mainTextColor};`"
+            :style="`color: ${adventure.mainText.color};`"
           >
-            {{ adventure.mainText }}
+            {{ adventure.mainText.text }}
           </h1>
         </div>
         <div
@@ -42,9 +42,9 @@
         >
           <h2
             id="secondary-text"
-            :style="`color: ${adventure.secondaryTextColor};`"
+            :style="`color: ${adventure.secondaryText.color};`"
           >
-            {{ adventure.secondaryText }}
+            {{ adventure.secondaryText.text }}
           </h2>
         </div>
 
@@ -76,7 +76,7 @@ import LabelItem from '../components/LabelItem.vue'
 import '../../node_modules/mapbox-gl/dist/mapbox-gl.css'
 import html2canvas from 'html2canvas'
 
-import { type Adventure } from '../types/Adventure.type'
+import { type Adventure } from '../types/Adventure'
 import { useStore } from '../vuex/store'
 import type { Store } from 'vuex'
 import type { Label } from '@/types/Label'

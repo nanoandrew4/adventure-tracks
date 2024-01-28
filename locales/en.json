@@ -24,7 +24,9 @@
       "save": "Save adventure",
       "adventure-section": {
         "background-color": "Background color",
+        "main-text": "Main text",
         "main-text-color": "Main text color",
+        "secondary-text": "Secondary text",
         "secondary-text-color": "Secondary text color",
         "line-width": "Activity line thickness",
         "show-elevation": "Draw elevation profile",

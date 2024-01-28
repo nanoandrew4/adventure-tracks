@@ -1,7 +1,7 @@
 import type { InjectionKey } from 'vue'
 import { createStore, useStore as baseUseStore, Store } from 'vuex'
 
-import { type Adventure } from '../types/Adventure.type'
+import { type Adventure } from '../types/Adventure'
 import { buildSampleAdventure } from '../helpers/buildSampleAdventure'
 import mutations from './mutations'
 import type { ActivityLoadProgress } from '@/types/ActivityLoadProgress'
@@ -27,9 +27,9 @@ export const store = createStore<State>({
     ],
     refreshDataGraph: false,
     activeMapStyle: {
-      name: "Monochrome",
-      username: "nanoandrew4",
-      styleID: "clq85wo0o000z01qyfu4j338x",
+      name: 'Monochrome',
+      username: 'nanoandrew4',
+      styleID: 'clq85wo0o000z01qyfu4j338x',
       accessToken: import.meta.env.VITE_MAPBOX_ACCESS_TOKEN
     }
   },

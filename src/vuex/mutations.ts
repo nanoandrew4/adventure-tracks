@@ -1,5 +1,5 @@
 import type { State } from './store'
-import type { Adventure } from '../types/Adventure.type'
+import type { Adventure } from '../types/Adventure'
 import type { Activity } from '../types/Activity'
 import type { Label } from '../types/Label'
 import type { ActivityLoadProgress } from '@/types/ActivityLoadProgress'

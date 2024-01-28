@@ -1,11 +1,10 @@
 import { type Activity } from './Activity'
+import type { CustomText } from './CustomText'
 import { type Label } from './Label'
 
 export interface Adventure {
-  mainText: string
-  mainTextColor: string
-  secondaryText: string
-  secondaryTextColor: string
+  mainText: CustomText
+  secondaryText: CustomText
   lineWidth: number
   backgroundColor: string
   activities: Activity[]

@@ -1,4 +1,4 @@
-import type { Adventure } from '../types/Adventure.type'
+import type { Adventure } from '../types/Adventure'
 import { constants } from '../constants/constants'
 
 export function buildSampleAdventure(secondaryText: string): Adventure {
@@ -7,11 +7,18 @@ export function buildSampleAdventure(secondaryText: string): Adventure {
     labels: [],
     backgroundColor: constants.defaultBackgroundColor,
     lineWidth: 4,
-    mainText: 'Sample Adventure',
-    mainTextColor: constants.defaultTextColor,
-    secondaryText,
-    secondaryTextColor: constants.defaultTextColor,
+    mainText: {
+      text: 'Sample Adventure',
+      color: constants.defaultTextColor,
+      font: ''
+    },
+    secondaryText: {
+      text: secondaryText,
+      color: constants.defaultTextColor,
+      font: ''
+    },
     displayElevationProfile: true,
-    displayHeartRateGraph: false
+    displayHeartRateGraph: false,
+    customizationEnabled: false
   }
 }

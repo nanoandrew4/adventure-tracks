@@ -1,23 +1,19 @@
 <template>
-  <v-text-field
-    v-model="adventure.mainText"
-    label="Main text"
-    hide-details
-    rounded
-    variant="solo"
+  <CustomizableText
+    :model-value="adventure.mainText"
+    :label-prefix="'creator.config-panel.adventure-section.main-text'"
     @update:model-value="
-      (text) => updateAdventure((adventure: Adventure) => (adventure.mainText = text))
+      (updatedTextObj) =>
+        updateAdventure((adventure: Adventure) => (adventure.mainText = updatedTextObj))
     "
   />
 
-  <v-text-field
-    v-model="adventure.secondaryText"
-    label="Secondary text"
-    hide-details
-    rounded
-    variant="solo"
+  <CustomizableText
+    :model-value="adventure.secondaryText"
+    :label-prefix="'creator.config-panel.adventure-section.secondary-text'"
     @update:model-value="
-      (text) => updateAdventure((adventure: Adventure) => (adventure.secondaryText = text))
+      (updatedTextObj) =>
+        updateAdventure((adventure: Adventure) => (adventure.secondaryText = updatedTextObj))
     "
   />
 
@@ -26,22 +22,6 @@
     :color="adventure.backgroundColor"
     @color-updated="
       (color) => updateAdventure((adventure: Adventure) => (adventure.backgroundColor = color))
-    "
-  />
-
-  <ColorPicker
-    :label="$t('creator.config-panel.adventure-section.main-text-color')"
-    :color="adventure.mainTextColor"
-    @color-updated="
-      (color) => updateAdventure((adventure: Adventure) => (adventure.mainTextColor = color))
-    "
-  />
-
-  <ColorPicker
-    :label="$t('creator.config-panel.adventure-section.secondary-text-color')"
-    :color="adventure.secondaryTextColor"
-    @color-updated="
-      (color) => updateAdventure((adventure: Adventure) => (adventure.secondaryTextColor = color))
     "
   />
 
@@ -119,8 +99,9 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { type Adventure } from '@/types/Adventure.type'
+import { type Adventure } from '@/types/Adventure'
 import ColorPicker from './ColorPicker.vue'
+import CustomizableText from './CustomizableText.vue'
 
 import { useStore } from '@/vuex/store'
 import { Store } from '../../../vuex'
@@ -129,7 +110,8 @@ let store: Store
 
 export default defineComponent({
   components: {
-    ColorPicker
+    ColorPicker,
+    CustomizableText
   },
   computed: {
     adventure: () => store.state.adventure

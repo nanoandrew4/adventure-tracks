@@ -43,7 +43,7 @@ import { Activity } from '../../types/Activity'
 import { useStore, type State } from '../../vuex/store'
 import { sortByDateAscending } from '../../helpers/activitySorter'
 import type { Store } from 'vuex'
-import type { Adventure } from '@/types/Adventure.type'
+import type { Adventure } from '@/types/Adventure'
 
 let store: Store
 let state: State
