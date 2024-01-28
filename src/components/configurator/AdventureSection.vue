@@ -2,6 +2,7 @@
   <CustomizableText
     :model-value="adventure.mainText"
     :label-prefix="'creator.config-panel.adventure-section.main-text'"
+    :picker-id="'maintext'"
     @update:model-value="
       (updatedTextObj) =>
         updateAdventure((adventure: Adventure) => (adventure.mainText = updatedTextObj))
@@ -11,6 +12,7 @@
   <CustomizableText
     :model-value="adventure.secondaryText"
     :label-prefix="'creator.config-panel.adventure-section.secondary-text'"
+    :picker-id="'secondarytext'"
     @update:model-value="
       (updatedTextObj) =>
         updateAdventure((adventure: Adventure) => (adventure.secondaryText = updatedTextObj))

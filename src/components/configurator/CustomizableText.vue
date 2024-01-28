@@ -26,6 +26,7 @@
           v-if="selectedEditMode != EDIT_MODE.FONT"
           @click="selectedEditMode = EDIT_MODE.FONT"
           icon="mdi-format-font"
+          class="customizable-text-menu-list-element"
         />
       </v-list>
     </v-menu>
@@ -46,12 +47,20 @@
       :color="modelValue.color"
       @color-updated="(color) => emitUpdate((modelValue) => (modelValue.color = color))"
     />
+
+    <div
+      v-show="selectedEditMode == EDIT_MODE.FONT"
+      :id="`font-picker-${pickerId}`"
+      class="font-picker"
+    />
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, type PropType } from 'vue'
+import FontPicker from 'font-picker'
 import ColorPicker from './ColorPicker.vue'
+const apiKey = import.meta.env.VITE_GOOGLE_FONTS_API_KEY
 
 import type { CustomText } from '@/types/CustomText'
 
@@ -77,6 +86,10 @@ export default defineComponent({
     labelPrefix: {
       type: String,
       required: true
+    },
+    pickerId: {
+      type: String,
+      required: true
     }
   },
   components: {
@@ -88,6 +101,13 @@ export default defineComponent({
       selectedEditMode: EDIT_MODE.TEXT,
       EDIT_MODE
     }
+  },
+  mounted() {
+    const t = this
+    const fontPicker = new FontPicker(apiKey, 'Open Sans', { pickerId: this.pickerId })
+    fontPicker.setOnChange((font) => {
+      t.emitUpdate((updatedModel: CustomText) => (updatedModel.font = font.family))
+    })
   },
   methods: {
     emitUpdate(fn: (updatedModel: CustomText) => void) {
@@ -121,8 +141,26 @@ export default defineComponent({
 
 .active-mode {
   margin-right: 1vw;
-  /* padding: 12px;
-  border: 2px solid white; 
-  border-radius: 100vw; */
+}
+</style>
+
+<style>
+.font-picker {
+  border-radius: 100vw;
+  width: 100% !important;
+  ul {
+    background-color: var(--color-background-soft) !important;
+  }
+
+  button {
+    border-radius: 100vw;
+    background-color: var(--color-background-soft) !important;
+
+    .dropdown-icon::before {
+      border-top: 6px solid var(--color-text) !important;
+      border-right: 5px solid transparent;
+      border-left: 5px solid transparent;
+    }
+  }
 }
 </style>

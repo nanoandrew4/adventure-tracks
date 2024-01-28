@@ -29,7 +29,7 @@
         >
           <h1
             id="main-text"
-            :style="`color: ${adventure.mainText.color};`"
+            :style="`color: ${adventure.mainText.color}; font-family: ${adventure.mainText.font}`"
           >
             {{ adventure.mainText.text }}
           </h1>
@@ -42,7 +42,7 @@
         >
           <h2
             id="secondary-text"
-            :style="`color: ${adventure.secondaryText.color};`"
+            :style="`color: ${adventure.secondaryText.color}; font-family: ${adventure.secondaryText.font}`"
           >
             {{ adventure.secondaryText.text }}
           </h2>
