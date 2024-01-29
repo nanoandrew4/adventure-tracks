@@ -8,6 +8,11 @@
     "config-panel": {
       "title": "Configuration panel",
       "activities": "Activities",
+      "customizable-text": {
+        "text": "Text",
+        "color": "Color",
+        "font": "Font"
+      },
       "activities-section": {
         "file-errors": "There were errors parsing the following files: { files }",
         "activity": {

@@ -10,24 +10,30 @@
       </template>
 
       <v-list class="customizable-text-menu-list">
-        <v-icon
+        <div
           v-if="selectedEditMode != EDIT_MODE.TEXT"
           @click="selectedEditMode = EDIT_MODE.TEXT"
-          icon="mdi-format-text-variant"
           class="customizable-text-menu-list-element"
-        />
-        <v-icon
+        >
+          <v-icon icon="mdi-format-text-variant" />
+          <p> {{ $t('creator.config-panel.customizable-text.text') }} </p>
+        </div>
+        <div
           v-if="selectedEditMode != EDIT_MODE.COLOR"
           @click="selectedEditMode = EDIT_MODE.COLOR"
-          icon="mdi-palette"
           class="customizable-text-menu-list-element"
-        />
-        <v-icon
+        >
+          <v-icon icon="mdi-palette" />
+          <p> {{ $t('creator.config-panel.customizable-text.color') }} </p>
+        </div>
+        <div
           v-if="selectedEditMode != EDIT_MODE.FONT"
           @click="selectedEditMode = EDIT_MODE.FONT"
-          icon="mdi-format-font"
           class="customizable-text-menu-list-element"
-        />
+        >
+          <v-icon icon="mdi-format-font" />
+          <p> {{ $t('creator.config-panel.customizable-text.font') }} </p>
+        </div>
       </v-list>
     </v-menu>
 
@@ -136,11 +142,22 @@ export default defineComponent({
 }
 
 .customizable-text-menu-list-element {
-  display: block;
+  display: flex;
+  margin: 0 0.5vw 0 0.5vw;
+  flex-direction: row;
+  cursor: pointer;
+  
+  p {
+    margin-left: 0.5vw;
+  }
+}
+
+.customizable-text-menu-list-element:not(:first-child) {
+  margin-top: 0.5vh;
 }
 
 .active-mode {
-  margin-right: 1vw;
+  margin-right: 0.5vw;
 }
 </style>
 
