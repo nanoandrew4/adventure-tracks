@@ -109,7 +109,7 @@ export default defineComponent({
           .filter((activity: Activity) => activity.startTime)
           .map((activity) => activity.startTime)
           .pop()
-        if (startDate) adventure.secondaryText = startDate.toDateString()
+        if (startDate) adventure.secondaryText.text = startDate.toDateString()
         store.commit('SET_ADVENTURE', adventure)
       }
     },

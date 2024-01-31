@@ -1,7 +1,7 @@
-import type { Adventure } from '../types/Adventure'
+import { LayoutMode, type Adventure } from '../types/Adventure'
 import { constants } from '../constants/constants'
 
-export function buildSampleAdventure(secondaryText: string): Adventure {
+export function buildSampleAdventure(secondaryTextVal: string): Adventure {
   return {
     activities: [],
     labels: [],
@@ -13,12 +13,13 @@ export function buildSampleAdventure(secondaryText: string): Adventure {
       font: ''
     },
     secondaryText: {
-      text: secondaryText,
+      text: secondaryTextVal,
       color: constants.defaultTextColor,
       font: ''
     },
     displayElevationProfile: true,
     displayHeartRateGraph: false,
-    customizationEnabled: false
+    customizationEnabled: false,
+    layoutMode: LayoutMode.LANDSCAPE,
   }
 }

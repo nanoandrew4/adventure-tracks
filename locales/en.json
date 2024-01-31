@@ -28,6 +28,8 @@
       "adventure": "Adventure",
       "save": "Save adventure",
       "adventure-section": {
+        "vertical-layout": "Portrait",
+        "horizontal-layout": "Landscape",
         "background-color": "Background color",
         "main-text": "Main text",
         "main-text-color": "Main text color",

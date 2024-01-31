@@ -1,4 +1,19 @@
 <template>
+  <div class="adventure-layout-container">
+    <v-btn
+      @click="
+        updateAdventure((adventure: Adventure) => (adventure.layoutMode = LayoutMode.PORTRAIT))
+      "
+      >{{ $t('creator.config-panel.adventure-section.vertical-layout') }}</v-btn
+    >
+    <v-btn
+      @click="
+        updateAdventure((adventure: Adventure) => (adventure.layoutMode = LayoutMode.LANDSCAPE))
+      "
+      >{{ $t('creator.config-panel.adventure-section.horizontal-layout') }}</v-btn
+    >
+  </div>
+
   <CustomizableText
     :model-value="adventure.mainText"
     :label-prefix="'creator.config-panel.adventure-section.main-text'"
@@ -42,7 +57,7 @@
     v-model="adventure.customizationEnabled"
     @click="() => (showDisableCustomizationDialog = adventure.customizationEnabled)"
     @update:model-value="
-      (enable) =>
+      () =>
         updateAdventure((adventure) => {
           if (!adventure.customizationEnabled) {
             showDisableCustomizationDialog = true
@@ -101,7 +116,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { type Adventure } from '@/types/Adventure'
+import { LayoutMode, type Adventure } from '@/types/Adventure'
 import ColorPicker from './ColorPicker.vue'
 import CustomizableText from './CustomizableText.vue'
 
@@ -123,7 +138,8 @@ export default defineComponent({
   },
   data() {
     return {
-      showDisableCustomizationDialog: false
+      showDisableCustomizationDialog: false,
+      LayoutMode
     }
   },
   methods: {
@@ -143,6 +159,11 @@ export default defineComponent({
 </script>
 
 <style scoped>
+.adventure-layout-container {
+  display: flex;
+  justify-content: center;
+}
+
 .text-field {
   width: 10vw;
 }

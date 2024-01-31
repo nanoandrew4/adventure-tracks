@@ -110,7 +110,7 @@ export default defineComponent({
   },
   mounted() {
     const t = this
-    const fontPicker = new FontPicker(apiKey, 'Open Sans', { pickerId: this.pickerId })
+    const fontPicker = new FontPicker(apiKey, 'Open Sans', { pickerId: this.pickerId, limit: 300 })
     fontPicker.setOnChange((font) => {
       t.emitUpdate((updatedModel: CustomText) => (updatedModel.font = font.family))
     })

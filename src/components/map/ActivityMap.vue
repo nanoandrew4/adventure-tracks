@@ -234,7 +234,6 @@ export default defineComponent({
     },
     resizeMap() {
       map.resize()
-      map.repaint = true
       this.lastResizeTimestamp = new Date().getTime()
     },
     recalculateActivitiesBoundingBox() {
@@ -292,10 +291,12 @@ export default defineComponent({
   */
   contain: layout;
 
-  max-width: 100%;
+  max-width: inherit;
   max-height: inherit;
   .mapboxgl-canvas-container {
+    max-width: inherit;
     canvas {
+      max-width: inherit;
       border-radius: 12px;
     }
   }

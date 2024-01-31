@@ -5,16 +5,16 @@
   >
     <div
       id="adventure-track"
-      :class="showConfigurationPanel ? 'adventure-track' : 'adventure-track--full'"
+      :class="`adventure-track${adventureTrackClassSuffix}`"
       :style="`background: ${adventure.backgroundColor};`"
     >
       <ActivityMap
-        :class="`adventure-track-map${adventureTrackStyleSuffix}`"
+        :class="`adventure-track-map${adventureTrackChildrenStyleSuffix}`"
         ref="activityMap"
       />
       <div
         class="adventure-track-details adventure-track-details"
-        :class="`adventure track-details adventure-track-details${adventureTrackStyleSuffix}`"
+        :class="`adventure track-details adventure-track-details${adventureTrackChildrenStyleSuffix}`"
       >
         <DataGraph
           :display="displayGraph"
@@ -76,7 +76,7 @@ import LabelItem from '../components/LabelItem.vue'
 import '../../node_modules/mapbox-gl/dist/mapbox-gl.css'
 import html2canvas from 'html2canvas'
 
-import { type Adventure } from '../types/Adventure'
+import { LayoutMode, type Adventure } from '../types/Adventure'
 import { useStore } from '../vuex/store'
 import type { Store } from 'vuex'
 import type { Label } from '@/types/Label'
@@ -92,10 +92,6 @@ import {
 
 let store: Store
 
-const ANIMATE_MAP_RESIZE_DURATION = 500
-const ANIMATE_MAP_RESIZE_FRAME_TIME = 16
-const ANIMATE_MAP_RESIZE_FRAMES = ANIMATE_MAP_RESIZE_DURATION / ANIMATE_MAP_RESIZE_FRAME_TIME
-
 export default defineComponent({
   components: {
     ActivityMap,
@@ -109,7 +105,16 @@ export default defineComponent({
     displayGraph: function (): boolean {
       return store.state.adventure.displayElevationProfile && this?.adventure.activities.length > 0
     },
-    adventureTrackStyleSuffix: function (): string {
+    adventureTrackClassSuffix: function (): string {
+      if (this.adventure.layoutMode == LayoutMode.PORTRAIT) {
+        if (this.showConfigurationPanel) return '--portrait'
+        else return '--portrait-full'
+      } else {
+        if (this.showConfigurationPanel) return '--landscape'
+        else return '--landscape-full'
+      }
+    },
+    adventureTrackChildrenStyleSuffix: function (): string {
       adjustAllRegisteredElementDimensionsIfNecessary() // to adjust size when graph is added
       return this.displayGraph ? '--with-elevation' : '--without-elevation'
     },
@@ -125,7 +130,7 @@ export default defineComponent({
       activityMap: ref<InstanceType<typeof ActivityMap>>(),
       rawGpxFiles,
       showConfigurationPanel: true,
-      lastConfigurationPanelState: true
+      lastAdventureTrackClassSuffix: ''
     }
   },
   setup() {
@@ -185,17 +190,15 @@ export default defineComponent({
   },
   updated: function () {
     this.$nextTick(async () => {
-      if (this.lastStyleSuffix !== this.adventureTrackStyleSuffix) {
+      if (this.lastStyleSuffix !== this.adventureTrackChildrenStyleSuffix) {
         this.resizeMap()
-        this.lastStyleSuffix = this.adventureTrackStyleSuffix
-      } else if (this.lastConfigurationPanelState !== this.showConfigurationPanel) {
-        let activityMapRef = this.$refs.activityMap as typeof ActivityMap
-
-        for (let i = 0; i < ANIMATE_MAP_RESIZE_FRAMES; i++) {
-          await new Promise((resolve) => setTimeout(resolve, ANIMATE_MAP_RESIZE_FRAME_TIME))
-          activityMapRef.resizeMap()
-        }
-        this.lastConfigurationPanelState = this.showConfigurationPanel
+        this.lastStyleSuffix = this.adventureTrackChildrenStyleSuffix
+      } else if (
+        this.lastAdventureTrackClassSuffix !== this.adventureTrackClassSuffix
+      ) {
+        this.resizeMap()
+        store.commit('SET_REFRESH_DATA_GRAPH', true)
+        this.lastAdventureTrackClassSuffix = this.adventureTrackClassSuffix
       }
     })
   }
@@ -209,25 +212,49 @@ export default defineComponent({
   contain: layout;
 }
 
-.adventure-track,
-.adventure-track--full {
+.adventure-track--landscape,
+.adventure-track--landscape-full,
+.adventure-track--portrait,
+.adventure-track--portrait-full {
   position: absolute;
   transition: all 0.5s ease;
   transition-property: width, left;
-  max-width: calc(94vh * sqrt(2));
-  max-height: 94vh;
+  max-height: var(--max-height);
   border-radius: 12px;
-  aspect-ratio: sqrt(2);
-}
-.adventure-track {
-  left: 0;
-  width: 75%;
-  left: max(calc((75% - 94vh * sqrt(2)) / 2), 0px);
+
+  --max-height: 93vh;
 }
 
-.adventure-track--full {
+.adventure-track--portrait,
+.adventure-track--portrait-full {
+  max-width: calc(var(--max-height) * (1 / sqrt(2)));
+  aspect-ratio: 1 / sqrt(2);
+}
+
+.adventure-track--portrait {
+  width: 75%;
+  left: max(calc((75% - var(--max-height) * (1 / sqrt(2))) / 2), 0px);
+}
+
+.adventure-track--portrait-full {
   width: 100%;
-  left: max(calc((100% - 94vh * sqrt(2)) / 2), 0px);
+  left: max(calc((100% - var(--max-height) * (1 / sqrt(2))) / 2), 0px);
+}
+
+.adventure-track--landscape,
+.adventure-track--landscape-full {
+  max-width: calc(var(--max-height) * sqrt(2));
+  aspect-ratio: sqrt(2);
+}
+
+.adventure-track--landscape {
+  width: 75%;
+  left: max(calc((75% - var(--max-height) * sqrt(2)) / 2), 0px);
+}
+
+.adventure-track--landscape-full {
+  width: 100%;
+  left: max(calc((100% - var(--max-height) * sqrt(2)) / 2), 0px);
 }
 
 .adventure-track-map--with-elevation {
