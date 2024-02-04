@@ -5,30 +5,26 @@
       :key="idx"
       v-for="(label, idx) in labels"
     >
-      <v-text-field
-        v-model="label.name"
+      <CustomizableText
         class="text-field"
-        :label="$t('creator.config-panel.labels-section.label-name')"
-        hide-details
-        rounded
-        variant="solo"
-        @update:model-value="(text) => updateLabelName(idx, text)"
+        :model-value="label.name"
+        :label-prefix="'creator.config-panel.labels-section.label-name'"
+        :picker-id="`labelname${idx}`"
+        @update:model-value="(text: any) => updateLabelName(idx, text)"
       />
 
-      <v-text-field
-        v-model="label.value"
+      <CustomizableText
         class="text-field"
-        :label="$t('creator.config-panel.labels-section.label-value')"
-        hide-details
-        rounded
-        variant="solo"
-        @update:model-value="(text) => updateLabelValue(idx, text)"
+        :model-value="label.value"
+        :label-prefix="'creator.config-panel.labels-section.label-value'"
+        :picker-id="`labelvalue${idx}`"
+        @update:model-value="(text: any) => updateLabelValue(idx, text)"
       />
       <v-icon
-          class="configurator-activity-delete"
-          icon="mdi-delete"
-          @click.stop="deleteLabel(idx)"
-        />
+        class="configurator-activity-delete"
+        icon="mdi-delete"
+        @click.stop="deleteLabel(idx)"
+      />
     </div>
 
     <v-btn
@@ -42,11 +38,17 @@
 import { defineComponent } from 'vue'
 
 import { useStore } from '@/vuex/store'
+import { createEmptyLabel } from '@/types/Label'
 import { Store } from '../../../vuex'
+import type { CustomText } from '@/types/CustomText'
+import CustomizableText from '@/components/configurator/CustomizableText.vue'
 
 let store: Store
 
 export default defineComponent({
+  components: {
+    CustomizableText
+  },
   computed: {
     adventure: () => store.state.adventure,
     labels: () => store.state.adventure.labels
@@ -57,15 +59,15 @@ export default defineComponent({
   methods: {
     addEmptyLabel() {
       const updatedAdventure = this.adventure
-      updatedAdventure.labels.push({ name: '', value: '' })
+      updatedAdventure.labels.push(createEmptyLabel())
       store.commit('SET_ADVENTURE', updatedAdventure)
     },
-    updateLabelName(idx: number, newName: string) {
+    updateLabelName(idx: number, newName: CustomText) {
       const updatedAdventure = this.adventure
       updatedAdventure.labels[idx].name = newName
       store.commit('SET_ADVENTURE', updatedAdventure)
     },
-    updateLabelValue(idx: number, newValue: string) {
+    updateLabelValue(idx: number, newValue: CustomText) {
       const updatedAdventure = this.adventure
       updatedAdventure.labels[idx].value = newValue
       store.commit('SET_ADVENTURE', updatedAdventure)

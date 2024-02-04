@@ -5,8 +5,18 @@
     resizable
     draggable
   >
-    <p class="label-name">{{ label.name }}</p>
-    <p class="label-value">{{ label.value }}</p>
+    <p
+      class="label-name"
+      :style="`color: ${label.name.color}; font-family: ${label.name.font}`"
+    >
+      {{ label.name.text }}
+    </p>
+    <p
+      class="label-value"
+      :style="`color: ${label.value.color}; font-family: ${label.value.font}`"
+    >
+      {{ label.value.text }}
+    </p>
   </div>
 </template>
 

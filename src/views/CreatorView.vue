@@ -120,7 +120,7 @@ export default defineComponent({
     },
     labels: () =>
       store.state.adventure.labels.filter(
-        (label: Label) => label.name.length > 0 && label.value.length > 0
+        (label: Label) => label.name.text.length > 0 && label.value.text.length > 0
       )
   },
   data() {
@@ -217,8 +217,7 @@ export default defineComponent({
 .adventure-track--portrait,
 .adventure-track--portrait-full {
   position: absolute;
-  transition: all 0.5s ease;
-  transition-property: width, left;
+  transition: left 0.5s ease;
   max-height: var(--max-height);
   border-radius: 12px;
 
