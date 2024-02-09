@@ -5,6 +5,8 @@ import { createApp } from 'vue'
 import { createI18n } from 'vue-i18n'
 import { store, key } from './vuex/store'
 import App from './App.vue'
+import VueImageZoomer from 'vue-image-zoomer'
+import 'vue-image-zoomer/dist/style.css';
 import router from './router'
 
 import en from '../locales/en.json'
@@ -47,6 +49,7 @@ app.use(i18n)
 app.use(store, key)
 app.use(FileSelector)
 app.use(vuetify)
+app.use(VueImageZoomer)
 app.mount('#app')
 
 // app.config.performance = true

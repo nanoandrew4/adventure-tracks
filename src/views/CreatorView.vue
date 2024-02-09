@@ -59,16 +59,75 @@
       </div>
     </div>
     <ConfigurationPanel
-      @capture="capture"
+      @capture="showSaveAdventureDialog = true"
       @change-visibility="showConfigurationPanel = !showConfigurationPanel"
       :show="showConfigurationPanel"
     />
+    <v-dialog
+      v-model="showSaveAdventureDialog"
+      width="fit-content"
+      height="fit-content"
+    >
+      <v-card
+        v-show="!showGeneratedImageDialog"
+        :class="'save-adventure-dialog' + layoutSuffix"
+      >
+        <v-card-text>
+          {{ $t('creator.config-panel.save-adventure.text') }}
+        </v-card-text>
+
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn
+            :text="$t('creator.config-panel.save-adventure.cancel')"
+            @click="closeSaveAdventureDialog"
+          />
+          <v-btn
+            :text="$t('creator.config-panel.save-adventure.confirm')"
+            :loading="isSaving"
+            @click="capture"
+          />
+        </v-card-actions>
+      </v-card>
+      <v-card
+        v-show="showGeneratedImageDialog"
+        :class="'generated-image-dialog' + layoutSuffix"
+      >
+        <v-card-text class="centered-dialog-text">
+          {{ $t('creator.config-panel.save-adventure.generated-image-text') }}
+        </v-card-text>
+
+        <div
+          id="generated-image-container"
+          class="generated-image-container"
+        >
+          <vue-image-zoomer
+            :img-class="'generated-image' + layoutSuffix"
+            :regular="generatedImageThumbnailDataURL"
+            :zoom="generatedImageDataURL"
+            :zoom-amount="4"
+          />
+        </div>
+
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn
+            :text="$t('creator.config-panel.save-adventure.discard')"
+            @click="closeSaveAdventureDialog"
+          />
+          <v-btn
+            :text="$t('creator.config-panel.save-adventure.save')"
+            :loading="isSaving"
+            @click="saveGeneratedImage"
+          />
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
-  <div id="output"></div>
 </template>
 
 <script lang="ts">
-import { ref, defineComponent } from 'vue'
+import { ref, defineComponent, nextTick } from 'vue'
 import ActivityMap from '../components/map/ActivityMap.vue'
 import DataGraph from '../components/DataGraph.vue'
 import ConfigurationPanel from '../components/configurator/MainPanel.vue'
@@ -89,6 +148,12 @@ import {
   registerResizableTaggedElements,
   unregisterAllResizableElements
 } from '@/helpers/resizableManager'
+import {
+  generateImageToDownloadDataURL,
+  generatePortraitThumbnailDataURL,
+  generateLandscapeThumbnailDataURL
+} from '@/helpers/generatedImage'
+import FileSaver from 'file-saver'
 
 let store: Store
 
@@ -114,6 +179,13 @@ export default defineComponent({
         else return '--landscape-full'
       }
     },
+    layoutSuffix: function (): string {
+      if (this.adventure.layoutMode == LayoutMode.PORTRAIT) {
+        return '--portrait'
+      } else {
+        return '--landscape'
+      }
+    },
     adventureTrackChildrenStyleSuffix: function (): string {
       adjustAllRegisteredElementDimensionsIfNecessary() // to adjust size when graph is added
       return this.displayGraph ? '--with-elevation' : '--without-elevation'
@@ -130,7 +202,12 @@ export default defineComponent({
       activityMap: ref<InstanceType<typeof ActivityMap>>(),
       rawGpxFiles,
       showConfigurationPanel: true,
-      lastAdventureTrackClassSuffix: ''
+      showSaveAdventureDialog: false,
+      showGeneratedImageDialog: false,
+      isSaving: false,
+      lastAdventureTrackClassSuffix: '',
+      generatedImageDataURL: '',
+      generatedImageThumbnailDataURL: ''
     }
   },
   setup() {
@@ -138,38 +215,72 @@ export default defineComponent({
   },
   methods: {
     async capture() {
+      this.isSaving = true
+
       let captureElement = document.getElementById('adventure-track')
       let activityMapRef = this.$refs.activityMap as typeof ActivityMap
 
       if (captureElement != null && activityMapRef != null) {
-        captureElement.style.width = '7680px'
+        this.showConfigurationPanel = false
+        captureElement.style.maxWidth = 'none'
+        captureElement.style.maxHeight = 'none'
+        captureElement.style.width = 'auto'
+        captureElement.style.left = '0'
+        /*
+         * Half of 7680px, which is the max width mapbox will load.
+         * Since the devicePixelRatio is set to 2, the HTML capture will be twice as big as specified here,
+         * yielding a 7680px wide image
+         */
+        if (this.adventure.layoutMode == LayoutMode.PORTRAIT) {
+          captureElement.style.height = '3840px'
+        } else {
+          captureElement.style.width = '3840px'
+        }
         activityMapRef.resizeMap()
         activityMapRef.recenter()
 
         await new Promise((r) => setTimeout(r, 5000))
 
         html2canvas(captureElement).then((canvas) => {
-          const newWindow = window.open()
+          canvas.style.height = ''
+          canvas.style.aspectRatio = captureElement!.style.aspectRatio
 
-          if (newWindow != null) {
-            newWindow.document.write(`<html><body><div id="output"></body></html>`)
+          this.showGeneratedImageDialog = true
 
-            let outputDiv = newWindow.document.getElementById('output')
-            if (outputDiv != null) {
-              outputDiv.appendChild(canvas)
-            }
-
-            newWindow.document.close()
-          }
+          this.$nextTick(() => {
+            this.generatedImageDataURL = generateImageToDownloadDataURL(canvas)
+            this.generatedImageThumbnailDataURL =
+              this.adventure.layoutMode == LayoutMode.PORTRAIT
+                ? generatePortraitThumbnailDataURL(canvas, 2)
+                : generateLandscapeThumbnailDataURL(canvas, 2)
+          })
         })
 
         await new Promise((r) => setTimeout(r, 2000))
 
         captureElement.style.width = ''
+        captureElement.style.left = ''
+        captureElement.style.maxWidth = ''
+        captureElement.style.maxHeight = ''
+
         activityMapRef.resizeMap()
+        activityMapRef.recenter()
+
+        this.isSaving = false
+        this.showConfigurationPanel = true
       } else {
         alert('Adventure track to save could not be located')
       }
+    },
+    saveGeneratedImage() {
+      FileSaver.saveAs(this.generatedImageDataURL, "image.png");
+      this.closeSaveAdventureDialog()
+    },
+    async closeSaveAdventureDialog() {
+      this.showSaveAdventureDialog = false
+      setTimeout(() => {
+        this.showGeneratedImageDialog = false
+      }, 500)
     },
     resizeMap() {
       let activityMapRef = this.$refs.activityMap as typeof ActivityMap
@@ -193,9 +304,7 @@ export default defineComponent({
       if (this.lastStyleSuffix !== this.adventureTrackChildrenStyleSuffix) {
         this.resizeMap()
         this.lastStyleSuffix = this.adventureTrackChildrenStyleSuffix
-      } else if (
-        this.lastAdventureTrackClassSuffix !== this.adventureTrackClassSuffix
-      ) {
+      } else if (this.lastAdventureTrackClassSuffix !== this.adventureTrackClassSuffix) {
         this.resizeMap()
         store.commit('SET_REFRESH_DATA_GRAPH', true)
         this.lastAdventureTrackClassSuffix = this.adventureTrackClassSuffix
@@ -205,7 +314,7 @@ export default defineComponent({
 })
 </script>
 
-<style>
+<style scoped>
 .track-creator {
   width: 100%;
   height: fit-content;
@@ -266,12 +375,10 @@ export default defineComponent({
 
 .adventure-track-details--with-elevation {
   max-height: calc(30% - 0.5vw * 2);
-  /* margin: 0.5vw; */
 }
 
 .adventure-track-details--without-elevation {
   max-height: calc(25% - 0.5vw * 2);
-  /* margin: 0.5vw; */
 }
 
 .adventure-track-details {
@@ -311,5 +418,50 @@ div#secondary-text-container {
   h2 {
     font-size: 7.5cqw;
   }
+}
+
+.generated-image-container {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.save-adventure-dialog--portrait,
+.save-adventure-dialog--landscape {
+  max-width: 50%;
+}
+
+.generated-image-dialog--portrait,
+.generated-image-dialog--landscape {
+  width: 100%;
+  height: 100%;
+  max-height: 90vh;
+}
+
+.centered-dialog-text {
+  text-align: center;
+}
+</style>
+
+<style>
+.v-overlay__content {
+  display: flex;
+  align-items: center;
+}
+
+.generated-image--portrait {
+  aspect-ratio: calc(1 / sqrt(2));
+  width: calc(80vh * (1 / sqrt(2)));
+}
+
+.generated-image--landscape {
+  aspect-ratio: sqrt(2);
+  width: calc(80vh * sqrt(2));
+}
+
+.generated-image--portrait,
+.generated-image--landscape {
+  display: flex;
+  justify-content: center;
 }
 </style>

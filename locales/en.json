@@ -44,6 +44,14 @@
           "confirm": "Confirm"
         }
       },
+      "save-adventure": {
+        "text": "To capture your adventure in maximum resolution, it will be resized in the background before it is captured. The full capture will take several seconds. Do you wish to proceed?",
+        "generated-image-text": "Here is the image that was generated, take a look and see if you want to keep it",
+        "cancel": "Cancel",
+        "confirm": "Confirm",
+        "discard": "Discard",
+        "save": "Save"
+      },
       "labels": "Labels",
       "labels-section": {
         "add-label": "Add label",

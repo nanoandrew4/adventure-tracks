@@ -9,6 +9,7 @@
     <v-dialog
       activator="parent"
       width="fit-content"
+      :scrim="false"
       v-model="open"
     >
       <div
@@ -48,9 +49,9 @@ export default defineComponent({
     this.$nextTick(() => {
       t.circleBoundingClient = (this.$refs?.circle as HTMLElement)?.getBoundingClientRect()
     })
-    addEventListener("resize", () => {
+    addEventListener('resize', () => {
       t.circleBoundingClient = (this.$refs?.circle as HTMLElement)?.getBoundingClientRect()
-    });
+    })
   },
   data() {
     let circleBoundingClient: DOMRect | undefined
