@@ -56,7 +56,8 @@
       "labels-section": {
         "add-label": "Add label",
         "label-name": "Label",
-        "label-value": "Value"
+        "label-value": "Value",
+        "label-name-color": "Text Color"
       }
     }
   }

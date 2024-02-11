@@ -48,14 +48,24 @@ export default defineComponent({
   computed: {
     customizationEnabled: (): boolean => store.state.adventure.customizationEnabled
   },
+  mounted() {
+    if (this.customizationEnabled) {
+      this.enableCustomization()
+    }
+  },
+  methods: {
+    enableCustomization() {
+      const rootElem = document.getElementById('label-container-' + this.index)
+      if (rootElem) {
+        registerResizableAdventureTrackElement(rootElem, () => {})
+        registerDraggableElement(rootElem)
+      }
+    }
+  },
   watch: {
     customizationEnabled(enabled: boolean) {
       if (enabled) {
-        const rootElem = document.getElementById('label-container-' + this.index)
-        if (rootElem) {
-          registerResizableAdventureTrackElement(rootElem, () => {})
-          registerDraggableElement(rootElem)
-        }
+        this.enableCustomization()
       }
     }
   }
@@ -64,8 +74,8 @@ export default defineComponent({
 
 <style scoped>
 .label-container {
-  width: 100px;
-  height: fit-content;
+  width: 20%;
+  height: max-content;
   container-type: inline-size;
 
   display: flex;
@@ -77,13 +87,14 @@ export default defineComponent({
 
 .label-name {
   color: black;
-  padding-top: 2px;
-  margin-right: 0.5vw;
-  font-size: 100%;
+  margin-right: 4%;
+  width: max-content;
+  font-size: 10cqw;
 }
 
 .label-value {
   color: black;
-  font-size: 100%;
+  width: max-content;
+  font-size: 10cqw;
 }
 </style>
