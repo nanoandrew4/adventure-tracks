@@ -6,7 +6,7 @@ import { createI18n } from 'vue-i18n'
 import { store, key } from './vuex/store'
 import App from './App.vue'
 import VueImageZoomer from 'vue-image-zoomer'
-import 'vue-image-zoomer/dist/style.css';
+import 'vue-image-zoomer/dist/style.css'
 import router from './router'
 
 import en from '../locales/en.json'
@@ -33,11 +33,11 @@ import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'
 
 const vuetify = createVuetify({
-    components,
-    directives,
-    icons: {
-      defaultSet: 'mdi',
-    },
+  components,
+  directives,
+  icons: {
+    defaultSet: 'mdi'
+  }
 })
 
 import FileSelector from 'vue-file-selector'

@@ -127,7 +127,7 @@
 </template>
 
 <script lang="ts">
-import { ref, defineComponent, nextTick } from 'vue'
+import { ref, defineComponent } from 'vue'
 import ActivityMap from '../components/map/ActivityMap.vue'
 import DataGraph from '../components/DataGraph.vue'
 import ConfigurationPanel from '../components/configurator/MainPanel.vue'
@@ -273,7 +273,7 @@ export default defineComponent({
       }
     },
     saveGeneratedImage() {
-      FileSaver.saveAs(this.generatedImageDataURL, "image.png");
+      FileSaver.saveAs(this.generatedImageDataURL, 'image.png')
       this.closeSaveAdventureDialog()
     },
     async closeSaveAdventureDialog() {

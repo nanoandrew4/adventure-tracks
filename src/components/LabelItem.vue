@@ -79,12 +79,11 @@ export default defineComponent({
   color: black;
   padding-top: 2px;
   margin-right: 0.5vw;
-  font-size: 12cqw;
+  font-size: 100%;
 }
 
 .label-value {
   color: black;
-  /* font-size: large; */
-  font-size: 15cqw;
+  font-size: 100%;
 }
 </style>

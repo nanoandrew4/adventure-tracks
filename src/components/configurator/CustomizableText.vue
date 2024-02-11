@@ -16,7 +16,7 @@
           class="customizable-text-menu-list-element"
         >
           <v-icon icon="mdi-format-text-variant" />
-          <p> {{ $t('creator.config-panel.customizable-text.text') }} </p>
+          <p>{{ $t('creator.config-panel.customizable-text.text') }}</p>
         </div>
         <div
           v-if="selectedEditMode != EDIT_MODE.COLOR"
@@ -24,7 +24,7 @@
           class="customizable-text-menu-list-element"
         >
           <v-icon icon="mdi-palette" />
-          <p> {{ $t('creator.config-panel.customizable-text.color') }} </p>
+          <p>{{ $t('creator.config-panel.customizable-text.color') }}</p>
         </div>
         <div
           v-if="selectedEditMode != EDIT_MODE.FONT"
@@ -32,7 +32,7 @@
           class="customizable-text-menu-list-element"
         >
           <v-icon icon="mdi-format-font" />
-          <p> {{ $t('creator.config-panel.customizable-text.font') }} </p>
+          <p>{{ $t('creator.config-panel.customizable-text.font') }}</p>
         </div>
       </v-list>
     </v-menu>
@@ -64,11 +64,10 @@
 
 <script lang="ts">
 import { defineComponent, type PropType } from 'vue'
-import FontPicker from 'font-picker'
 import ColorPicker from './ColorPicker.vue'
-const apiKey = import.meta.env.VITE_GOOGLE_FONTS_API_KEY
 
 import type { CustomText } from '@/types/CustomText'
+import { getCachedPicker } from '@/helpers/fontPickerCache'
 
 enum EDIT_MODE {
   TEXT,
@@ -110,7 +109,7 @@ export default defineComponent({
   },
   mounted() {
     const t = this
-    const fontPicker = new FontPicker(apiKey, 'Open Sans', { pickerId: this.pickerId, limit: 300 })
+    const fontPicker = getCachedPicker(this.pickerId)
     fontPicker.setOnChange((font) => {
       t.emitUpdate((updatedModel: CustomText) => (updatedModel.font = font.family))
     })
@@ -146,7 +145,7 @@ export default defineComponent({
   margin: 0 0.5vw 0 0.5vw;
   flex-direction: row;
   cursor: pointer;
-  
+
   p {
     margin-left: 0.5vw;
   }
