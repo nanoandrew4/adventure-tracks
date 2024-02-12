@@ -57,7 +57,8 @@
         "add-label": "Add label",
         "label-name": "Label",
         "label-value": "Value",
-        "label-name-color": "Text Color"
+        "label-name-color": "Text Color",
+        "label-value-color": "Text Color"
       }
     }
   }

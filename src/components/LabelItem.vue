@@ -1,8 +1,7 @@
 <template>
   <div
     :id="`label-container-${index}`"
-    class="label-container resizable-container"
-    resizable
+    class="label-container"
     draggable
   >
     <p
