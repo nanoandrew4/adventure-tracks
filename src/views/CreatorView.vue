@@ -27,12 +27,10 @@
           draggable
           resizable
         >
-          <h1
+          <CustomText
             id="main-text"
-            :style="`color: ${adventure.mainText.color}; font-family: ${adventure.mainText.font}`"
-          >
-            {{ adventure.mainText.text }}
-          </h1>
+            :model-value="adventure.mainText"
+          />
         </div>
         <div
           id="secondary-text-container"
@@ -40,12 +38,10 @@
           draggable
           resizable
         >
-          <h2
+          <CustomText
             id="secondary-text"
-            :style="`color: ${adventure.secondaryText.color}; font-family: ${adventure.secondaryText.font}`"
-          >
-            {{ adventure.secondaryText.text }}
-          </h2>
+            :model-value="adventure.secondaryText"
+          />
         </div>
 
         <div class="labels-container">
@@ -130,6 +126,7 @@
 import { ref, defineComponent } from 'vue'
 import ActivityMap from '../components/map/ActivityMap.vue'
 import DataGraph from '../components/DataGraph.vue'
+import CustomText from '../components/CustomText.vue'
 import ConfigurationPanel from '../components/configurator/MainPanel.vue'
 import LabelItem from '../components/LabelItem.vue'
 import '../../node_modules/mapbox-gl/dist/mapbox-gl.css'
@@ -162,7 +159,8 @@ export default defineComponent({
     ActivityMap,
     DataGraph,
     ConfigurationPanel,
-    LabelItem
+    LabelItem,
+    CustomText
   },
   computed: {
     adventure: (): Adventure => store.state.adventure,

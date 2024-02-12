@@ -11,7 +11,9 @@
       "customizable-text": {
         "text": "Text",
         "color": "Color",
-        "font": "Font"
+        "font": "Font",
+        "font-size": "Font Size",
+        "font-style": "Font Style"
       },
       "activities-section": {
         "file-errors": "There were errors parsing the following files: { files }",

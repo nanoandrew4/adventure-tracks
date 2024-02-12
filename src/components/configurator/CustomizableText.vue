@@ -5,35 +5,19 @@
         <v-icon
           class="active-mode"
           v-bind="props"
-          :icon="getIconForCurrentlySelectedMode()"
+          :icon="getIconForMode(selectedEditMode)"
         />
       </template>
 
       <v-list class="customizable-text-menu-list">
-        <div
-          v-if="selectedEditMode != EDIT_MODE.TEXT"
-          @click="selectedEditMode = EDIT_MODE.TEXT"
-          class="customizable-text-menu-list-element"
-        >
-          <v-icon icon="mdi-format-text-variant" />
-          <p>{{ $t('creator.config-panel.customizable-text.text') }}</p>
-        </div>
-        <div
-          v-if="selectedEditMode != EDIT_MODE.COLOR"
-          @click="selectedEditMode = EDIT_MODE.COLOR"
-          class="customizable-text-menu-list-element"
-        >
-          <v-icon icon="mdi-palette" />
-          <p>{{ $t('creator.config-panel.customizable-text.color') }}</p>
-        </div>
-        <div
-          v-if="selectedEditMode != EDIT_MODE.FONT"
-          @click="selectedEditMode = EDIT_MODE.FONT"
-          class="customizable-text-menu-list-element"
-        >
-          <v-icon icon="mdi-format-font" />
-          <p>{{ $t('creator.config-panel.customizable-text.font') }}</p>
-        </div>
+        <TextEditMode
+          v-for="[editMode, props] in MODE_TO_PROPS_MAP"
+          :key="editMode"
+          :selected-edit-mode="selectedEditMode"
+          :target-edit-mode="editMode"
+          :label-suffix="props.labelSuffix"
+          @selected="(clickedEditMode) => (selectedEditMode = clickedEditMode)"
+        />
       </v-list>
     </v-menu>
 
@@ -59,26 +43,58 @@
       :id="`font-picker-${pickerId}`"
       class="font-picker"
     />
+
+    <v-text-field
+      v-if="selectedEditMode == EDIT_MODE.FONT_SIZE"
+      :model-value="modelValue.fontSize"
+      :label="$t('creator.config-panel.customizable-text.font-size')"
+      hide-details
+      rounded
+      type="number"
+      variant="solo"
+      @update:model-value="
+        (fontSize) => emitUpdate((modelValue) => (modelValue.fontSize = fontSize))
+      "
+    />
+
+    <div v-show="selectedEditMode == EDIT_MODE.FONT_STYLE">
+      <v-btn @click="() => emitUpdate((modelValue) => (modelValue.bold = !modelValue.bold))">
+        <v-icon icon="mdi-format-bold" />
+      </v-btn>
+      <v-btn @click="() => emitUpdate((modelValue) => (modelValue.italic = !modelValue.italic))">
+        <v-icon icon="mdi-format-italic"
+      /></v-btn>
+    </div>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, type PropType } from 'vue'
 import ColorPicker from './ColorPicker.vue'
+import TextEditMode from './TextEditMode.vue'
 
 import type { CustomText } from '@/types/CustomText'
 import { getCachedPicker } from '@/helpers/fontPickerCache'
 
-enum EDIT_MODE {
+export enum EDIT_MODE {
   TEXT,
   COLOR,
-  FONT
+  FONT,
+  FONT_SIZE,
+  FONT_STYLE
 }
 
-const modeToIconMap = new Map<EDIT_MODE, string>([
-  [EDIT_MODE.TEXT, 'mdi-format-text-variant'],
-  [EDIT_MODE.COLOR, 'mdi-palette'],
-  [EDIT_MODE.FONT, 'mdi-format-font']
+export interface EditModeProps {
+  icon: string
+  labelSuffix: string
+}
+
+export const MODE_TO_PROPS_MAP = new Map<EDIT_MODE, EditModeProps>([
+  [EDIT_MODE.TEXT, { icon: 'mdi-format-text-variant', labelSuffix: 'text' }],
+  [EDIT_MODE.COLOR, { icon: 'mdi-palette', labelSuffix: 'color' }],
+  [EDIT_MODE.FONT, { icon: 'mdi-format-text', labelSuffix: 'font' }],
+  [EDIT_MODE.FONT_SIZE, { icon: 'mdi-format-size', labelSuffix: 'font-size' }],
+  [EDIT_MODE.FONT_STYLE, { icon: 'mdi-format-font', labelSuffix: 'font-style' }]
 ])
 
 export default defineComponent({
@@ -98,13 +114,15 @@ export default defineComponent({
     }
   },
   components: {
-    ColorPicker
+    ColorPicker,
+    TextEditMode
   },
   data() {
     return {
       modifiableCustomText: this.customText,
       selectedEditMode: EDIT_MODE.TEXT,
-      EDIT_MODE
+      EDIT_MODE,
+      MODE_TO_PROPS_MAP
     }
   },
   mounted() {
@@ -115,13 +133,13 @@ export default defineComponent({
     })
   },
   methods: {
+    getIconForMode(mode: EDIT_MODE): string | undefined {
+      return MODE_TO_PROPS_MAP.get(mode)?.icon
+    },
     emitUpdate(fn: (updatedModel: CustomText) => void) {
       const modelValue = this.modelValue
       fn(modelValue)
       this.$emit('update:modelValue', modelValue)
-    },
-    getIconForCurrentlySelectedMode(): string | undefined {
-      return modeToIconMap.get(this.selectedEditMode)
     }
   }
 })

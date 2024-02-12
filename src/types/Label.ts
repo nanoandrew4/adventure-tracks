@@ -11,12 +11,18 @@ export function createEmptyLabel(): Label {
         name: {
             text: '',
             color: constants.defaultTextColor,
-            font: ''
+            font: '',
+            fontSize: '10',
+            bold: false,
+            italic: false
         },
         value: {
             text: '',
             color: constants.defaultTextColor,
-            font: ''
+            font: '',
+            fontSize: '10',
+            bold: false,
+            italic: false
         }
     }
 }

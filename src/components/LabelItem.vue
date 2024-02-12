@@ -4,24 +4,21 @@
     class="label-container"
     draggable
   >
-    <p
+    <CustomText
       class="label-name"
-      :style="`color: ${label.name.color}; font-family: ${label.name.font}`"
-    >
-      {{ label.name.text }}
-    </p>
-    <p
+      :model-value="label.name"
+    />
+    <CustomText
       class="label-value"
-      :style="`color: ${label.value.color}; font-family: ${label.value.font}`"
-    >
-      {{ label.value.text }}
-    </p>
+      :model-value="label.value"
+    />
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, type PropType } from 'vue'
 
+import CustomText from './CustomText.vue'
 import type { Label } from '@/types/Label'
 import { registerResizableAdventureTrackElement } from '@/helpers/resizableManager'
 import { registerDraggableElement } from '@/helpers/draggableManager'
@@ -31,6 +28,9 @@ import { useStore } from '@/vuex/store'
 let store: Store
 
 export default defineComponent({
+  components: {
+    CustomText
+  },
   props: {
     index: {
       type: Number,

@@ -10,12 +10,18 @@ export function buildSampleAdventure(secondaryTextVal: string): Adventure {
     mainText: {
       text: 'Sample Adventure',
       color: constants.defaultTextColor,
-      font: ''
+      font: '',
+      fontSize: '10',
+      bold: false,
+      italic: false
     },
     secondaryText: {
       text: secondaryTextVal,
       color: constants.defaultTextColor,
-      font: ''
+      font: '',
+      fontSize: '7.5',
+      bold: false,
+      italic: false
     },
     displayElevationProfile: true,
     displayHeartRateGraph: false,
