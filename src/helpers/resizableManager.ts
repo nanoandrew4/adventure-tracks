@@ -39,8 +39,8 @@ function registerResizableAdventureTrackElement(htmlElem: HTMLElement, resizeCal
   document.addEventListener('mouseup', () => {
     if (resizableElementState.get(htmlElem) === ResizeStates.MAYBE_RESIZING) {
       resizableElementState.set(htmlElem, ResizeStates.NONE)
-      adjustElementDimensionsIfNecessary(htmlElem, adventureTrackRoot, resizeCallback)
       resizeObserver.disconnect()
+      adjustElementDimensionsIfNecessary(htmlElem, adventureTrackRoot, resizeCallback)
     }
   })
 }
@@ -57,8 +57,8 @@ function adjustElementDimensionsIfNecessary(
 
   // control aspect ratio
 
-  htmlElem.style.width = (elemRect.width / rootRect.width) * 100 + '%'
-  htmlElem.style.height = (elemRect.height / rootRect.height) * 100 + '%'
+  htmlElem.style.width = (elemRect.width / rootRect.width) * 100 + 'cqw'
+  htmlElem.style.height = (elemRect.height / rootRect.height) * 100 + 'cqh'
 
   resizeCallback()
 }

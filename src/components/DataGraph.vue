@@ -1,7 +1,6 @@
 <template>
   <div
     id="data-graph-root"
-    resizable
     class="data-graph-root"
   >
     <div
@@ -57,6 +56,12 @@ export default defineComponent({
   },
   mounted() {
     this.$nextTick(() => this.drawGraph(this.reducedActivities))
+    if (this.customizationEnabled) {
+      this.enableCustomization()
+    }
+  },
+  unmounted() {
+
   },
   watch: {
     reducedActivities: {
@@ -73,33 +78,36 @@ export default defineComponent({
     },
     customizationEnabled(enabled: boolean) {
       if (enabled) {
-        const rootElem = document.getElementById('data-graph-root')
-        if (rootElem != null) {
-          const t = this
-          let onResize = function () {
-            if (t.display) {
-              if (new Date().getTime() - t.lastDrawTimestamp < MILLISECONDS_BETWEEN_FRAMES) {
-                t.delayedRunner.runDelayedFunction(() => {
-                  t.drawGraph(t.reducedActivities, undefined, true)
-                }, MILLISECONDS_BETWEEN_FRAMES)
-              } else {
-                t.delayedRunner.clearTimeout()
-                t.drawGraph(t.reducedActivities, undefined, true)
-              }
-            }
-          }
-
-          registerResizableAdventureTrackElement(rootElem, onResize)
-        }
+        this.enableCustomization()
       }
     }
   },
   methods: {
+    enableCustomization() {
+      const rootElem = document.getElementById('data-graph-container')
+      if (rootElem != null) {
+        const t = this
+        registerResizableAdventureTrackElement(rootElem, () => {
+          console.log('redrawing')
+          if (t.display) {
+            if (new Date().getTime() - t.lastDrawTimestamp < MILLISECONDS_BETWEEN_FRAMES) {
+              t.delayedRunner.runDelayedFunction(() => {
+                t.drawGraph(t.reducedActivities, undefined, true)
+              }, MILLISECONDS_BETWEEN_FRAMES)
+            } else {
+              t.delayedRunner.clearTimeout()
+              t.drawGraph(t.reducedActivities, undefined, true)
+            }
+          }
+        })
+      }
+    },
     drawGraph(
       modifiedActivities: ReducedActivity[],
       oldActivities?: ReducedActivity[],
       force?: boolean
     ) {
+      console.log('redrawing graph')
       const activitiesMap = this.activities.reduce((result, item) => {
         result.set(item.uid, item)
         return result
@@ -113,11 +121,10 @@ export default defineComponent({
 
         let componentWidth = 0,
           componentHeight = 0
-        let dataGraphRootElement = document.getElementById('data-graph-root')
         let dataGraphContainerElement = document.getElementById('data-graph-container')
-        if (dataGraphRootElement != null && dataGraphContainerElement != null) {
-          componentWidth = dataGraphRootElement.getBoundingClientRect().width
-          componentHeight = dataGraphRootElement.getBoundingClientRect().height
+        if (dataGraphContainerElement != null) {
+          componentWidth = dataGraphContainerElement.getBoundingClientRect().width
+          componentHeight = dataGraphContainerElement.getBoundingClientRect().height
         } else {
           return
         }
@@ -172,18 +179,18 @@ export default defineComponent({
 
 <style>
 .data-graph-root {
-  width: calc(100% - 1vw);
-  margin: 0 0.5vw 0 0.5vw;
-  height: fit-content;
+  width: calc(98cqw);
+  max-width: calc(98cqw);
+  margin: 0 1cqw 0 1cqw;
 }
 
 .data-graph-container {
-  height: 80px;
+  max-width: inherit;
+  height: 10cqh;
 }
 
 svg g path {
   display: block;
   width: 100%;
-  height: 80px;
 }
 </style>

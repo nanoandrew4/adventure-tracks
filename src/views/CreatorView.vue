@@ -18,6 +18,7 @@
       >
         <DataGraph
           :display="displayGraph"
+          ref="dataGraph"
           class="draggable"
           draggable
         />
@@ -236,6 +237,7 @@ export default defineComponent({
         }
         activityMapRef.resizeMap()
         activityMapRef.recenter()
+        // store.commit('SET_REFRESH_DATA_GRAPH', true)
 
         await new Promise((r) => setTimeout(r, 5000))
 
@@ -263,6 +265,7 @@ export default defineComponent({
 
         activityMapRef.resizeMap()
         activityMapRef.recenter()
+        // store.commit('SET_REFRESH_DATA_GRAPH', true)
 
         this.isSaving = false
         this.showConfigurationPanel = true
@@ -324,6 +327,7 @@ export default defineComponent({
 .adventure-track--portrait,
 .adventure-track--portrait-full {
   position: absolute;
+  container-type: size;
   transition: left 0.5s ease;
   max-height: var(--max-height);
   border-radius: 12px;
@@ -386,6 +390,7 @@ export default defineComponent({
   justify-content: center;
   text-align: center;
   /* height: 100%; */
+  padding-top: 2cqh;
 
   .labels-container {
     display: flex;
