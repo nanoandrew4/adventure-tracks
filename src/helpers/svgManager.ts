@@ -45,7 +45,6 @@ function createElevationSvg(activities: Activity[], componentWidth: number, comp
     const stepSize = activityWidth / elevationProfile.length
     let d = 'M ' + currPx + ' ' + componentHeight
     elevationProfile.forEach((elevationPoint) => {
-      // console.log("elevation: " + elevationPoint + " | highestPoint: " + highestPoint)
       d += ' L ' + currPx + ' ' + (componentHeight - ((elevationPoint + yNormalizationOffset) / highestPoint) * componentHeight)
       currPx += stepSize
     })

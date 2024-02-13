@@ -1,5 +1,6 @@
 <template>
   <div
+    v-if="!isMobile"
     id="track-creator"
     class="track-creator"
   >
@@ -121,6 +122,12 @@
       </v-card>
     </v-dialog>
   </div>
+  <div
+    v-else
+    class="mobile-creator"
+  >
+    <p>{{ $t('creator.mobile') }}</p>
+  </div>
 </template>
 
 <script lang="ts">
@@ -165,6 +172,7 @@ export default defineComponent({
   },
   computed: {
     adventure: (): Adventure => store.state.adventure,
+    isMobile: (): boolean => screen.width < 760,
     customizationEnabled: (): boolean => store.state.adventure.customizationEnabled,
     displayGraph: function (): boolean {
       return store.state.adventure.displayElevationProfile && this?.adventure.activities.length > 0
@@ -236,7 +244,7 @@ export default defineComponent({
         } else {
           captureElement.style.width = '3840px'
         }
-        
+
         // Scale line width by aspect ratio squared to maintain proportions on larger image
         const modifiedAdventure = this.adventure
         modifiedAdventure.lineWidth *= this.adventure.layoutMode == LayoutMode.PORTRAIT ? 0.5 : 2
@@ -451,6 +459,18 @@ div#secondary-text-container {
 
 .centered-dialog-text {
   text-align: center;
+}
+
+.mobile-creator {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  height: 100%;
+
+  p {
+    width: 50%;
+  }
 }
 </style>
 

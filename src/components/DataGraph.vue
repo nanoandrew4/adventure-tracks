@@ -88,7 +88,6 @@ export default defineComponent({
       if (rootElem != null) {
         const t = this
         registerResizableAdventureTrackElement(rootElem, () => {
-          console.log('redrawing')
           if (t.display) {
             if (new Date().getTime() - t.lastDrawTimestamp < MILLISECONDS_BETWEEN_FRAMES) {
               t.delayedRunner.runDelayedFunction(() => {
@@ -107,7 +106,6 @@ export default defineComponent({
       oldActivities?: ReducedActivity[],
       force?: boolean
     ) {
-      console.log('redrawing graph')
       const activitiesMap = this.activities.reduce((result, item) => {
         result.set(item.uid, item)
         return result

@@ -103,7 +103,6 @@ export default defineComponent({
       }
 
       reader.onloadend = (e) => {
-        console.log(e)
         const adventure = store.state.adventure as Adventure
         let startDate = adventure.activities
           .filter((activity: Activity) => activity.startTime)
