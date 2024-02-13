@@ -225,6 +225,7 @@ export default defineComponent({
         captureElement.style.maxHeight = 'none'
         captureElement.style.width = 'auto'
         captureElement.style.left = '0'
+
         /*
          * Half of 7680px, which is the max width mapbox will load.
          * Since the devicePixelRatio is set to 2, the HTML capture will be twice as big as specified here,
@@ -235,9 +236,14 @@ export default defineComponent({
         } else {
           captureElement.style.width = '3840px'
         }
+        
+        // Scale line width by aspect ratio squared to maintain proportions on larger image
+        const modifiedAdventure = this.adventure
+        modifiedAdventure.lineWidth *= this.adventure.layoutMode == LayoutMode.PORTRAIT ? 0.5 : 2
+        store.commit('UPDATE_ADVENTURE', modifiedAdventure)
+
         activityMapRef.resizeMap()
         activityMapRef.recenter()
-        // store.commit('SET_REFRESH_DATA_GRAPH', true)
 
         await new Promise((r) => setTimeout(r, 5000))
 
@@ -265,7 +271,9 @@ export default defineComponent({
 
         activityMapRef.resizeMap()
         activityMapRef.recenter()
-        // store.commit('SET_REFRESH_DATA_GRAPH', true)
+
+        modifiedAdventure.lineWidth = this.adventure.layoutMode == LayoutMode.PORTRAIT ? 0.5 : 2
+        store.commit('UPDATE_ADVENTURE', modifiedAdventure)
 
         this.isSaving = false
         this.showConfigurationPanel = true
