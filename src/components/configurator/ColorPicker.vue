@@ -21,6 +21,7 @@
           icon="mdi-close-circle-outline"
         />
         <v-color-picker
+          :model-value="color"
           @update:model-value="(color) => $emit('color-updated', color)"
           :mode="'rgb'"
         ></v-color-picker>
@@ -89,7 +90,7 @@ export default defineComponent({
 
   i {
     right: 0;
-    color: black;
+    color: white;
     position: absolute;
     z-index: 1;
   }
@@ -97,8 +98,8 @@ export default defineComponent({
   div {
     padding: 20px;
     margin: 0px;
-    background-color: white;
     width: 15vw !important;
+    /* border: 1px solid white; */
   }
 }
 </style>
