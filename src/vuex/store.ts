@@ -12,7 +12,7 @@ export interface State {
   adventure: Adventure
   boundingCoordinateBox: [number, number, number, number]
   refreshDataGraph: boolean
-  activitiesLoadProgress: ActivityLoadProgress | undefined
+  activitiesLoadProgress: ActivityLoadProgress
   activeMapStyle: MapStyle
 }
 

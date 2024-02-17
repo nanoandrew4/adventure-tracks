@@ -5,7 +5,7 @@
     class="activities-section"
   >
     <v-expansion-panel
-      :key="activity.name"
+      :key="activity.uid"
       v-for="activity in sortedActivities"
     >
       <v-expansion-panel-title class="configurator-activity-title">
@@ -23,7 +23,7 @@
   </v-expansion-panels>
   <FileSelector
     class="configurator-file-selector"
-    accept-extensions=".gpx"
+    accept-extensions=".gpx,.kml,.tcx"
     :multiple="true"
     @validated="handleFilesValidated"
     @changed="handleFilesChanged"
@@ -35,7 +35,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { type FsValidationResult } from 'vue-file-selector/dist'
-import { gpxGen } from '@tmcw/togeojson'
+import { gpxGen, kmlGen, type F, tcxGen } from '@tmcw/togeojson'
 
 import ActivityCard from './ActivityCard.vue'
 import { Activity } from '../../types/Activity'
@@ -43,6 +43,7 @@ import { useStore, type State } from '../../vuex/store'
 import { sortByDateAscending } from '../../helpers/activitySorter'
 import type { Store } from 'vuex'
 import type { Adventure } from '@/types/Adventure'
+import type { Feature, Geometry, GeoJsonProperties } from 'geojson'
 
 let store: Store
 let state: State
@@ -69,30 +70,61 @@ export default defineComponent({
       store.commit('SET_ADVENTURE_ACTIVITIES', modifiedActivities)
     },
     handleFilesValidated(result: FsValidationResult, files: File[]) {
-      console.log('Validation result: ' + result)
+      this.initActivityLoadProgress(files.length)
+      const activityLoadProgress = state.activitiesLoadProgress!
+      files.forEach((file) => {
+        activityLoadProgress.filesWithErrors.add(file.name)
+        activityLoadProgress.numOfActivitiesProcessed++
+        store.commit('SET_ACTIVITY_LOAD_PROGRESS', activityLoadProgress)
+      })
     },
     async handleFilesChanged(files: File[]) {
-      console.log('Selected files: ')
-      console.table(files)
-
-      this.processFiles(files)
+      this.initActivityLoadProgress(files.length)
+      files.forEach((file) => {
+        this.processIntoGeoJson(file)
+      })
     },
     processIntoGeoJson(file: File) {
       const reader = new FileReader()
+      const activityLoadProgress = state.activitiesLoadProgress!
 
       reader.readAsText(file)
       reader.onload = (response) => {
         const rawFile = response.target?.result as string
-        let geoJsonGen = gpxGen(new DOMParser().parseFromString(rawFile, 'text/xml'))
+        let geoJsonGen: Generator<F, any, unknown>
+        if (file.name.includes('gpx')) {
+          geoJsonGen = gpxGen(new DOMParser().parseFromString(rawFile, 'text/xml'))
+        } else if (file.name.includes('kml')) {
+          geoJsonGen = kmlGen(new DOMParser().parseFromString(rawFile, 'text/xml'))
+        } else if (file.name.includes('tcx')) {
+          geoJsonGen = tcxGen(new DOMParser().parseFromString(rawFile, 'text/xml'))
+        } else {
+          activityLoadProgress.filesWithErrors.add(file.name)
+          return
+        }
         let nextFeature = geoJsonGen.next()
 
-        const activityLoadProgress = state.activitiesLoadProgress!
         if (nextFeature.done) {
           // No feature means the file contained no valid data
-          activityLoadProgress.filesWithErrors.push(file.name)
+          activityLoadProgress.filesWithErrors.add(file.name)
         } else {
           while (!nextFeature.done) {
-            store.commit('ADD_ACTIVITY', new Activity(nextFeature.value))
+            const nextFeatVal = nextFeature.value
+            if (
+              nextFeatVal.geometry &&
+              'coordinates' in nextFeatVal.geometry &&
+              nextFeatVal.geometry.coordinates.length > 0
+            ) {
+              if (nextFeatVal.properties && !nextFeatVal.properties.name) {
+                nextFeatVal.properties.name = file.name
+              }
+              store.commit(
+                'ADD_ACTIVITY',
+                new Activity(nextFeatVal as Feature<Geometry, GeoJsonProperties>)
+              )
+            } else {
+              activityLoadProgress.filesWithErrors.add(file.name)
+            }
             nextFeature = geoJsonGen.next()
           }
         }
@@ -111,14 +143,11 @@ export default defineComponent({
         store.commit('SET_ADVENTURE', adventure)
       }
     },
-    processFiles(files: File[]) {
+    initActivityLoadProgress(numOfActivitiesToLoad: number) {
       store.commit('SET_ACTIVITY_LOAD_PROGRESS', {
-        numOfActivitiesToLoad: files.length,
+        numOfActivitiesToLoad: numOfActivitiesToLoad,
         numOfActivitiesProcessed: 0,
-        filesWithErrors: []
-      })
-      files.forEach((file) => {
-        this.processIntoGeoJson(file)
+        filesWithErrors: new Set()
       })
     }
   }

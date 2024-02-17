@@ -122,7 +122,7 @@ export default defineComponent({
   computed: {
     filesWithErrors(): string {
       if (!state.activitiesLoadProgress) return ''
-      return state.activitiesLoadProgress.filesWithErrors.join(', ')
+      return [...state.activitiesLoadProgress.filesWithErrors].join(', ')
     },
     processedActivitiesRatio(): number {
       if (!state.activitiesLoadProgress) return -1
@@ -165,12 +165,12 @@ export default defineComponent({
     processedActivitiesRatio(newRatio: number) {
       const t = this
       if (newRatio === 100) {
-        if (state.activitiesLoadProgress?.filesWithErrors.length == 0) {
+        if (state.activitiesLoadProgress?.filesWithErrors.size == 0) {
           this.activityLoadCompletedSuccessfully = true
           setTimeout(() => {
             t.activityLoadCompletedSuccessfully = false
           }, 5000)
-        } else if (state.activitiesLoadProgress!.filesWithErrors.length > 0) {
+        } else if (state.activitiesLoadProgress!.filesWithErrors.size > 0) {
           this.activityLoadCompletedWithErrors = true
         }
       }
