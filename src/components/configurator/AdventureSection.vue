@@ -1,12 +1,14 @@
 <template>
   <div class="adventure-layout-container">
     <v-btn
+      color="primary"
       @click="
         updateAdventure((adventure: Adventure) => (adventure.layoutMode = LayoutMode.PORTRAIT))
       "
       >{{ $t('creator.config-panel.adventure-section.vertical-layout') }}</v-btn
     >
     <v-btn
+      color="primary"
       @click="
         updateAdventure((adventure: Adventure) => (adventure.layoutMode = LayoutMode.LANDSCAPE))
       "
@@ -102,7 +104,6 @@
   </v-dialog>
 
   <v-text-field
-    class="text-field"
     :label="$t('creator.config-panel.adventure-section.line-width')"
     hide-details
     rounded

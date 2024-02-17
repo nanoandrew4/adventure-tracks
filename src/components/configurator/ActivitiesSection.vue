@@ -1,6 +1,5 @@
 <template>
   <v-expansion-panels
-    theme="dark"
     multiple
     variant="accordion"
     class="activities-section"
@@ -132,14 +131,15 @@ export default defineComponent({
   width: 100%;
   padding: 1em;
   margin: 1em 0 0 0;
-  border-radius: 0.5vw;
-  border: 1px solid gray;
+  border-radius: 0.25vw;
+  background-color: rgb(var(--v-theme-primary));
 }
 
 .fs-btn-select {
   text-align: center;
   width: 100%;
   height: 100%;
+  color: white;
 }
 
 .configurator-activity-name {
@@ -149,7 +149,7 @@ export default defineComponent({
 
 .activities-section {
   overflow-y: scroll;
-  max-height: 60vh;
+  max-height: 45vh;
 }
 
 .activities-section::-webkit-scrollbar {

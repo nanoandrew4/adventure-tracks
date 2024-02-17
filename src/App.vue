@@ -1,96 +1,98 @@
 <template>
-    <header>
-        <img
-            alt="Vue logo"
-            class="logo"
-            src="@/assets/logo.svg"
-            width="50"
-            height="50"
-        />
+  <header>
+    <img
+      alt="Vue logo"
+      class="logo"
+      src="@/assets/logo.svg"
+      width="50"
+      height="50"
+    />
 
-        <div class="wrapper">
-            <nav>
-                <RouterLink to="/">{{ t('header.home') }}</RouterLink>
-                <RouterLink to="/create">{{ t('header.creator') }}</RouterLink>
-                <RouterLink to="/about">{{ t('header.about') }}</RouterLink>
-            </nav>
-            <LocaleSwitcher/>
-        </div>
-    </header>
+    <div class="wrapper">
+      <nav>
+        <RouterLink to="/">{{ t('header.home') }}</RouterLink>
+        <RouterLink to="/create">{{ t('header.creator') }}</RouterLink>
+        <RouterLink to="/about">{{ t('header.about') }}</RouterLink>
+      </nav>
+      <ThemeSwitcher />
+      <LocaleSwitcher />
+    </div>
+  </header>
 
-    <RouterView />
+  <RouterView />
 </template>
 
 <script setup lang="ts">
 import { RouterLink, RouterView } from 'vue-router'
-import LocaleSwitcher from './components/LocaleSwitcher.vue'
+import LocaleSwitcher from './components/header/LocaleSwitcher.vue'
+import ThemeSwitcher from './components/header/ThemeSwitcher.vue'
 import { useI18n } from 'vue-i18n'
+import { useTheme } from 'vuetify'
+
+const theme = useTheme()
+
+const darkThemeMq = window.matchMedia('(prefers-color-scheme: dark)')
+if (darkThemeMq.matches) {
+  theme.global.name.value = 'dark'
+}
 
 const { t } = useI18n()
 </script>
 
 <style scoped>
 header {
-    line-height: 1.5;
-    min-height: 5vh;
-    max-height: 5vh;
-    width: 100%;
+  line-height: 1.5;
+  min-height: 5vh;
+  max-height: 5vh;
+  width: 100%;
 }
 
 .logo {
-    display: block;
-    max-height: 100%;
+  display: block;
+  max-height: 100%;
 }
 
 nav {
-    width: 100%;
-    font-size: 12px;
-    text-align: center;
+  width: 100%;
+  font-size: 12px;
+  text-align: center;
 }
 
 nav a.router-link-exact-active {
-    color: var(--color-text);
-}
-
-nav a.router-link-exact-active:hover {
-    background-color: transparent;
+  color: rgb(var(--v-theme-text-selected));
 }
 
 nav a {
-    display: inline-block;
-    padding: 0 1rem;
-    border-left: 1px solid var(--color-border);
+  display: inline-block;
+  padding: 0 1rem;
+  color: rgb(var(--v-theme-text));
 }
 
 nav a:first-of-type {
-    border: 0;
+  border: 0;
 }
 
 @media (min-width: 1024px) {
-    header {
-        display: flex;
-        align-items: center;
-        padding-right: calc(var(--section-gap) / 2);
-    }
+  header {
+    display: flex;
+    align-items: center;
+    padding-right: calc(var(--section-gap) / 2);
+  }
 
-    .logo {
-        /* margin: 1rem 1rem 0 1rem; */
-    }
+  header .wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: fit-content;
+  }
 
-    header .wrapper {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 100%;
-        height: fit-content;
-    }
+  nav {
+    text-align: center;
+    margin-left: -1rem;
+    font-size: 1rem;
 
-    nav {
-        text-align: center;
-        margin-left: -1rem;
-        font-size: 1rem;
-
-        /* padding: 1rem 0; */
-    }
+    /* padding: 1rem 0; */
+  }
 }
 </style>

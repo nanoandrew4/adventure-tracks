@@ -99,6 +99,8 @@ export default defineComponent({
     padding: 20px;
     margin: 0px;
     width: 15vw !important;
+    min-width: 300px;
+    background-color: rgb(var(--v-theme-surface-light-bluish));
     /* border: 1px solid white; */
   }
 }

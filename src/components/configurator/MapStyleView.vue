@@ -1,8 +1,6 @@
 <template>
   <div class="map-style">
-    <v-tooltip
-      class="map-style-tooltip"
-    >
+    <v-tooltip class="map-style-tooltip">
       <img
         :src="`https://api.mapbox.com/styles/v1/${mapStyle.username}/${mapStyle.styleID}/static/${coords},13/${resolution}?access_token=${mapStyle.accessToken}`"
       />

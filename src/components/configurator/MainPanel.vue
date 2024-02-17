@@ -8,12 +8,8 @@
         @click.stop="$emit('change-visibility')"
       />
     </div>
-    <v-expansion-panels
-      theme="dark"
-      variant="accordion"
-    >
+    <v-expansion-panels variant="accordion">
       <v-expansion-panel class="configurator-section-header">
-        <!-- <v-expansion-panel-title expand-icon="mdi-chevron-down" collapse-icon="mdi-chevron-up"> -->
         <v-expansion-panel-title>
           {{ $t('creator.config-panel.activities') }}
           <template v-slot:actions="{ expanded }">
@@ -178,7 +174,7 @@ export default defineComponent({
           this.activityLoadCompletedWithErrors = true
         }
       }
-    },
+    }
   }
 })
 </script>
@@ -257,6 +253,5 @@ export default defineComponent({
 .configurator-save-btn {
   margin-top: 1vw;
   width: 80%;
-  color: black;
 }
 </style>
