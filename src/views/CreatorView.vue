@@ -89,6 +89,7 @@
       </v-card>
       <v-card
         v-show="showGeneratedImageDialog"
+        style="overflow: hidden;"
         :class="'generated-image-dialog' + layoutSuffix"
       >
         <v-card-text class="centered-dialog-text">
@@ -159,6 +160,7 @@ import {
   generateLandscapeThumbnailDataURL
 } from '@/helpers/generatedImage'
 import FileSaver from 'file-saver'
+import { retrieveDefaultMapStyles } from '@/helpers/retrieveDefaultMapStyles'
 
 let store: Store
 
@@ -219,6 +221,7 @@ export default defineComponent({
   },
   setup() {
     store = useStore()
+    retrieveDefaultMapStyles().then((mapStyles) => (store.commit('ADD_MAP_STYLES', mapStyles)))
   },
   methods: {
     async capture() {

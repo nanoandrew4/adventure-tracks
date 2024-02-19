@@ -56,13 +56,7 @@
         :title="$t('creator.config-panel.map-styles')"
       >
         <v-expansion-panel-text>
-          <div class="d-flex">
-            <MapStyleView
-              :key="mapStyle.name"
-              v-for="mapStyle in defaultMapStyles"
-              :map-style="mapStyle"
-            />
-          </div>
+          <MapSection />
         </v-expansion-panel-text>
       </v-expansion-panel>
       <v-expansion-panel
@@ -108,11 +102,9 @@ import { defineComponent } from 'vue'
 import ActivitiesSection from './ActivitiesSection.vue'
 import LabelsSection from './LabelsSection.vue'
 import AdventureSection from './AdventureSection.vue'
-import MapStyleView from './MapStyleView.vue'
+import MapSection from './map/MapSection.vue'
 import { Store } from 'vuex'
 import { useStore, type State } from '../../vuex/store'
-import { retrieveDefaultMapStyles } from '../../helpers/retrieveDefaultMapStyles'
-import type { MapStyle } from '@/types/MapStyle'
 
 let store: Store
 let state: State
@@ -137,7 +129,7 @@ export default defineComponent({
     ActivitiesSection,
     AdventureSection,
     LabelsSection,
-    MapStyleView
+    MapSection
   },
   props: {
     show: {
@@ -150,16 +142,10 @@ export default defineComponent({
     state = store.state
   },
   data() {
-    const defaultMapStyles: MapStyle[] = []
     return {
       activityLoadCompletedSuccessfully: false,
       activityLoadCompletedWithErrors: false,
-      defaultMapStyles
     }
-  },
-  mounted() {
-    const t = this
-    retrieveDefaultMapStyles().then((mapStyles) => (t.defaultMapStyles = mapStyles))
   },
   watch: {
     processedActivitiesRatio(newRatio: number) {

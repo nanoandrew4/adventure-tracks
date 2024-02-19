@@ -69,7 +69,7 @@ export default defineComponent({
       )
       store.commit('SET_ADVENTURE_ACTIVITIES', modifiedActivities)
     },
-    handleFilesValidated(result: FsValidationResult, files: File[]) {
+    handleFilesValidated(_result: FsValidationResult, files: File[]) {
       this.initActivityLoadProgress(files.length)
       const activityLoadProgress = state.activitiesLoadProgress!
       files.forEach((file) => {
@@ -133,7 +133,7 @@ export default defineComponent({
         store.commit('SET_ACTIVITY_LOAD_PROGRESS', activityLoadProgress)
       }
 
-      reader.onloadend = (e) => {
+      reader.onloadend = () => {
         const adventure = store.state.adventure as Adventure
         let startDate = adventure.activities
           .filter((activity: Activity) => activity.startTime)

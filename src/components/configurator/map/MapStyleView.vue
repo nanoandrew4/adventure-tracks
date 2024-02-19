@@ -18,8 +18,8 @@
 <script lang="ts">
 import { defineComponent, type PropType } from 'vue'
 
-import { useStore } from '../../vuex/store'
-import { Store } from '../../../vuex'
+import { useStore } from '../../../vuex/store'
+import { Store } from '../../../../vuex'
 import type { MapStyle } from '@/types/MapStyle'
 
 let store: Store

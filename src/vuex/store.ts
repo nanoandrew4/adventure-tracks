@@ -13,6 +13,7 @@ export interface State {
   boundingCoordinateBox: [number, number, number, number]
   refreshDataGraph: boolean
   activitiesLoadProgress: ActivityLoadProgress
+  mapStyles: Set<MapStyle>
   activeMapStyle: MapStyle
 }
 
@@ -31,7 +32,8 @@ export const store = createStore<State>({
       username: 'nanoandrew4',
       styleID: 'clq85wo0o000z01qyfu4j338x',
       accessToken: import.meta.env.VITE_MAPBOX_ACCESS_TOKEN
-    }
+    },
+    mapStyles: new Set(),
   },
   mutations
 })

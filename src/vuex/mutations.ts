@@ -30,5 +30,10 @@ export default {
   },
   SET_ACTIVE_MAP_STYLE(state: State, activeMapStyle: MapStyle) {
     state.activeMapStyle = activeMapStyle
+  },
+  ADD_MAP_STYLES(state: State, mapStyles: MapStyle[]) {
+    mapStyles.forEach((m) => {
+      state.mapStyles.add(m)
+    })
   }
 }
