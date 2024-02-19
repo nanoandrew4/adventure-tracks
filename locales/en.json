@@ -26,6 +26,17 @@
           "use-same-color": "Use same color"
         }
       },
+      "map-config": {
+        "import-custom-style": {
+          "activator-btn": "Import custom MapBox style",
+          "text": "Input your MapBox username and StyleID to import the style and use it",
+          "style-name": "Style name (how you want it to be called)",
+          "style-username": "MapBox username",
+          "style-id": "MapBox style ID",
+          "close": "Close",
+          "save": "Save"
+        }
+      },
       "select-gpx-files": "Select GPX files",
       "map-styles": "Map styles",
       "adventure": "Adventure",

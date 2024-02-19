@@ -31,8 +31,8 @@ export const store = createStore<State>({
       name: 'Monochrome',
       username: 'nanoandrew4',
       styleID: 'clq85wo0o000z01qyfu4j338x',
-      accessToken: import.meta.env.VITE_MAPBOX_ACCESS_TOKEN
     },
+    mapBoxToken: import.meta.env.VITE_MAPBOX_ACCESS_TOKEN,
     mapStyles: new Set(),
   },
   mutations

@@ -1,7 +1,6 @@
 import type { MapStyle } from '@/types/MapStyle'
 
 const requestURL = import.meta.env.VITE_MAP_STYLES_FILE
-const stylesAccessToken = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN
 
 const headers: Headers = new Headers()
 headers.set('Content-Type', 'application/json')
@@ -21,7 +20,7 @@ async function retrieveDefaultMapStyles(): Promise<MapStyle[]> {
           name: elem.name,
           username: elem.username,
           styleID: elem.style_id,
-          accessToken: stylesAccessToken
+          custom: false
         }
       ])
     })

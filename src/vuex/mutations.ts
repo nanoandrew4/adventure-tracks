@@ -35,5 +35,8 @@ export default {
     mapStyles.forEach((m) => {
       if (!state.mapStyles.has(m)) state.mapStyles.add(m)
     })
+  },
+  DELETE_MAP_STYLE(state: State, mapStyle: MapStyle) {
+    state.mapStyles.delete(mapStyle)
   }
 }

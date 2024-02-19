@@ -2,14 +2,23 @@
   <div class="map-style">
     <v-tooltip class="map-style-tooltip">
       <img
-        :src="`https://api.mapbox.com/styles/v1/${mapStyle.username}/${mapStyle.styleID}/static/${coords},13/${resolution}?access_token=${mapStyle.accessToken}`"
+        :src="`https://api.mapbox.com/styles/v1/${mapStyle.username}/${mapStyle.styleID}/static/${coords},13/${resolution}?access_token=${mapBoxToken}`"
       />
       <template v-slot:activator="{ props }">
-        <v-btn
-          v-bind="props"
-          :text="mapStyle.name"
-          @click="setStyleAsActive"
-        />
+        <div class="style-button-container">
+          <v-btn
+            :color="mapStyle.custom ? 'surface-light-bluish' : 'primary'"
+            v-bind="props"
+            :text="mapStyle.name"
+            @click="setStyleAsActive"
+          />
+          <v-icon
+            v-if="mapStyle.custom"
+            class="delete-style"
+            icon="mdi-close-circle-outline"
+            @click="deleteCustomStyle"
+          />
+        </div>
       </template>
     </v-tooltip>
   </div>
@@ -25,7 +34,10 @@ import type { MapStyle } from '@/types/MapStyle'
 let store: Store
 
 export default defineComponent({
-  components: {},
+  computed: {
+    activeMapStyle: (): MapStyle => store.state.activeMapStyle,
+    mapBoxToken: (): string => store.state.mapBoxToken
+  },
   props: {
     mapStyle: {
       type: Object as PropType<MapStyle>,
@@ -44,6 +56,10 @@ export default defineComponent({
   methods: {
     setStyleAsActive() {
       store.commit('SET_ACTIVE_MAP_STYLE', this.mapStyle)
+    },
+    deleteCustomStyle() {
+      if (this.activeMapStyle == this.mapStyle) store.commit('SET_ACTIVE_MAP_STYLE', [...store.state.mapStyles][0])
+      store.commit('DELETE_MAP_STYLE', this.mapStyle)
     }
   }
 })
@@ -63,5 +79,16 @@ export default defineComponent({
       border-radius: 1vh !important;
     }
   }
+}
+
+.style-button-container {
+  position: relative;
+}
+
+.delete-style {
+  position: absolute;
+  font-size: 1.2em;
+  top: -0.5vh;
+  right: -0.5vw;
 }
 </style>
