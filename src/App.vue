@@ -1,21 +1,23 @@
 <template>
   <header>
     <img
-      alt="Vue logo"
+      alt="Site logo"
       class="logo"
       src="@/assets/logo.svg"
       width="50"
       height="50"
+      @click="$router.push({ path: '/' })"
     />
 
     <div class="wrapper">
       <nav>
         <RouterLink to="/">{{ t('header.home') }}</RouterLink>
         <RouterLink to="/create">{{ t('header.creator') }}</RouterLink>
-        <RouterLink to="/about">{{ t('header.about') }}</RouterLink>
       </nav>
-      <ThemeSwitcher />
-      <LocaleSwitcher />
+      <div class="header-controls">
+        <ThemeSwitcher />
+        <LocaleSwitcher />
+      </div>
     </div>
   </header>
 
@@ -37,6 +39,7 @@ if (darkThemeMq.matches) {
 }
 
 const { t } = useI18n()
+
 </script>
 
 <style scoped>
@@ -50,11 +53,16 @@ header {
 .logo {
   display: block;
   max-height: 100%;
+  margin-top: 1vh;
+  cursor: pointer;
+  z-index: 1;
 }
 
 nav {
-  width: 100%;
-  font-size: 12px;
+  position: absolute;
+  width: 100vw;
+  left: 0;
+  font-size: 1rem;
   text-align: center;
 }
 
@@ -82,17 +90,15 @@ nav a:first-of-type {
   header .wrapper {
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: end;
     width: 100%;
     height: fit-content;
-  }
+    padding-right: 2.5vw;
 
-  nav {
-    text-align: center;
-    margin-left: -1rem;
-    font-size: 1rem;
-
-    /* padding: 1rem 0; */
+    .header-controls {
+      display: inherit;
+      padding-top: 1vh;
+    }
   }
 }
 </style>

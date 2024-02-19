@@ -42,13 +42,11 @@ export default defineComponent({
     // const basePixelRatio = window.devicePixelRatio
     /*
      * By setting the pixel ratio to > 1, we force mapbox to render in retina mode, which yields
-     * higher resolution images. 2 is chosen as a nice round number that can be used during the capture
-     * to determine the width of the creator div in order to generate a high resolution version of the
-     * adventure
+     * higher resolution images. 1.5 is chosen as it allows map resizing without causing issues
      */
     Object.defineProperty(window, 'devicePixelRatio', {
       get() {
-        return 2
+        return 1.5
       }
     })
 

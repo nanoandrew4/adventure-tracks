@@ -251,7 +251,7 @@ export default defineComponent({
         // Scale line width by aspect ratio squared to maintain proportions on larger image
         const modifiedAdventure = this.adventure
         modifiedAdventure.lineWidth *= this.adventure.layoutMode == LayoutMode.PORTRAIT ? 0.5 : 2
-        store.commit('UPDATE_ADVENTURE', modifiedAdventure)
+        store.commit('SET_ADVENTURE', modifiedAdventure)
 
         activityMapRef.resizeMap()
         activityMapRef.recenter()
@@ -284,7 +284,7 @@ export default defineComponent({
         activityMapRef.recenter()
 
         modifiedAdventure.lineWidth = this.adventure.layoutMode == LayoutMode.PORTRAIT ? 0.5 : 2
-        store.commit('UPDATE_ADVENTURE', modifiedAdventure)
+        store.commit('SET_ADVENTURE', modifiedAdventure)
 
         this.isSaving = false
         this.showConfigurationPanel = true

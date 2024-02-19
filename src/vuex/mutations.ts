@@ -33,7 +33,7 @@ export default {
   },
   ADD_MAP_STYLES(state: State, mapStyles: MapStyle[]) {
     mapStyles.forEach((m) => {
-      state.mapStyles.add(m)
+      if (!state.mapStyles.has(m)) state.mapStyles.add(m)
     })
   }
 }
