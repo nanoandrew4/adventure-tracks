@@ -12,6 +12,7 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
+    "@samuelmeuli/font-manager": "^1.4.0",
     "@tmcw/togeojson": "^5.8.1",
     "@types/geojson": "^7946.0.13",
     "file-saver": "^2.0.5",

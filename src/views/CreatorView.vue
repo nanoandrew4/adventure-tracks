@@ -4,6 +4,7 @@
     id="track-creator"
     class="track-creator"
   >
+    <FontRetriever :fonts="defaultStyleFonts"/>
     <div
       id="adventure-track"
       :class="`adventure-track${adventureTrackClassSuffix}`"
@@ -89,7 +90,7 @@
       </v-card>
       <v-card
         v-show="showGeneratedImageDialog"
-        style="overflow: hidden;"
+        style="overflow: hidden"
         :class="'generated-image-dialog' + layoutSuffix"
       >
         <v-card-text class="centered-dialog-text">
@@ -135,6 +136,7 @@
 import { ref, defineComponent } from 'vue'
 import ActivityMap from '../components/map/ActivityMap.vue'
 import DataGraph from '../components/DataGraph.vue'
+import FontRetriever from '../components/FontRetriever.vue'
 import CustomText from '../components/CustomText.vue'
 import ConfigurationPanel from '../components/configurator/MainPanel.vue'
 import LabelItem from '../components/LabelItem.vue'
@@ -161,6 +163,7 @@ import {
 } from '@/helpers/generatedImage'
 import FileSaver from 'file-saver'
 import { retrieveDefaultMapStyles } from '@/helpers/retrieveDefaultMapStyles'
+import type { MapStyle } from '@/types/MapStyle'
 
 let store: Store
 
@@ -170,9 +173,14 @@ export default defineComponent({
     DataGraph,
     ConfigurationPanel,
     LabelItem,
-    CustomText
+    CustomText,
+    FontRetriever
   },
   computed: {
+    defaultStyleFonts: (): string[] =>
+      [...store.state.mapStyles]
+        .map((style: MapStyle) => style.mainTextFont)
+        .filter((f: any) => f !== undefined) as string[],
     adventure: (): Adventure => store.state.adventure,
     isMobile: (): boolean => screen.width < 760,
     customizationEnabled: (): boolean => store.state.adventure.customizationEnabled,

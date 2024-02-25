@@ -74,7 +74,9 @@ import ColorPicker from './ColorPicker.vue'
 import TextEditMode from './TextEditMode.vue'
 
 import type { CustomText } from '@/types/CustomText'
-import { getCachedPicker } from '@/helpers/fontPickerCache'
+import FontPicker from 'font-picker'
+
+const apiKey = import.meta.env.VITE_GOOGLE_FONTS_API_KEY
 
 export enum EDIT_MODE {
   TEXT,
@@ -125,13 +127,6 @@ export default defineComponent({
       MODE_TO_PROPS_MAP
     }
   },
-  mounted() {
-    const t = this
-    const fontPicker = getCachedPicker(this.pickerId)
-    fontPicker.setOnChange((font) => {
-      t.emitUpdate((updatedModel: CustomText) => (updatedModel.font = font.family))
-    })
-  },
   methods: {
     getIconForMode(mode: EDIT_MODE): string | undefined {
       return MODE_TO_PROPS_MAP.get(mode)?.icon
@@ -140,6 +135,20 @@ export default defineComponent({
       const modelValue = this.modelValue
       fn(modelValue)
       this.$emit('update:modelValue', modelValue)
+    }
+  },
+  watch: {
+    selectedEditMode(newEditMode: number) {
+      if (newEditMode === EDIT_MODE.FONT) {
+        const t = this
+        const fontPicker = new FontPicker(apiKey, this.modelValue.font, {
+          pickerId: this.pickerId,
+          limit: 300
+        })
+        fontPicker.setOnChange((font) => {
+          t.emitUpdate((updatedModel: CustomText) => (updatedModel.font = font.family))
+        })
+      }
     }
   }
 })
@@ -183,15 +192,15 @@ export default defineComponent({
   border-radius: 100vw;
   width: 100% !important;
   ul {
-    background-color: var(--color-background-soft) !important;
+    background-color: rgb(var(--v-theme-surface)) !important;
   }
 
   button {
     border-radius: 100vw;
-    background-color: var(--color-background-soft) !important;
+    background-color: rgb(var(--v-theme-surface-light-bluish)) !important;
 
     .dropdown-icon::before {
-      border-top: 6px solid var(--color-text) !important;
+      border-top: 6px solid rgb(var(--v-theme-text)) !important;
       border-right: 5px solid transparent;
       border-left: 5px solid transparent;
     }

@@ -30,6 +30,7 @@ import { defineComponent, type PropType } from 'vue'
 import { useStore } from '../../../vuex/store'
 import { Store } from '../../../../vuex'
 import type { MapStyle } from '@/types/MapStyle'
+import type { Adventure } from '@/types/Adventure'
 
 let store: Store
 
@@ -56,9 +57,42 @@ export default defineComponent({
   methods: {
     setStyleAsActive() {
       store.commit('SET_ACTIVE_MAP_STYLE', this.mapStyle)
+      if (
+        this.activeMapStyle.backgroundColor ||
+        this.activeMapStyle.mainTextColor ||
+        this.activeMapStyle.mainTextFont ||
+        this.activeMapStyle.secondaryTextColor ||
+        this.activeMapStyle.secondaryTextFont ||
+        this.activeMapStyle.labelNameTextColor ||
+        this.activeMapStyle.labelNameTextFont ||
+        this.activeMapStyle.labelValueTextColor ||
+        this.activeMapStyle.labelValueTextFont
+      ) {
+        const modifiedAdventure = store.state.adventure as Adventure
+        modifiedAdventure.backgroundColor =
+          this.mapStyle.backgroundColor ?? modifiedAdventure.backgroundColor
+        modifiedAdventure.mainText.color =
+          this.mapStyle.mainTextColor ?? modifiedAdventure.mainText.color
+        modifiedAdventure.mainText.font =
+          this.mapStyle.mainTextFont ?? modifiedAdventure.mainText.font
+        modifiedAdventure.secondaryText.color =
+          this.mapStyle.mainTextColor ?? modifiedAdventure.secondaryText.color
+        modifiedAdventure.secondaryText.font =
+          this.mapStyle.secondaryTextFont ?? modifiedAdventure.secondaryText.font
+        if (modifiedAdventure.labels) {
+          modifiedAdventure.labels.forEach((l) => {
+            l.name.color = this.mapStyle.labelNameTextColor ?? l.name.color
+            l.name.font = this.mapStyle.labelNameTextFont ?? l.name.font
+            l.value.color = this.mapStyle.labelValueTextColor ?? l.value.color
+            l.value.font = this.mapStyle.labelValueTextFont ?? l.value.font
+          })
+        }
+        store.commit('SET_ADVENTURE', modifiedAdventure)
+      }
     },
     deleteCustomStyle() {
-      if (this.activeMapStyle == this.mapStyle) store.commit('SET_ACTIVE_MAP_STYLE', [...store.state.mapStyles][0])
+      if (this.activeMapStyle == this.mapStyle)
+        store.commit('SET_ACTIVE_MAP_STYLE', [...store.state.mapStyles][0])
       store.commit('DELETE_MAP_STYLE', this.mapStyle)
     }
   }

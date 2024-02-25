@@ -10,18 +10,18 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, type PropType } from 'vue'
+import { defineComponent } from 'vue'
 import { EDIT_MODE, MODE_TO_PROPS_MAP } from './CustomizableText.vue'
 
 export default defineComponent({
   emits: ['selected'],
   props: {
     selectedEditMode: {
-      type: Object as PropType<EDIT_MODE>,
+      type: Number,
       required: true
     },
     targetEditMode: {
-      type: Object as PropType<EDIT_MODE>,
+      type: Number,
       required: true
     },
     labelSuffix: {
