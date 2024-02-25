@@ -120,7 +120,10 @@ export default defineComponent({
               }
               store.commit(
                 'ADD_ACTIVITY',
-                new Activity(nextFeatVal as Feature<Geometry, GeoJsonProperties>)
+                new Activity(
+                  nextFeatVal as Feature<Geometry, GeoJsonProperties>,
+                  this.adventure.mainText.color
+                )
               )
             } else {
               activityLoadProgress.filesWithErrors.add(file.name)

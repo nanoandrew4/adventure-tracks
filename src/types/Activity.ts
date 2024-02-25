@@ -16,9 +16,9 @@ export class Activity {
   longLatCoords: number[][]
   elevation: number[]
 
-  constructor(geoJsonFeature: Feature) {
-    this.lineColor = constants.defaultTextColor
-    this.elevationProfileColor = constants.defaultTextColor
+  constructor(geoJsonFeature: Feature, defaultTextColor?: string) {
+    this.lineColor = defaultTextColor ?? constants.defaultTextColor
+    this.elevationProfileColor = defaultTextColor ?? constants.defaultTextColor
     this.geoJsonFeature = geoJsonFeature
     this.uid = objectHash.sha1(geoJsonFeature)
     this.name = geoJsonFeature.properties?.name

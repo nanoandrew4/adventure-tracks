@@ -87,6 +87,10 @@ export default defineComponent({
             l.value.font = this.mapStyle.labelValueTextFont ?? l.value.font
           })
         }
+        modifiedAdventure.activities.forEach((activity) => {
+          activity.lineColor = modifiedAdventure.mainText.color
+          activity.elevationProfileColor = modifiedAdventure.mainText.color
+        })
         store.commit('SET_ADVENTURE', modifiedAdventure)
       }
     },
