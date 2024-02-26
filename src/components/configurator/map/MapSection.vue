@@ -1,19 +1,39 @@
 <template>
-  <div class="styles-container">
-    <MapStyleView
-      v-for="mapStyle in mapStyles"
-      :key="mapStyle.name"
-      :map-style="mapStyle"
-    />
-  </div>
-  <div class="import-custom-style">
-    <v-btn
-      color="surface-light-bluish"
-      @click="showAddCustomStyleDialog = true"
-    >
-      {{ $t('creator.config-panel.map-config.import-custom-style.activator-btn') }}
-    </v-btn>
-  </div>
+  <v-card
+    :title="$t('creator.config-panel.map-config.map-styles')"
+    class="section"
+  >
+    <div class="stored-styles-container">
+      <MapStyleView
+        v-for="mapStyle in mapStyles"
+        :key="mapStyle.name"
+        :map-style="mapStyle"
+      />
+    </div>
+    <div class="import-custom-style">
+      <v-btn
+        color="surface-light-bluish"
+        @click="showAddCustomStyleDialog = true"
+      >
+        {{ $t('creator.config-panel.map-config.import-custom-style.activator-btn') }}
+      </v-btn>
+    </div>
+  </v-card>
+
+  <v-card
+    :title="$t('creator.config-panel.map-config.actions')"
+    class="section"
+  >
+    <div class="actions-container">
+      <v-btn
+        color="primary"
+        @click="recenterMap"
+      >
+        {{ $t('creator.config-panel.map-config.recenter') }}
+      </v-btn>
+    </div>
+  </v-card>
+
   <v-dialog
     v-model="showAddCustomStyleDialog"
     width="fit-content"
@@ -112,15 +132,28 @@ export default defineComponent({
       this.customStyleName = ''
       this.customStyleUsername = ''
       this.customStyleID = ''
+    },
+    recenterMap() {
+      store.commit('SET_RECENTER_MAP', true)
     }
   }
 })
 </script>
 
 <style scoped>
-.styles-container {
+.section {
+  padding-bottom: 0.5vw;
+}
+
+.actions-container {
+  display: flex;
+  justify-content: center;
+}
+
+.stored-styles-container {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
 }
 
 .import-custom-style {

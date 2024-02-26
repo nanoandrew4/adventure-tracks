@@ -53,7 +53,7 @@
       </v-expansion-panel>
       <v-expansion-panel
         class="configurator-section-header"
-        :title="$t('creator.config-panel.map-styles')"
+        :title="$t('creator.config-panel.map')"
       >
         <v-expansion-panel-text>
           <MapSection />

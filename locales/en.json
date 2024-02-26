@@ -26,7 +26,11 @@
           "use-same-color": "Use same color"
         }
       },
+      "map": "Map",
       "map-config": {
+        "map-styles": "Map styles",
+        "actions": "Actions",
+        "recenter": "Recenter map",
         "import-custom-style": {
           "activator-btn": "Import custom MapBox style",
           "text": "Input your MapBox username and StyleID to import the style and use it",
@@ -45,7 +49,6 @@
         "text-color": "Graph text color"
       },
       "select-gpx-files": "Select GPX files",
-      "map-styles": "Map styles",
       "adventure": "Adventure",
       "save": "Save adventure",
       "adventure-section": {

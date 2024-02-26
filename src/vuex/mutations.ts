@@ -25,6 +25,9 @@ export default {
   SET_REFRESH_DATA_GRAPH(state: State, newVal: boolean) {
     state.refreshDataGraph = newVal
   },
+  SET_RECENTER_MAP(state: State, newVal: boolean) {
+    state.recenterMap = newVal
+  },
   SET_ACTIVITY_LOAD_PROGRESS(state: State, newLoadProgress: ActivityLoadProgress) {
     state.activitiesLoadProgress = newLoadProgress
   },

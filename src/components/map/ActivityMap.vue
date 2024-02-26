@@ -36,7 +36,8 @@ export default defineComponent({
     reducedActivities: (): ReducedActivity[] =>
       state.adventure.activities.map((activity: Activity) => new ReducedActivity(activity)),
     boundingCoordinateBox: (): [number, number, number, number] => state.boundingCoordinateBox,
-    activeMapStyle: (): MapStyle => state.adventure.mapStyle
+    activeMapStyle: (): MapStyle => state.adventure.mapStyle,
+    recenterMap: (): boolean => store.state.recenterMap,
   },
   setup() {
     // const basePixelRatio = window.devicePixelRatio
@@ -149,7 +150,13 @@ export default defineComponent({
       handler(modifiedActivities: ReducedActivity[]) {
         this.fpsCappedMapRefresh(modifiedActivities)
       }
-    }
+    },
+    recenterMap(newVal: boolean) {
+      if (newVal) {
+        this.recenter()
+        store.commit('SET_RECENTER_MAP', false)
+      }
+    },
   },
   methods: {
     fpsCappedMapRefresh(modifiedActivities: ReducedActivity[]) {
