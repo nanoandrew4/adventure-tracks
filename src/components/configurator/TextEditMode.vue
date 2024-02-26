@@ -4,14 +4,13 @@
     @click="$emit('selected', targetEditMode)"
     class="customizable-text-menu-list-element"
   >
-    <v-icon :icon="getIconForMode(targetEditMode)" />
+    <v-icon :icon="icon" />
     <p>{{ $t('creator.config-panel.customizable-text.' + labelSuffix) }}</p>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { EDIT_MODE, MODE_TO_PROPS_MAP } from './CustomizableText.vue'
 
 export default defineComponent({
   emits: ['selected'],
@@ -27,12 +26,11 @@ export default defineComponent({
     labelSuffix: {
       type: String,
       required: true
-    }
-  },
-  methods: {
-    getIconForMode(mode: EDIT_MODE): string | undefined {
-      return MODE_TO_PROPS_MAP.get(mode)?.icon
     },
+    icon: {
+      type: String,
+      required: true
+    }
   }
 })
 </script>

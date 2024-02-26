@@ -11,24 +11,25 @@
 
       <v-list class="customizable-text-menu-list">
         <TextEditMode
-          v-for="[editMode, props] in MODE_TO_PROPS_MAP"
+          v-for="[editMode, props] in modesToShowMap"
           :key="editMode"
           :selected-edit-mode="selectedEditMode"
           :target-edit-mode="editMode"
           :label-suffix="props.labelSuffix"
+          :icon="getIconForMode(editMode)"
           @selected="(clickedEditMode) => (selectedEditMode = clickedEditMode)"
         />
       </v-list>
     </v-menu>
 
     <v-text-field
-      v-if="selectedEditMode == EDIT_MODE.TEXT"
+      v-if="selectedEditMode == EDIT_MODE.TEXT && 'text' in modelValue"
       :model-value="modelValue.text"
       :label="$t(labelPrefix)"
       hide-details
       rounded
       variant="solo"
-      @update:model-value="(text) => emitUpdate((modelValue) => (modelValue.text = text))"
+      @update:model-value="(text) => emitCustomTextUpdate((modelValue) => (modelValue.text = text))"
     />
 
     <ColorPicker
@@ -75,6 +76,7 @@ import TextEditMode from './TextEditMode.vue'
 
 import type { CustomText } from '@/types/CustomText'
 import FontPicker from 'font-picker'
+import type { CustomTextStyle } from '@/types/CustomTextStyle'
 
 const apiKey = import.meta.env.VITE_GOOGLE_FONTS_API_KEY
 
@@ -91,19 +93,26 @@ export interface EditModeProps {
   labelSuffix: string
 }
 
-export const MODE_TO_PROPS_MAP = new Map<EDIT_MODE, EditModeProps>([
-  [EDIT_MODE.TEXT, { icon: 'mdi-format-text-variant', labelSuffix: 'text' }],
+const CUSTOM_TEXT_STYLES_MODE_TO_PROPS_MAP = new Map<EDIT_MODE, EditModeProps>([
   [EDIT_MODE.COLOR, { icon: 'mdi-palette', labelSuffix: 'color' }],
   [EDIT_MODE.FONT, { icon: 'mdi-format-text', labelSuffix: 'font' }],
   [EDIT_MODE.FONT_SIZE, { icon: 'mdi-format-size', labelSuffix: 'font-size' }],
   [EDIT_MODE.FONT_STYLE, { icon: 'mdi-format-font', labelSuffix: 'font-style' }]
 ])
 
+const CUSTOM_TEXT_MODE_TO_PROPS_MAP = new Map<EDIT_MODE, EditModeProps>(
+  CUSTOM_TEXT_STYLES_MODE_TO_PROPS_MAP
+)
+CUSTOM_TEXT_MODE_TO_PROPS_MAP.set(EDIT_MODE.TEXT, {
+  icon: 'mdi-format-text-variant',
+  labelSuffix: 'text'
+})
+
 export default defineComponent({
   emits: ['update:modelValue'],
   props: {
     modelValue: {
-      type: Object as PropType<CustomText>,
+      type: Object as PropType<CustomText | CustomTextStyle>,
       required: true
     },
     labelPrefix: {
@@ -122,19 +131,30 @@ export default defineComponent({
   data() {
     return {
       modifiableCustomText: this.customText,
-      selectedEditMode: EDIT_MODE.TEXT,
+      selectedEditMode: this.isCustomText() ? EDIT_MODE.TEXT : EDIT_MODE.COLOR,
       EDIT_MODE,
-      MODE_TO_PROPS_MAP
+      modesToShowMap:
+      this.isCustomText()
+          ? CUSTOM_TEXT_MODE_TO_PROPS_MAP
+          : CUSTOM_TEXT_STYLES_MODE_TO_PROPS_MAP
     }
   },
   methods: {
-    getIconForMode(mode: EDIT_MODE): string | undefined {
-      return MODE_TO_PROPS_MAP.get(mode)?.icon
+    getIconForMode(mode: EDIT_MODE): string {
+      return this.modesToShowMap.get(mode)!.icon
     },
-    emitUpdate(fn: (updatedModel: CustomText) => void) {
+    emitUpdate(fn: (updatedModel: CustomText | CustomTextStyle) => void) {
       const modelValue = this.modelValue
       fn(modelValue)
       this.$emit('update:modelValue', modelValue)
+    },
+    emitCustomTextUpdate(fn: (updatedModel: CustomText) => void) {
+      const modelValue = this.modelValue as CustomText
+      fn(modelValue)
+      this.$emit('update:modelValue', modelValue)
+    },
+    isCustomText(): boolean {
+      return 'text' in this.modelValue
     }
   },
   watch: {
@@ -146,7 +166,9 @@ export default defineComponent({
           limit: 300
         })
         fontPicker.setOnChange((font) => {
-          t.emitUpdate((updatedModel: CustomText) => (updatedModel.font = font.family))
+          t.emitUpdate(
+            (updatedModel: CustomText | CustomTextStyle) => (updatedModel.font = font.family)
+          )
         })
       }
     }

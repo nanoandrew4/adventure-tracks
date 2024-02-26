@@ -45,15 +45,6 @@
   />
 
   <v-checkbox
-    :label="$t('creator.config-panel.adventure-section.show-elevation')"
-    hide-details
-    v-model="adventure.displayElevationProfile"
-    @update:model-value="
-      (display) => updateAdventure((adventure) => (adventure.displayElevationProfile = display))
-    "
-  />
-
-  <v-checkbox
     :label="$t('creator.config-panel.adventure-section.enable-customization')"
     hide-details
     v-model="adventure.customizationEnabled"

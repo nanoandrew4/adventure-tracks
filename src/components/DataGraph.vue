@@ -4,6 +4,24 @@
     class="data-graph-root"
   >
     <div
+      class="elevation-display"
+      v-show="display && hasSvgBeenDrawn && showHighestAndLowestPoints"
+    >
+      <StylizedText
+        class="highest-point"
+        :model-value="dataGraph.graphText"
+        :text="String(highestPoint)"
+        :font-scaling-factor="0.1"
+      />
+      <div class="point-spacer"></div>
+      <StylizedText
+        class="lowest-point"
+        :model-value="dataGraph.graphText"
+        :text="String(lowestPoint)"
+        :font-scaling-factor="0.1"
+      />
+    </div>
+    <div
       id="data-graph-container"
       class="data-graph-container"
       v-show="display && hasSvgBeenDrawn"
@@ -23,6 +41,8 @@ import type { Activity } from '@/types/Activity'
 import { createElevationSvg } from '@/helpers/svgManager'
 import { DelayedRunner } from '@/helpers/delayedRunner'
 import { registerResizableAdventureTrackElement } from '@/helpers/resizableManager'
+import StylizedText from '@/components/text/StylizedText.vue'
+import type { DataGraph } from '@/types/DataGraph'
 
 let store: Store
 
@@ -30,12 +50,18 @@ const TARGET_REFRESH_RATE = 10.0
 const MILLISECONDS_BETWEEN_FRAMES = 1000.0 / TARGET_REFRESH_RATE
 
 export default defineComponent({
+  components: {
+    StylizedText
+  },
   computed: {
+    dataGraph: (): DataGraph => store.state.adventure.dataGraph,
     customizationEnabled: (): boolean => store.state.adventure.customizationEnabled,
     activities: (): Activity[] => store.state.adventure.activities,
     reducedActivities: (): ReducedActivity[] =>
       store.state.adventure.activities.map((activity: Activity) => new ReducedActivity(activity)),
-    refreshDataGraph: (): boolean => store.state.refreshDataGraph
+    refreshDataGraph: (): boolean => store.state.refreshDataGraph,
+    showHighestAndLowestPoints: (): boolean =>
+      store.state.adventure.dataGraph.displayHighestAndLowestPoints
   },
   props: {
     display: {
@@ -48,7 +74,9 @@ export default defineComponent({
       isReady: false,
       hasSvgBeenDrawn: false,
       lastDrawTimestamp: new Date().getTime(),
-      delayedRunner: new DelayedRunner()
+      delayedRunner: new DelayedRunner(),
+      highestPoint: 0,
+      lowestPoint: 0
     }
   },
   setup() {
@@ -60,9 +88,7 @@ export default defineComponent({
       this.enableCustomization()
     }
   },
-  unmounted() {
-
-  },
+  unmounted() {},
   watch: {
     reducedActivities: {
       deep: true,
@@ -127,11 +153,14 @@ export default defineComponent({
           return
         }
 
-        const newSvg = createElevationSvg(activities, componentWidth, componentHeight)
+        const newSvgWrapper = createElevationSvg(activities, componentWidth, componentHeight)
 
         let oldSvg = document.getElementById('data-graph')
-        if (oldSvg && newSvg) {
+        if (oldSvg && newSvgWrapper) {
+          const newSvg = newSvgWrapper.svg
           dataGraphContainerElement.replaceChild(newSvg, oldSvg)
+          this.lowestPoint = Math.trunc(newSvgWrapper.lowestPoint)
+          this.highestPoint = Math.trunc(newSvgWrapper.highestPoint)
           this.hasSvgBeenDrawn = true
         } else {
           console.log('could not replace data graph')
@@ -177,14 +206,36 @@ export default defineComponent({
 
 <style>
 .data-graph-root {
+  display: flex;
   width: calc(98cqw);
   max-width: calc(98cqw);
   margin: 0 1cqw 0 1cqw;
 }
 
 .data-graph-container {
-  max-width: inherit;
   height: 10cqh;
+  width: 100%;
+}
+
+.elevation-display {
+  display: flex;
+  flex-direction: column;
+  width: 4cqw;
+  height: 10cqh;
+  font-size: 0.6em;
+  color: black;
+}
+
+.highest-point {
+  margin-top: -1em;
+}
+
+.point-spacer {
+  height: 100%;
+}
+
+.lowest-point {
+  margin-bottom: -1em;
 }
 
 svg g path {

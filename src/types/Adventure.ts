@@ -1,6 +1,8 @@
 import { type Activity } from './Activity'
 import type { CustomText } from './CustomText'
+import type { DataGraph } from './DataGraph'
 import { type Label } from './Label'
+import type { MapStyle } from './MapStyle'
 
 export enum LayoutMode {
   PORTRAIT,
@@ -15,8 +17,8 @@ export interface Adventure {
   activities: Activity[]
   labels: Label[]
 
-  displayElevationProfile: boolean
-  displayHeartRateGraph: boolean
+  mapStyle: MapStyle
+  dataGraph: DataGraph
 
   customizationEnabled: boolean
   layoutMode: LayoutMode

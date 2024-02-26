@@ -1,6 +1,12 @@
 import type { Activity } from '@/types/Activity'
 
-function createElevationSvg(activities: Activity[], componentWidth: number, componentHeight: number): SVGSVGElement | null {
+interface ElevationSvg {
+  svg: SVGSVGElement
+  lowestPoint: number
+  highestPoint: number
+}
+
+function createElevationSvg(activities: Activity[], componentWidth: number, componentHeight: number): ElevationSvg | null {
   let highestPoint = 0, lowestPoint = 0
   let totalDuration = 0
   activities.forEach((activity) => {
@@ -54,7 +60,7 @@ function createElevationSvg(activities: Activity[], componentWidth: number, comp
     svgGroup.appendChild(activitySvgPath)
     newSvg.appendChild(svgGroup)
   }
-  return newSvg
+  return {svg: newSvg, lowestPoint, highestPoint}
 }
 
 export { createElevationSvg }

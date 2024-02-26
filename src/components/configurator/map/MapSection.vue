@@ -80,7 +80,7 @@ export default defineComponent({
     MapStyleView
   },
   computed: {
-    activeMapStyle: (): MapStyle => store.state.activeMapStyle,
+    activeMapStyle: (): MapStyle => store.state.adventure.mapStyle,
     mapStyles(): MapStyle[] {
       return [...store.state.mapStyles].filter(
         (style: MapStyle) => style.styleID != this.activeMapStyle.styleID

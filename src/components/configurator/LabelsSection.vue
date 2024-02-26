@@ -42,6 +42,7 @@ import { createEmptyLabel } from '@/types/Label'
 import { Store } from '../../../vuex'
 import type { CustomText } from '@/types/CustomText'
 import CustomizableText from '@/components/configurator/CustomizableText.vue'
+import type { Adventure } from '@/types/Adventure'
 
 let store: Store
 
@@ -50,7 +51,7 @@ export default defineComponent({
     CustomizableText
   },
   computed: {
-    adventure: () => store.state.adventure,
+    adventure: () => store.state.adventure as Adventure,
     labels: () => store.state.adventure.labels
   },
   setup() {
@@ -59,7 +60,7 @@ export default defineComponent({
   methods: {
     addEmptyLabel() {
       const updatedAdventure = this.adventure
-      updatedAdventure.labels.push(createEmptyLabel())
+      updatedAdventure.labels.push(createEmptyLabel(this.adventure.mainText.font))
       store.commit('SET_ADVENTURE', updatedAdventure)
     },
     updateLabelName(idx: number, newName: CustomText) {

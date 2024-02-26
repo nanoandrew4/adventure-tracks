@@ -6,12 +6,12 @@ export interface Label {
   value: CustomText
 }
 
-export function createEmptyLabel(): Label {
+export function createEmptyLabel(font: string): Label {
     return {
         name: {
             text: '',
             color: constants.defaultTextColor,
-            font: '',
+            font,
             fontSize: '10',
             bold: false,
             italic: false
@@ -19,7 +19,7 @@ export function createEmptyLabel(): Label {
         value: {
             text: '',
             color: constants.defaultTextColor,
-            font: '',
+            font,
             fontSize: '10',
             bold: false,
             italic: false

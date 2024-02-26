@@ -137,9 +137,9 @@ import { ref, defineComponent } from 'vue'
 import ActivityMap from '../components/map/ActivityMap.vue'
 import DataGraph from '../components/DataGraph.vue'
 import FontRetriever from '../components/FontRetriever.vue'
-import CustomText from '../components/CustomText.vue'
+import CustomText from '../components/text/CustomText.vue'
 import ConfigurationPanel from '../components/configurator/MainPanel.vue'
-import LabelItem from '../components/LabelItem.vue'
+import LabelItem from '../components/text/LabelItem.vue'
 import '../../node_modules/mapbox-gl/dist/mapbox-gl.css'
 import html2canvas from 'html2canvas'
 
@@ -185,7 +185,7 @@ export default defineComponent({
     isMobile: (): boolean => screen.width < 760,
     customizationEnabled: (): boolean => store.state.adventure.customizationEnabled,
     displayGraph: function (): boolean {
-      return store.state.adventure.displayElevationProfile && this?.adventure.activities.length > 0
+      return store.state.adventure.dataGraph.display() && this?.adventure.activities.length > 0
     },
     adventureTrackClassSuffix: function (): string {
       if (this.adventure.layoutMode == LayoutMode.PORTRAIT) {

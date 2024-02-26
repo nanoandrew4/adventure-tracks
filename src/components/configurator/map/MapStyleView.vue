@@ -36,7 +36,7 @@ let store: Store
 
 export default defineComponent({
   computed: {
-    activeMapStyle: (): MapStyle => store.state.activeMapStyle,
+    activeMapStyle: (): MapStyle => store.state.adventure.mapStyle,
     mapBoxToken: (): string => store.state.mapBoxToken
   },
   props: {

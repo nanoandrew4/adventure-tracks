@@ -27,11 +27,6 @@ export const store = createStore<State>({
       -74.04728500751165, 40.68392799015035, -73.91058699000139, 40.87764500765852
     ],
     refreshDataGraph: false,
-    activeMapStyle: {
-      name: 'Monochrome',
-      username: 'nanoandrew4',
-      styleID: 'clq85wo0o000z01qyfu4j338x',
-    },
     mapBoxToken: import.meta.env.VITE_MAPBOX_ACCESS_TOKEN,
     mapStyles: new Set(),
   },

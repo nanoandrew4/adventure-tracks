@@ -29,7 +29,7 @@ export default {
     state.activitiesLoadProgress = newLoadProgress
   },
   SET_ACTIVE_MAP_STYLE(state: State, activeMapStyle: MapStyle) {
-    state.activeMapStyle = activeMapStyle
+    state.adventure.mapStyle = activeMapStyle
   },
   ADD_MAP_STYLES(state: State, mapStyles: MapStyle[]) {
     mapStyles.forEach((m) => {

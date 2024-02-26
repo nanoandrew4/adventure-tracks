@@ -36,7 +36,7 @@ export default defineComponent({
     reducedActivities: (): ReducedActivity[] =>
       state.adventure.activities.map((activity: Activity) => new ReducedActivity(activity)),
     boundingCoordinateBox: (): [number, number, number, number] => state.boundingCoordinateBox,
-    activeMapStyle: (): MapStyle => state.activeMapStyle
+    activeMapStyle: (): MapStyle => state.adventure.mapStyle
   },
   setup() {
     // const basePixelRatio = window.devicePixelRatio

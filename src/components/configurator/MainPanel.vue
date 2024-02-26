@@ -61,6 +61,14 @@
       </v-expansion-panel>
       <v-expansion-panel
         class="configurator-section-header"
+        :title="$t('creator.config-panel.data-graph')"
+      >
+        <v-expansion-panel-text>
+          <DataGraphSection />
+        </v-expansion-panel-text>
+      </v-expansion-panel>
+      <v-expansion-panel
+        class="configurator-section-header"
         :title="$t('creator.config-panel.adventure')"
       >
         <v-expansion-panel-text>
@@ -102,6 +110,7 @@ import { defineComponent } from 'vue'
 import ActivitiesSection from './ActivitiesSection.vue'
 import LabelsSection from './LabelsSection.vue'
 import AdventureSection from './AdventureSection.vue'
+import DataGraphSection from './DataGraphSection.vue'
 import MapSection from './map/MapSection.vue'
 import { Store } from 'vuex'
 import { useStore, type State } from '../../vuex/store'
@@ -129,7 +138,8 @@ export default defineComponent({
     ActivitiesSection,
     AdventureSection,
     LabelsSection,
-    MapSection
+    MapSection,
+    DataGraphSection
   },
   props: {
     show: {

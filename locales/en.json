@@ -37,6 +37,12 @@
           "save": "Save"
         }
       },
+      "data-graph": "Data graph",
+      "data-graph-section": {
+        "show-elevation": "Draw elevation profile",
+        "show-highest-lowest-points": "Show highest/lowest point on graph",
+        "text-color": "Graph text color"
+      },
       "select-gpx-files": "Select GPX files",
       "map-styles": "Map styles",
       "adventure": "Adventure",
@@ -50,7 +56,6 @@
         "secondary-text": "Secondary text",
         "secondary-text-color": "Secondary text color",
         "line-width": "Activity line thickness",
-        "show-elevation": "Draw elevation profile",
         "enable-customization": "Enable customization",
         "disable-customization-dialog": {
           "text": "Disabling customization will reset all dragged and resized elements, are you sure you want to continue?",

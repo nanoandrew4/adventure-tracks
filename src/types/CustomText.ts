@@ -1,10 +1,5 @@
-export interface CustomText {
-  text: string
-  color: string
-  font: string
-  fontSize: string
+import type { CustomTextStyle } from "./CustomTextStyle"
 
-  // Font style
-  bold: boolean
-  italic: boolean
+export interface CustomText extends CustomTextStyle {
+  text: string
 }
