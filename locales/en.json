@@ -39,6 +39,7 @@
       },
       "data-graph": "Data graph",
       "data-graph-section": {
+        "no-activities": "To enable the options in this section, please first add some activities in the 'Activities' section",
         "show-elevation": "Draw elevation profile",
         "show-highest-lowest-points": "Show highest/lowest point on graph",
         "text-color": "Graph text color"

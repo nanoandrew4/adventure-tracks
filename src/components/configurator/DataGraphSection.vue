@@ -1,4 +1,11 @@
 <template>
+  <v-alert
+    v-if="!activitiesExist"
+    :text="$t('creator.config-panel.data-graph-section.no-activities')"
+    type="info"
+    variant="tonal"
+  />
+
   <v-checkbox
     :label="$t('creator.config-panel.data-graph-section.show-elevation')"
     hide-details
