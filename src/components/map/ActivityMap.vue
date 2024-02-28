@@ -37,7 +37,7 @@ export default defineComponent({
       state.adventure.activities.map((activity: Activity) => new ReducedActivity(activity)),
     boundingCoordinateBox: (): [number, number, number, number] => state.boundingCoordinateBox,
     activeMapStyle: (): MapStyle => state.adventure.mapStyle,
-    recenterMap: (): boolean => store.state.recenterMap,
+    recenterMap: (): boolean => store.state.recenterMap
   },
   setup() {
     // const basePixelRatio = window.devicePixelRatio
@@ -88,18 +88,16 @@ export default defineComponent({
     // }))
     map.addControl(this.attribution)
 
-    const calculatedZoomAndCenter = this.calculateZoomAndCenter()
-    map.setCenter({
-      lng: calculatedZoomAndCenter.center[0],
-      lat: calculatedZoomAndCenter.center[1]
-    })
-    map.setZoom(calculatedZoomAndCenter.zoom)
-
     map.on('rotate', () => {
       map.setBearing(0)
     })
     map.on('pitch', () => {
       map.setPitch(0)
+    })
+
+    map.on('load', () => {
+      this.fpsCappedMapRefresh(this.reducedActivities)
+      this.recenter()
     })
   },
   unmounted() {
@@ -113,14 +111,6 @@ export default defineComponent({
         t.removeSourcesAndLayers(this.sourceTracker.getAllSources())
         t.activities.forEach((activity) => this.addSourceAndLayer(activity))
       })
-    },
-    boundingCoordinateBox() {
-      const calculatedZoomAndCenter = this.calculateZoomAndCenter()
-      map.setCenter({
-        lng: calculatedZoomAndCenter.center[0],
-        lat: calculatedZoomAndCenter.center[1]
-      })
-      map.setZoom(calculatedZoomAndCenter.zoom)
     },
     customizationEnabled(enabled: boolean) {
       if (enabled) {
@@ -156,7 +146,7 @@ export default defineComponent({
         this.recenter()
         store.commit('SET_RECENTER_MAP', false)
       }
-    },
+    }
   },
   methods: {
     fpsCappedMapRefresh(modifiedActivities: ReducedActivity[]) {
@@ -243,8 +233,19 @@ export default defineComponent({
 
       return true
     },
-    resizeMap() {
+    resizeMap(recenter?: boolean) {
+      const b = map.getBounds()
+      map.on('resize', () => {
+        if (recenter) {
+          this.recenter()
+        } else {
+          map.setCenter(map.getCenter())
+          map.fitBounds(b, { padding: this.getBoundsPadding(b) })
+        }
+        map.on('resize', () => {})
+      })
       map.resize()
+
       this.lastResizeTimestamp = new Date().getTime()
     },
     recalculateActivitiesBoundingBox() {
@@ -256,37 +257,19 @@ export default defineComponent({
       store.commit('SET_BOUNDING_COORDINATE_BOX', bboxCalculator.getBoundingBox())
     },
     recenter() {
-      const calculatedZoomAndCenter = this.calculateZoomAndCenter()
-      map.setCenter({
-        lng: calculatedZoomAndCenter.center[0],
-        lat: calculatedZoomAndCenter.center[1]
-      })
-      map.setZoom(calculatedZoomAndCenter.zoom)
-    },
-    calculateZoomAndCenter() {
       const bounds = new mapboxgl.LngLatBounds(this.boundingCoordinateBox)
-
-      const { lng, lat } = bounds.getCenter()
-      const ne = bounds.getNorthEast()
-      const sw = bounds.getSouthWest()
-
-      let containerSize = 0
-      if (
-        (bounds.getNorth() - bounds.getSouth()) / (bounds.getEast() - bounds.getWest()) >
-        9 / 16
-      ) {
-        containerSize = map.getCanvas().clientHeight
-      } else {
-        containerSize = map.getCanvas().clientWidth
-      }
-      // Calculate the zoom level based on the bounding box dimensions
-      const zoom = this.getZoom(ne.lng - sw.lng, containerSize)
-
-      return { center: [lng, lat], zoom }
+      map.setCenter(bounds.getCenter())
+      map.fitBounds(bounds, { padding: this.getBoundsPadding(bounds) })
     },
-    getZoom(width: number, containerSize: number) {
-      const zoom = Math.log2(containerSize / width) - 0.75
-      return zoom
+    getBoundsPadding(bounds: mapboxgl.LngLatBounds): number {
+      if (
+        (bounds.getEast() - bounds.getWest()) / (bounds.getNorth() - bounds.getSouth()) >
+        Math.sqrt(2)
+      ) {
+        return map.getCanvas().clientHeight / 100
+      } else {
+        return map.getCanvas().clientWidth / 100
+      }
     }
   }
 })

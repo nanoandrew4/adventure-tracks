@@ -4,7 +4,7 @@
     id="track-creator"
     class="track-creator"
   >
-    <FontRetriever :fonts="defaultStyleFonts"/>
+    <FontRetriever :fonts="defaultStyleFonts" />
     <div
       id="adventure-track"
       :class="`adventure-track${adventureTrackClassSuffix}`"
@@ -229,7 +229,7 @@ export default defineComponent({
   },
   setup() {
     store = useStore()
-    retrieveDefaultMapStyles().then((mapStyles) => (store.commit('ADD_MAP_STYLES', mapStyles)))
+    retrieveDefaultMapStyles().then((mapStyles) => store.commit('ADD_MAP_STYLES', mapStyles))
   },
   methods: {
     async capture() {
@@ -261,8 +261,7 @@ export default defineComponent({
         modifiedAdventure.lineWidth *= this.adventure.layoutMode == LayoutMode.PORTRAIT ? 0.5 : 2
         store.commit('SET_ADVENTURE', modifiedAdventure)
 
-        activityMapRef.resizeMap()
-        activityMapRef.recenter()
+        this.resizeMap()
 
         await new Promise((r) => setTimeout(r, 5000))
 
@@ -288,8 +287,7 @@ export default defineComponent({
         captureElement.style.maxWidth = ''
         captureElement.style.maxHeight = ''
 
-        activityMapRef.resizeMap()
-        activityMapRef.recenter()
+        this.resizeMap()
 
         modifiedAdventure.lineWidth = this.adventure.layoutMode == LayoutMode.PORTRAIT ? 0.5 : 2
         store.commit('SET_ADVENTURE', modifiedAdventure)
@@ -310,9 +308,9 @@ export default defineComponent({
         this.showGeneratedImageDialog = false
       }, 500)
     },
-    resizeMap() {
+    resizeMap(recenter?: boolean) {
       let activityMapRef = this.$refs.activityMap as typeof ActivityMap
-      activityMapRef.resizeMap()
+      activityMapRef.resizeMap(recenter)
     }
   },
   watch: {
@@ -330,10 +328,10 @@ export default defineComponent({
   updated: function () {
     this.$nextTick(async () => {
       if (this.lastStyleSuffix !== this.adventureTrackChildrenStyleSuffix) {
-        this.resizeMap()
+        this.resizeMap(!this.isSaving) // Do not recenter while capturing adventure
         this.lastStyleSuffix = this.adventureTrackChildrenStyleSuffix
       } else if (this.lastAdventureTrackClassSuffix !== this.adventureTrackClassSuffix) {
-        this.resizeMap()
+        this.resizeMap(!this.isSaving) // Do not recenter while capturing adventure
         store.commit('SET_REFRESH_DATA_GRAPH', true)
         this.lastAdventureTrackClassSuffix = this.adventureTrackClassSuffix
       }
