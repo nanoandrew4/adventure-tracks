@@ -260,40 +260,39 @@ export default defineComponent({
         const modifiedAdventure = this.adventure
         modifiedAdventure.lineWidth *= 2
         store.commit('SET_ADVENTURE', modifiedAdventure)
+        store.commit('SET_REFRESH_DATA_GRAPH', true)
 
-        this.resizeMap()
+        this.resizeMap(false, () => {
+          html2canvas(captureElement!).then((canvas) => {
+            console.log(canvas)
+            canvas.style.height = ''
+            canvas.style.aspectRatio = captureElement!.style.aspectRatio
 
-        await new Promise((r) => setTimeout(r, 5000))
+            this.showGeneratedImageDialog = true
 
-        html2canvas(captureElement).then((canvas) => {
-          canvas.style.height = ''
-          canvas.style.aspectRatio = captureElement!.style.aspectRatio
+            this.$nextTick(() => {
+              this.generatedImageDataURL = generateImageToDownloadDataURL(canvas)
+              this.generatedImageThumbnailDataURL =
+                this.adventure.layoutMode == LayoutMode.PORTRAIT
+                  ? generatePortraitThumbnailDataURL(canvas, 2)
+                  : generateLandscapeThumbnailDataURL(canvas, 2)
+            })
 
-          this.showGeneratedImageDialog = true
+            captureElement!.style.width = ''
+            captureElement!.style.left = ''
+            captureElement!.style.maxWidth = ''
+            captureElement!.style.maxHeight = ''
 
-          this.$nextTick(() => {
-            this.generatedImageDataURL = generateImageToDownloadDataURL(canvas)
-            this.generatedImageThumbnailDataURL =
-              this.adventure.layoutMode == LayoutMode.PORTRAIT
-                ? generatePortraitThumbnailDataURL(canvas, 2)
-                : generateLandscapeThumbnailDataURL(canvas, 2)
+            this.resizeMap()
+
+            modifiedAdventure.lineWidth /= 2
+            store.commit('SET_ADVENTURE', modifiedAdventure)
+            store.commit('SET_REFRESH_DATA_GRAPH', true)
+
+            this.isSaving = false
+            this.showConfigurationPanel = true
           })
         })
-
-        await new Promise((r) => setTimeout(r, 2000))
-
-        captureElement.style.width = ''
-        captureElement.style.left = ''
-        captureElement.style.maxWidth = ''
-        captureElement.style.maxHeight = ''
-
-        this.resizeMap()
-
-        modifiedAdventure.lineWidth /= 2
-        store.commit('SET_ADVENTURE', modifiedAdventure)
-
-        this.isSaving = false
-        this.showConfigurationPanel = true
       } else {
         alert('Adventure track to save could not be located')
       }
@@ -308,9 +307,9 @@ export default defineComponent({
         this.showGeneratedImageDialog = false
       }, 500)
     },
-    resizeMap(recenter?: boolean) {
+    resizeMap(recenter?: boolean, postResizeFunc?: () => void) {
       let activityMapRef = this.$refs.activityMap as typeof ActivityMap
-      activityMapRef.resizeMap(recenter)
+      activityMapRef.resizeMap(recenter, postResizeFunc)
     }
   },
   watch: {
@@ -331,9 +330,12 @@ export default defineComponent({
         this.resizeMap(!this.isSaving) // Do not recenter while capturing adventure
         this.lastStyleSuffix = this.adventureTrackChildrenStyleSuffix
       } else if (this.lastAdventureTrackClassSuffix !== this.adventureTrackClassSuffix) {
-        this.resizeMap(!this.isSaving) // Do not recenter while capturing adventure
-        store.commit('SET_REFRESH_DATA_GRAPH', true)
-        this.lastAdventureTrackClassSuffix = this.adventureTrackClassSuffix
+        if (!this.isSaving) {
+          // Do not recenter while capturing adventure
+          this.resizeMap(true)
+          store.commit('SET_REFRESH_DATA_GRAPH', true)
+          this.lastAdventureTrackClassSuffix = this.adventureTrackClassSuffix
+        }
       }
     })
   }

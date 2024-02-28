@@ -233,16 +233,20 @@ export default defineComponent({
 
       return true
     },
-    resizeMap(recenter?: boolean) {
+    resizeMap(recenter?: boolean, postResizeFunc?: () => void) {
       const b = map.getBounds()
-      map.on('resize', () => {
+      map.once('resize', () => {
         if (recenter) {
           this.recenter()
         } else {
-          map.setCenter(map.getCenter())
-          map.fitBounds(b, { padding: this.getBoundsPadding(b) })
+          map.fitBounds(b, { padding: this.getBoundsPadding(b), animate: false })
         }
-        map.on('resize', () => {})
+
+        if (postResizeFunc) {
+          map.once('idle', () => {
+            postResizeFunc()
+          })
+        }
       })
       map.resize()
 
@@ -258,7 +262,6 @@ export default defineComponent({
     },
     recenter() {
       const bounds = new mapboxgl.LngLatBounds(this.boundingCoordinateBox)
-      map.setCenter(bounds.getCenter())
       map.fitBounds(bounds, { padding: this.getBoundsPadding(bounds) })
     },
     getBoundsPadding(bounds: mapboxgl.LngLatBounds): number {
