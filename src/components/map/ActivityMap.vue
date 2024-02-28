@@ -107,7 +107,7 @@ export default defineComponent({
     activeMapStyle(newMapStyle: MapStyle) {
       map.setStyle(`mapbox://styles/${newMapStyle.username}/${newMapStyle.styleID}`)
       const t = this
-      map.on('style.load', () => {
+      map.once('style.load', () => {
         t.removeSourcesAndLayers(this.sourceTracker.getAllSources())
         t.activities.forEach((activity) => this.addSourceAndLayer(activity))
       })
