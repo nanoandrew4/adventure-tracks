@@ -246,19 +246,19 @@ export default defineComponent({
         captureElement.style.left = '0'
 
         /*
-         * Half of 7680px, which is the max width mapbox will load.
-         * Since the devicePixelRatio is set to 2, the HTML capture will be twice as big as specified here,
+         * 2/3 of 7680px, which is the max width mapbox will load.
+         * Since the devicePixelRatio is set to 1.5, the HTML capture will be 1.5x as big as specified here,
          * yielding a 7680px wide image
          */
         if (this.adventure.layoutMode == LayoutMode.PORTRAIT) {
-          captureElement.style.height = '3840px'
+          captureElement.style.height = '5120px'
         } else {
-          captureElement.style.width = '3840px'
+          captureElement.style.width = '5120px'
         }
 
         // Scale line width by aspect ratio squared to maintain proportions on larger image
         const modifiedAdventure = this.adventure
-        modifiedAdventure.lineWidth *= this.adventure.layoutMode == LayoutMode.PORTRAIT ? 0.5 : 2
+        modifiedAdventure.lineWidth *= 2
         store.commit('SET_ADVENTURE', modifiedAdventure)
 
         this.resizeMap()
@@ -289,7 +289,7 @@ export default defineComponent({
 
         this.resizeMap()
 
-        modifiedAdventure.lineWidth = this.adventure.layoutMode == LayoutMode.PORTRAIT ? 0.5 : 2
+        modifiedAdventure.lineWidth /= 2
         store.commit('SET_ADVENTURE', modifiedAdventure)
 
         this.isSaving = false

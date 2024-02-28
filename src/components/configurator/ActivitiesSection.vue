@@ -144,6 +144,7 @@ export default defineComponent({
           .pop()
         if (startDate) adventure.secondaryText.text = startDate.toDateString()
         store.commit('SET_ADVENTURE', adventure)
+        store.commit('SET_RECENTER_MAP', true)
       }
     },
     initActivityLoadProgress(numOfActivitiesToLoad: number) {

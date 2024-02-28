@@ -1,11 +1,11 @@
 <template>
   <p
     class="custom-text"
-    :style="`color: ${modelValue.color}; font-family: ${modelValue.font}; font-size: ${
-      parseInt(modelValue.fontSize) * fontScalingFactor
-    }cqw; font-weight: ${modelValue.bold ? 'bold' : 'normal'}; font-style: ${
-      modelValue.italic ? 'italic' : 'normal'
-    }`"
+    :style="`color: ${modelValue.color}; font-family: ${
+      modelValue.font
+    }; font-size: max(max(${fontSize}cqw, ${fontSize}cqh), 8px); font-weight: ${
+      modelValue.bold ? 'bold' : 'normal'
+    }; font-style: ${modelValue.italic ? 'italic' : 'normal'}`"
   >
     {{ text }}
   </p>
@@ -14,9 +14,14 @@
 <script lang="ts">
 import { defineComponent, type PropType } from 'vue'
 
-import type { CustomTextStyle } from '@/types/CustomTextStyle';
+import type { CustomTextStyle } from '@/types/CustomTextStyle'
 
 export default defineComponent({
+  computed: {
+    fontSize(): number {
+      return parseInt(this.modelValue.fontSize) * this.fontScalingFactor
+    }
+  },
   props: {
     modelValue: {
       type: Object as PropType<CustomTextStyle>,

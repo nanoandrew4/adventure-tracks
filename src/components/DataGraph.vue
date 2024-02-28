@@ -220,7 +220,6 @@ export default defineComponent({
 .elevation-display {
   display: flex;
   flex-direction: column;
-  width: 4cqw;
   height: 10cqh;
   font-size: 0.6em;
   color: black;
