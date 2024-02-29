@@ -28,6 +28,8 @@ let store: Store
 let state: State
 let map: mapboxgl.Map
 
+const layersToPutOnTop = ['settlement-major-label', 'settlement-minor-label']
+
 export default defineComponent({
   computed: {
     lineWidth: (): number => state.adventure.lineWidth,
@@ -199,6 +201,10 @@ export default defineComponent({
       })
 
       this.addLayer(activity)
+
+      layersToPutOnTop.forEach(l => {
+        map.moveLayer(activity.layerName, l)
+      })
 
       this.sourceTracker.registerActivity(activity)
     },
