@@ -3,7 +3,7 @@
     class="custom-text"
     :style="`color: ${modelValue.color}; font-family: ${
       modelValue.font
-    }; font-size: max(max(${fontSize}cqw, ${fontSize}cqh), 8px); font-weight: ${
+    }; font-size: max(max(${fontSize}cqw, ${fontSize}cqh), 7px); font-weight: ${
       modelValue.bold ? 'bold' : 'normal'
     }; font-style: ${modelValue.italic ? 'italic' : 'normal'}`"
   >

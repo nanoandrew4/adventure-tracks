@@ -4,8 +4,9 @@
     class="data-graph-root"
   >
     <div
+      id="elevation-display"
       class="elevation-display"
-      v-show="display && hasSvgBeenDrawn && showHighestAndLowestPoints"
+      v-show="display && showHighestAndLowestPoints"
     >
       <StylizedText
         class="highest-point"
@@ -43,6 +44,7 @@ import { DelayedRunner } from '@/helpers/delayedRunner'
 import { registerResizableAdventureTrackElement } from '@/helpers/resizableManager'
 import StylizedText from '@/components/text/StylizedText.vue'
 import type { DataGraph } from '@/types/DataGraph'
+import type { CustomTextStyle } from '@/types/CustomTextStyle'
 
 let store: Store
 
@@ -55,6 +57,7 @@ export default defineComponent({
   },
   computed: {
     dataGraph: (): DataGraph => store.state.adventure.dataGraph,
+    dataGraphText: (): CustomTextStyle => store.state.adventure.dataGraph.graphText,
     customizationEnabled: (): boolean => store.state.adventure.customizationEnabled,
     activities: (): Activity[] => store.state.adventure.activities,
     reducedActivities: (): ReducedActivity[] =>
@@ -106,6 +109,16 @@ export default defineComponent({
       if (enabled) {
         this.enableCustomization()
       }
+    },
+    dataGraphText: {
+      deep: true,
+      handler(newVal: CustomTextStyle, oldVal: CustomTextStyle) {
+        if (newVal.color == oldVal.color) {
+        console.log('redraw')
+        // Anything other than color changes should cause the graph to be redrawn
+        this.drawGraph(this.reducedActivities, undefined, true)
+      }
+      }
     }
   },
   methods: {
@@ -127,7 +140,7 @@ export default defineComponent({
         })
       }
     },
-    drawGraph(
+    async drawGraph(
       modifiedActivities: ReducedActivity[],
       oldActivities?: ReducedActivity[],
       force?: boolean
@@ -138,34 +151,40 @@ export default defineComponent({
       }, new Map<string, Activity>())
 
       if (force || this.doesGraphRequireFullRedraw(activitiesMap, oldActivities)) {
-        const activities: Activity[] = modifiedActivities
-          .map((reducedActivity) => activitiesMap.get(reducedActivity.uid))
-          .filter((activity) => activity !== undefined)
-          .sort(sortByDateAscending) as Activity[]
+        this.$nextTick(() => {
+          const activities: Activity[] = modifiedActivities
+            .map((reducedActivity) => activitiesMap.get(reducedActivity.uid))
+            .filter((activity) => activity !== undefined)
+            .sort(sortByDateAscending) as Activity[]
 
-        let componentWidth = 0,
-          componentHeight = 0
-        let dataGraphContainerElement = document.getElementById('data-graph-container')
-        if (dataGraphContainerElement != null) {
-          componentWidth = dataGraphContainerElement.getBoundingClientRect().width
-          componentHeight = dataGraphContainerElement.getBoundingClientRect().height
-        } else {
-          return
-        }
+          let componentWidth = 0,
+            componentHeight = 0
+          let dataGraphRootElement = document.getElementById('data-graph-root')
+          let dataGraphContainerElement = document.getElementById('data-graph-container')
+          let elevationDisplay = document.getElementById('elevation-display')
+          if (dataGraphRootElement != null && dataGraphContainerElement != null) {
+            componentWidth =
+            dataGraphRootElement.getBoundingClientRect().width -
+              (elevationDisplay?.getBoundingClientRect()?.width ?? 0)
+            componentHeight = dataGraphRootElement.getBoundingClientRect().height
+          } else {
+            return
+          }
 
-        const newSvgWrapper = createElevationSvg(activities, componentWidth, componentHeight)
+          const newSvgWrapper = createElevationSvg(activities, componentWidth, componentHeight)
 
-        let oldSvg = document.getElementById('data-graph')
-        if (oldSvg && newSvgWrapper) {
-          const newSvg = newSvgWrapper.svg
-          dataGraphContainerElement.replaceChild(newSvg, oldSvg)
-          this.lowestPoint = Math.trunc(newSvgWrapper.lowestPoint)
-          this.highestPoint = Math.trunc(newSvgWrapper.highestPoint)
-          this.hasSvgBeenDrawn = true
-        } else {
-          console.log('could not replace data graph')
-          this.hasSvgBeenDrawn = false
-        }
+          let oldSvg = document.getElementById('data-graph')
+          if (oldSvg && newSvgWrapper) {
+            const newSvg = newSvgWrapper.svg
+            dataGraphContainerElement.replaceChild(newSvg, oldSvg)
+            this.lowestPoint = Math.trunc(newSvgWrapper.lowestPoint)
+            this.highestPoint = Math.trunc(newSvgWrapper.highestPoint)
+            this.hasSvgBeenDrawn = true
+          } else {
+            console.log('could not replace data graph')
+            this.hasSvgBeenDrawn = false
+          }
+        })
       } else if (oldActivities) {
         oldActivities
           .filter((oldActivity) =>
