@@ -247,7 +247,12 @@ export default defineComponent({
         let activityMapRef = this.$refs.activityMap as typeof ActivityMap
         activityMapRef.repaintForCapture(() => {
           html2canvas(captureElement!).then((canvas) => {
-            canvas.style.height = ''
+            console.log(canvas)
+            if (canvas.getBoundingClientRect().width > canvas.getBoundingClientRect().height) {
+              canvas.style.height = ''
+            } else {
+              canvas.style.width = ''
+            }
             canvas.style.aspectRatio = captureElement!.style.aspectRatio
 
             this.showGeneratedImageDialog = true
@@ -430,6 +435,7 @@ div#secondary-text-container {
   display: flex;
   justify-content: center;
   width: 100%;
+  height: 80vh;
 }
 
 .save-adventure-dialog--portrait,
