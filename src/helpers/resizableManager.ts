@@ -55,12 +55,63 @@ function adjustElementDimensionsIfNecessary(
   const rootRect = rootElem.getBoundingClientRect()
   const elemRect = htmlElem.getBoundingClientRect()
 
+  let adventureTracksHeight = 0
+  for (const child of rootElem.children) {
+    adventureTracksHeight += child.getBoundingClientRect().height
+  }
+
+  if (adventureTracksHeight > rootElem.getBoundingClientRect().height) {
+    elemRect.height =
+      rootElem.getBoundingClientRect().height - getMaxHeightForElement(rootElem, htmlElem)
+  }
+
   // control aspect ratio
 
   htmlElem.style.width = (elemRect.width / rootRect.width) * 100 + 'cqw'
   htmlElem.style.height = (elemRect.height / rootRect.height) * 100 + 'cqh'
 
   resizeCallback()
+}
+
+function getMaxHeightForElement(rootElem: HTMLElement, htmlElem: HTMLElement): number {
+  if (!htmlElem.parentElement) return 0
+  if (htmlElem.parentElement && htmlElem.parentElement.children.length === 1)
+    getMaxHeightForElement(rootElem, htmlElem)
+
+  let allOtherElementHeights = 0
+  for (const c of htmlElem.parentElement.children) {
+    if (c != htmlElem && (c as HTMLElement).style.position != 'absolute')
+      allOtherElementHeights += c.getBoundingClientRect().height
+  }
+
+  let isContainedByRootChild = false
+  let rootChildContainingOriginalElement = htmlElem
+  while (
+    rootChildContainingOriginalElement.parentElement &&
+    rootChildContainingOriginalElement.parentElement != rootElem
+  ) {
+    isContainedByRootChild = true
+    rootChildContainingOriginalElement = rootChildContainingOriginalElement.parentElement
+    for (const property of ['padding-top', 'padding-bottom']) {
+      allOtherElementHeights += parseInt(
+        window
+          .getComputedStyle(rootChildContainingOriginalElement, null)
+          .getPropertyValue(property)
+          .slice(0, -2)
+      )
+    }
+  }
+
+  if (isContainedByRootChild) {
+    for (const c of rootElem.children) {
+      if (c != rootChildContainingOriginalElement)
+        allOtherElementHeights += c.getBoundingClientRect().height
+    }
+  }
+
+  console.log(allOtherElementHeights)
+
+  return allOtherElementHeights
 }
 
 function adjustAllRegisteredElementDimensionsIfNecessary() {
