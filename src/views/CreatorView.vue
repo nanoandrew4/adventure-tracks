@@ -164,6 +164,7 @@ import {
 import FileSaver from 'file-saver'
 import { retrieveDefaultMapStyles } from '@/helpers/retrieveDefaultMapStyles'
 import type { MapStyle } from '@/types/MapStyle'
+import { setHiResDPR, setStdResDPR } from '@/helpers/devicePixelRatioManager'
 
 let store: Store
 
@@ -240,31 +241,12 @@ export default defineComponent({
 
       if (captureElement != null && activityMapRef != null) {
         this.showConfigurationPanel = false
-        captureElement.style.maxWidth = 'none'
-        captureElement.style.maxHeight = 'none'
-        captureElement.style.width = 'auto'
-        captureElement.style.left = '0'
 
-        /*
-         * 2/3 of 7680px, which is the max width mapbox will load.
-         * Since the devicePixelRatio is set to 1.5, the HTML capture will be 1.5x as big as specified here,
-         * yielding a 7680px wide image
-         */
-        if (this.adventure.layoutMode == LayoutMode.PORTRAIT) {
-          captureElement.style.height = '5120px'
-        } else {
-          captureElement.style.width = '5120px'
-        }
+        setHiResDPR(captureElement.getBoundingClientRect())
 
-        // Scale line width by aspect ratio squared to maintain proportions on larger image
-        const modifiedAdventure = this.adventure
-        modifiedAdventure.lineWidth *= 2
-        store.commit('SET_ADVENTURE', modifiedAdventure)
-        store.commit('SET_REFRESH_DATA_GRAPH', true)
-
-        this.resizeMap(false, () => {
+        let activityMapRef = this.$refs.activityMap as typeof ActivityMap
+        activityMapRef.repaintForCapture(() => {
           html2canvas(captureElement!).then((canvas) => {
-            console.log(canvas)
             canvas.style.height = ''
             canvas.style.aspectRatio = captureElement!.style.aspectRatio
 
@@ -278,16 +260,9 @@ export default defineComponent({
                   : generateLandscapeThumbnailDataURL(canvas, 2)
             })
 
-            captureElement!.style.width = ''
-            captureElement!.style.left = ''
-            captureElement!.style.maxWidth = ''
-            captureElement!.style.maxHeight = ''
+            setStdResDPR()
 
-            this.resizeMap()
-
-            modifiedAdventure.lineWidth /= 2
-            store.commit('SET_ADVENTURE', modifiedAdventure)
-            store.commit('SET_REFRESH_DATA_GRAPH', true)
+            activityMapRef.repaintForCapture()
 
             this.isSaving = false
             this.showConfigurationPanel = true
@@ -305,11 +280,12 @@ export default defineComponent({
       this.showSaveAdventureDialog = false
       setTimeout(() => {
         this.showGeneratedImageDialog = false
+        this.showConfigurationPanel = true
       }, 500)
     },
-    resizeMap(recenter?: boolean, postResizeFunc?: () => void) {
+    resizeMap(recenter?: boolean) {
       let activityMapRef = this.$refs.activityMap as typeof ActivityMap
-      activityMapRef.resizeMap(recenter, postResizeFunc)
+      activityMapRef.resizeMap(recenter)
     }
   },
   watch: {

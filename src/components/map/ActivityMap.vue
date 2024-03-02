@@ -18,6 +18,7 @@ import { BoundingBoxCalculator } from '@/helpers/boundingBoxCalculator'
 import { mapSourceTracker } from '@/helpers/mapSourceTracker'
 import { registerResizableAdventureTrackElement } from '@/helpers/resizableManager'
 import type { MapStyle } from '@/types/MapStyle'
+import { initializeDevicePixelRatio } from '@/helpers/devicePixelRatioManager'
 
 const TARGET_DRAW_REFRESH_RATE = 10.0
 const TARGET_DRAW_RESIZE_RATE = 2.0
@@ -42,17 +43,6 @@ export default defineComponent({
     recenterMap: (): boolean => store.state.recenterMap
   },
   setup() {
-    // const basePixelRatio = window.devicePixelRatio
-    /*
-     * By setting the pixel ratio to > 1, we force mapbox to render in retina mode, which yields
-     * higher resolution images. 1.5 is chosen as it allows map resizing without causing issues
-     */
-    Object.defineProperty(window, 'devicePixelRatio', {
-      get() {
-        return 1.5
-      }
-    })
-
     store = useStore()
     state = store.state
     mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN
@@ -70,32 +60,9 @@ export default defineComponent({
     const mapContainerElement = document.getElementById('mapContainer')
     if (mapContainerElement == null) return
 
-    const bounds = new mapboxgl.LngLatBounds(this.boundingCoordinateBox)
-    map = new mapboxgl.Map({
-      container: mapContainerElement,
-      style: 'mapbox://styles/nanoandrew4/clq85wo0o000z01qyfu4j338x',
-      antialias: true,
-      trackResize: true,
-      center: bounds.getCenter(),
-      bearing: 0,
-      pitch: 0,
-      zoom: 9,
-      preserveDrawingBuffer: true,
-      attributionControl: false
-    })
+    initializeDevicePixelRatio()
 
-    map.addControl(new mapboxgl.NavigationControl({ showCompass: false, showZoom: false }))
-    // map.addControl(new mapboxgl.AttributionControl({
-    //     customAttribution: "© Mapbox, © OpenStreetMap"
-    // }))
-    map.addControl(this.attribution)
-
-    map.on('rotate', () => {
-      map.setBearing(0)
-    })
-    map.on('pitch', () => {
-      map.setPitch(0)
-    })
+    this.initMap()
 
     map.on('load', () => {
       this.fpsCappedMapRefresh(this.reducedActivities)
@@ -151,6 +118,37 @@ export default defineComponent({
     }
   },
   methods: {
+    initMap() {
+      const mapContainerElement = document.getElementById('mapContainer')
+
+      const bounds = new mapboxgl.LngLatBounds(this.boundingCoordinateBox)
+      map = new mapboxgl.Map({
+        container: mapContainerElement!,
+        style: `mapbox://styles/${this.activeMapStyle.username}/${this.activeMapStyle.styleID}`,
+        antialias: true,
+        trackResize: true,
+        center: bounds.getCenter(),
+        bearing: 0,
+        pitch: 0,
+        preserveDrawingBuffer: true,
+        attributionControl: false
+      })
+
+      map.fitBounds(bounds, { padding: this.getBoundsPadding(bounds), animate: false })
+
+      map.addControl(new mapboxgl.NavigationControl({ showCompass: false, showZoom: false }))
+      // map.addControl(new mapboxgl.AttributionControl({
+      //     customAttribution: "© Mapbox, © OpenStreetMap"
+      // }))
+      map.addControl(this.attribution)
+
+      map.on('rotate', () => {
+        map.setBearing(0)
+      })
+      map.on('pitch', () => {
+        map.setPitch(0)
+      })
+    },
     fpsCappedMapRefresh(modifiedActivities: ReducedActivity[]) {
       if (new Date().getTime() - this.lastRefreshTimestamp < DRAW_MILLISECONDS_BETWEEN_FRAMES) {
         this.delayedRunner.runDelayedFunction(() => {
@@ -202,7 +200,7 @@ export default defineComponent({
 
       this.addLayer(activity)
 
-      layersToPutOnTop.forEach(l => {
+      layersToPutOnTop.forEach((l) => {
         map.moveLayer(activity.layerName, l)
       })
 
@@ -239,7 +237,7 @@ export default defineComponent({
 
       return true
     },
-    resizeMap(recenter?: boolean, postResizeFunc?: () => void) {
+    resizeMap(recenter?: boolean) {
       const b = map.getBounds()
       map.once('resize', () => {
         if (recenter) {
@@ -247,16 +245,23 @@ export default defineComponent({
         } else {
           map.fitBounds(b, { padding: this.getBoundsPadding(b), animate: false })
         }
-
-        if (postResizeFunc) {
-          map.once('idle', () => {
-            postResizeFunc()
-          })
-        }
       })
       map.resize()
 
       this.lastResizeTimestamp = new Date().getTime()
+    },
+    repaintForCapture(postResizeFunc?: () => void) {
+      const originalBounds = map.getBounds()
+      map.remove()
+      this.initMap()
+      map.once('load', () => {
+        map.fitBounds(originalBounds, { padding: this.getBoundsPadding(originalBounds), animate: false })
+        this.sourceTracker = new mapSourceTracker()
+        this.refreshMap(this.reducedActivities)
+        map.once('idle', () => {
+          if (postResizeFunc) postResizeFunc()
+        })
+      })
     },
     recalculateActivitiesBoundingBox() {
       let bboxCalculator = new BoundingBoxCalculator()

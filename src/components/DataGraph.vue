@@ -114,10 +114,9 @@ export default defineComponent({
       deep: true,
       handler(newVal: CustomTextStyle, oldVal: CustomTextStyle) {
         if (newVal.color == oldVal.color) {
-        console.log('redraw')
-        // Anything other than color changes should cause the graph to be redrawn
-        this.drawGraph(this.reducedActivities, undefined, true)
-      }
+          // Anything other than color changes should cause the graph to be redrawn
+          this.drawGraph(this.reducedActivities, undefined, true)
+        }
       }
     }
   },
@@ -164,7 +163,7 @@ export default defineComponent({
           let elevationDisplay = document.getElementById('elevation-display')
           if (dataGraphRootElement != null && dataGraphContainerElement != null) {
             componentWidth =
-            dataGraphRootElement.getBoundingClientRect().width -
+              dataGraphRootElement.getBoundingClientRect().width -
               (elevationDisplay?.getBoundingClientRect()?.width ?? 0)
             componentHeight = dataGraphRootElement.getBoundingClientRect().height
           } else {
