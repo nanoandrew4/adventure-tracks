@@ -242,9 +242,10 @@ export default defineComponent({
       if (captureElement != null && activityMapRef != null) {
         this.showConfigurationPanel = false
 
+        captureElement.style.borderRadius = '0px'
+
         setHiResDPR(captureElement.getBoundingClientRect())
 
-        let activityMapRef = this.$refs.activityMap as typeof ActivityMap
         activityMapRef.repaintForCapture(() => {
           html2canvas(captureElement!).then((canvas) => {
             console.log(canvas)
@@ -268,6 +269,8 @@ export default defineComponent({
             setStdResDPR()
 
             activityMapRef.repaintForCapture()
+
+            captureElement!.style.borderRadius = ''
 
             this.isSaving = false
             this.showConfigurationPanel = true
