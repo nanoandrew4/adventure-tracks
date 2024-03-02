@@ -57,7 +57,7 @@ export default defineComponent({
       const rootElem = document.getElementById('label-container-' + this.index)
       if (rootElem) {
         registerResizableAdventureTrackElement(rootElem, () => {})
-        registerDraggableElement(rootElem)
+        registerDraggableElement(rootElem, store)
       }
     }
   },

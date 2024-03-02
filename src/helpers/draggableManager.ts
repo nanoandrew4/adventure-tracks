@@ -1,17 +1,20 @@
+import type { State } from "@/vuex/store"
+import type { Store } from "vuex/types/index.js"
+
 let offset = [0, 0]
 
 let registeredElements: HTMLElement[] = []
 let lastTouchedElement: HTMLElement | undefined
 let lastMovedElement: HTMLElement | undefined
 
-function registerDraggableTaggedElements() {
+function registerDraggableTaggedElements(store: Store<State>) {
   document.querySelectorAll('[draggable]').forEach((elem) => {
     const htmlElem = elem as HTMLElement
-    registerDraggableElement(htmlElem)
+    registerDraggableElement(htmlElem, store)
   })
 }
 
-function registerDraggableElement(elem: HTMLElement) {
+function registerDraggableElement(elem: HTMLElement, store: Store<State>) {
   registeredElements.push(elem)
 
   elem.classList.add('draggable')
@@ -37,12 +40,32 @@ function registerDraggableElement(elem: HTMLElement) {
           if (adventureTrackRoot) {
             const rootRect = adventureTrackRoot.getBoundingClientRect()
             const elemRect = lastMovedElement.getBoundingClientRect()
-            const leftMargin = parseInt(window.getComputedStyle(lastMovedElement).getPropertyValue('margin-left'))
-            lastMovedElement.style.left = ((elemRect.x - rootRect.x - leftMargin) / rootRect.width) * 100 + '%'
+            const leftMargin = parseInt(
+              window.getComputedStyle(lastMovedElement).getPropertyValue('margin-left')
+            )
+            lastMovedElement.style.left =
+              ((elemRect.x - rootRect.x - leftMargin) / rootRect.width) * 100 + '%'
             lastMovedElement.style.top = ((elemRect.y - rootRect.y) / rootRect.height) * 100 + '%'
           }
         } else if (lastTouchedElement) {
-          restoreElement(lastTouchedElement)
+          lastTouchedElement.style.cursor = ''
+          const adventureTrackRoot = document.getElementById('adventure-track')
+          if (!adventureTrackRoot) {
+            return
+          }
+          let adventureTrackChildrenHeight = 0
+          for (const c of adventureTrackRoot.children) {
+            adventureTrackChildrenHeight += c.getBoundingClientRect().height
+          }
+
+          if (
+            adventureTrackRoot.getBoundingClientRect().height <
+            adventureTrackChildrenHeight + lastTouchedElement.getBoundingClientRect().height
+          ) {
+            store.commit('SET_SNACKBAR_MESSAGE', 'creator.snackbar.element-does-not-fit')
+          } else {
+            restoreElement(lastTouchedElement)
+          }
         }
         lastMovedElement = undefined
         lastTouchedElement = undefined
@@ -86,8 +109,4 @@ function restoreElement(elem: HTMLElement) {
   elem.style.top = ''
 }
 
-export {
-  registerDraggableTaggedElements,
-  registerDraggableElement,
-  unregisterAllDraggableElements
-}
+export { registerDraggableTaggedElements, registerDraggableElement, unregisterAllDraggableElements }

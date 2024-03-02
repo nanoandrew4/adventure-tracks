@@ -41,5 +41,8 @@ export default {
   },
   DELETE_MAP_STYLE(state: State, mapStyle: MapStyle) {
     state.mapStyles.delete(mapStyle)
+  },
+  SET_SNACKBAR_MESSAGE(state: State, message: string) {
+    state.snackbarMessage = message
   }
 }

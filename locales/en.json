@@ -6,6 +6,9 @@
   },
   "creator": {
     "mobile": "Mobile is currently unsupported, please access this page from a desktop to get the best experience",
+    "snackbar": {
+      "element-does-not-fit": "The selected element doesn't fit in its original position. Resize other elements to make room for it and try again"
+    },
     "config-panel": {
       "title": "Configuration",
       "activities": "Activities",

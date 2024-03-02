@@ -109,8 +109,6 @@ function getMaxHeightForElement(rootElem: HTMLElement, htmlElem: HTMLElement): n
     }
   }
 
-  console.log(allOtherElementHeights)
-
   return allOtherElementHeights
 }
 

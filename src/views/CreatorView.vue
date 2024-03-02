@@ -122,6 +122,15 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+    <v-snackbar
+      v-model="showSnackbar"
+      color="red"
+      rounded
+      multi-line
+      close-on-content-click
+    >
+      {{ snackbarMessage.length ? $t(snackbarMessage) : '' }}
+    </v-snackbar>
   </div>
   <div
     v-else
@@ -177,6 +186,7 @@ export default defineComponent({
     FontRetriever
   },
   computed: {
+    snackbarMessage: (): string => store.state.snackbarMessage,
     defaultStyleFonts: (): string[] =>
       [...store.state.mapStyles]
         .map((style: MapStyle) => style.mainTextFont)
@@ -224,7 +234,8 @@ export default defineComponent({
       isSaving: false,
       lastAdventureTrackClassSuffix: '',
       generatedImageDataURL: '',
-      generatedImageThumbnailDataURL: ''
+      generatedImageThumbnailDataURL: '',
+      showSnackbar: false
     }
   },
   setup() {
@@ -296,11 +307,20 @@ export default defineComponent({
     customizationEnabled(enabled: boolean) {
       if (enabled) {
         registerResizableTaggedElements()
-        registerDraggableTaggedElements()
+        registerDraggableTaggedElements(store)
       } else {
         unregisterAllResizableElements()
         unregisterAllDraggableElements()
         this.resizeMap()
+      }
+    },
+    snackbarMessage(newMessage: string) {
+      if (newMessage.length > 0) {
+        this.showSnackbar = true
+        setTimeout(() => {
+          this.showSnackbar = false
+          store.commit('SET_SNACKBAR_MESSAGE', '')
+        }, 5500) // snackbar stays open 5000ms by default
       }
     }
   },

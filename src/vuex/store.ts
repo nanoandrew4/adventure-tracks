@@ -15,7 +15,8 @@ export interface State {
   recenterMap: boolean
   activitiesLoadProgress: ActivityLoadProgress
   mapStyles: Set<MapStyle>
-  activeMapStyle: MapStyle
+  activeMapStyle: MapStyle,
+  snackbarMessage: string
 }
 
 // define injection key
@@ -31,6 +32,7 @@ export const store = createStore<State>({
     recenterMap: false,
     mapBoxToken: import.meta.env.VITE_MAPBOX_ACCESS_TOKEN,
     mapStyles: new Set(),
+    snackbarMessage: ''
   },
   mutations
 })
