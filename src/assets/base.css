@@ -10,10 +10,10 @@
 *::-webkit-scrollbar {
   /* display: none; */
   width: 5px;
-  background: --color-background-soft;
+  /* background: --color-background-soft; */
 }
 *::-webkit-scrollbar-thumb {
-    background: white;                                 
+    /* background: white;                                  */
     border-radius: 1em;   
 }
 

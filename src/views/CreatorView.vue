@@ -90,7 +90,6 @@
       </v-card>
       <v-card
         v-show="showGeneratedImageDialog"
-        style="overflow: hidden"
         :class="'generated-image-dialog' + layoutSuffix"
       >
         <v-card-text class="centered-dialog-text">
@@ -230,7 +229,9 @@ export default defineComponent({
   },
   setup() {
     store = useStore()
-    retrieveDefaultMapStyles().then((mapStyles) => store.commit('ADD_MAP_STYLES', mapStyles))
+    if (!store.state.mapStyles || store.state.mapStyles.size === 0) {
+      retrieveDefaultMapStyles().then((mapStyles) => store.commit('ADD_MAP_STYLES', mapStyles))
+    }
   },
   methods: {
     async capture() {
@@ -247,15 +248,10 @@ export default defineComponent({
         setHiResDPR(captureElement.getBoundingClientRect())
 
         activityMapRef.repaintForCapture(() => {
-          html2canvas(captureElement!).then((canvas) => {
-            console.log(canvas)
-            if (canvas.getBoundingClientRect().width > canvas.getBoundingClientRect().height) {
-              canvas.style.height = ''
-            } else {
-              canvas.style.width = ''
-            }
-            canvas.style.aspectRatio = captureElement!.style.aspectRatio
-
+          html2canvas(captureElement!, {
+            width: captureElement?.getBoundingClientRect().width,
+            height: captureElement?.getBoundingClientRect().height
+          }).then((canvas) => {
             this.showGeneratedImageDialog = true
 
             this.$nextTick(() => {
