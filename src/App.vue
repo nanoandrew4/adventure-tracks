@@ -39,7 +39,6 @@ if (darkThemeMq.matches) {
 }
 
 const { t } = useI18n()
-
 </script>
 
 <style scoped>

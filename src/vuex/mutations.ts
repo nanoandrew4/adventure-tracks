@@ -47,5 +47,8 @@ export default {
   },
   SET_RESIZE_MAP_TO_FIT_SIBLINGS(state: State, resizeMap: boolean) {
     state.resizeMapToFitSiblings = resizeMap
+  },
+  SET_SHOW_CUSTOM_TOOLTIP(state: State, show: boolean) {
+    state.showCustomTooltip = show
   }
 }

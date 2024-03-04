@@ -29,6 +29,13 @@
     >
       <svg id="data-graph"></svg>
     </div>
+    <v-tooltip
+      v-if="customizationEnabled && showCustomTooltip"
+      activator="parent"
+      location="top"
+    >
+      {{ $t('creator.draggable-instructions') }}</v-tooltip
+    >
   </div>
 </template>
 
@@ -59,6 +66,7 @@ export default defineComponent({
     dataGraph: (): DataGraph => store.state.adventure.dataGraph,
     dataGraphText: (): CustomTextStyle => store.state.adventure.dataGraph.graphText,
     customizationEnabled: (): boolean => store.state.adventure.customizationEnabled,
+    showCustomTooltip: () => store.state.showCustomTooltip,
     activities: (): Activity[] => store.state.adventure.activities,
     reducedActivities: (): ReducedActivity[] =>
       store.state.adventure.activities.map((activity: Activity) => new ReducedActivity(activity)),

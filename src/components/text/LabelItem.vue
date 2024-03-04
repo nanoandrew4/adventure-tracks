@@ -13,6 +13,13 @@
       :model-value="label.value"
     />
   </div>
+  <v-tooltip
+    v-if="customizationEnabled && showCustomTooltip"
+    activator="parent"
+    location="top"
+  >
+    {{ $t('creator.draggable-instructions') }}</v-tooltip
+  >
 </template>
 
 <script lang="ts">
@@ -48,6 +55,7 @@ export default defineComponent({
     store = useStore()
   },
   computed: {
+    showCustomTooltip: () => store.state.showCustomTooltip,
     customizationEnabled: (): boolean => store.state.adventure.customizationEnabled
   },
   mounted() {

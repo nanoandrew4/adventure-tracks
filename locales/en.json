@@ -6,6 +6,7 @@
   },
   "creator": {
     "mobile": "Mobile is currently unsupported, please access this page from a desktop to get the best experience",
+    "draggable-instructions": "Drag and drop anywhere, click to restore to original position",
     "snackbar": {
       "element-does-not-fit": "The selected element doesn't fit in its original position. Resize other elements to make room for it and try again"
     },
@@ -64,6 +65,7 @@
         "secondary-text-color": "Secondary text color",
         "line-width": "Activity line thickness",
         "enable-customization": "Enable customization",
+        "customization-tooltip": "Show draggable element instructions on hover",
         "disable-customization-dialog": {
           "text": "Disabling customization will reset all dragged and resized elements, are you sure you want to continue?",
           "cancel": "Cancel",

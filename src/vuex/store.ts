@@ -15,6 +15,7 @@ export interface State {
   mapStyles: Set<MapStyle>
   activeMapStyle: MapStyle
   
+  showCustomTooltip: boolean
   recenterMap: boolean
   resizeMapToFitSiblings: boolean
   refreshDataGraph: boolean
@@ -32,7 +33,8 @@ export const store = createStore<State>({
     ],
     mapBoxToken: import.meta.env.VITE_MAPBOX_ACCESS_TOKEN,
     mapStyles: new Set(),
-    
+
+    showCustomTooltip: true,
     recenterMap: false,
     refreshDataGraph: false,
     resizeMapToFitSiblings: false,

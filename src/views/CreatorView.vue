@@ -34,6 +34,13 @@
             id="main-text"
             :model-value="adventure.mainText"
           />
+          <v-tooltip
+            v-if="customizationEnabled && showCustomTooltip"
+            activator="parent"
+            location="top"
+          >
+            {{ $t('creator.draggable-instructions') }}</v-tooltip
+          >
         </div>
         <div
           id="secondary-text-container"
@@ -45,6 +52,13 @@
             id="secondary-text"
             :model-value="adventure.secondaryText"
           />
+          <v-tooltip
+            v-if="customizationEnabled && showCustomTooltip"
+            activator="parent"
+            location="top"
+          >
+            {{ $t('creator.draggable-instructions') }}</v-tooltip
+          >
         </div>
 
         <div class="labels-container">
@@ -187,6 +201,7 @@ export default defineComponent({
     FontRetriever
   },
   computed: {
+    showCustomTooltip: () => store.state.showCustomTooltip,
     snackbarMessage: (): string => store.state.snackbarMessage,
     defaultStyleFonts: (): string[] =>
       [...store.state.mapStyles]

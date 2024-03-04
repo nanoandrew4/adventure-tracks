@@ -59,6 +59,13 @@
         })
     "
   />
+  <v-checkbox
+    v-if="adventure.customizationEnabled"
+    :label="$t('creator.config-panel.adventure-section.customization-tooltip')"
+    hide-details
+    v-model="showCustomTooltip"
+    @update:model-value="() => toggleShowCustomizationTooltip()"
+  />
 
   <v-dialog
     width="500"
@@ -123,6 +130,7 @@ export default defineComponent({
     CustomizableText
   },
   computed: {
+    showCustomTooltip: () => store.state.showCustomTooltip,
     adventure: () => store.state.adventure
   },
   setup() {
@@ -145,6 +153,9 @@ export default defineComponent({
       const lineWidth = Number(lineWidthStr)
       updatedAdventure.lineWidth = lineWidth >= 0 ? lineWidth : 0
       store.commit('SET_ADVENTURE', updatedAdventure)
+    },
+    toggleShowCustomizationTooltip() {
+      store.commit('SET_SHOW_CUSTOM_TOOLTIP', !this.showCustomTooltip)
     }
   }
 })
