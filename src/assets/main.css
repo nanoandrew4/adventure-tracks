@@ -18,6 +18,11 @@
   overflow: hidden;
 }
 
+.resizable-vertical {
+  resize: vertical;
+  overflow: hidden;
+}
+
 .draggable {
   cursor: grab;
 }

@@ -95,7 +95,7 @@ export default defineComponent({
               t.delayedRunner.clearTimeout()
               t.resizeMap()
             }
-          })
+          }, 'resizable-vertical')
         }
       }
     },

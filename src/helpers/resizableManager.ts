@@ -1,3 +1,5 @@
+const resizableClassAttribute = 'resizable-class'
+
 function registerResizableTaggedElements() {
   document.querySelectorAll('[resizable]').forEach((elem) => {
     const htmlElem = elem as HTMLElement
@@ -12,7 +14,11 @@ enum ResizeStates {
 
 let managedElements: HTMLElement[] = []
 const resizableElementState = new Map<HTMLElement, ResizeStates>()
-function registerResizableAdventureTrackElement(htmlElem: HTMLElement, resizeCallback: () => void) {
+function registerResizableAdventureTrackElement(
+  htmlElem: HTMLElement,
+  resizeCallback: () => void,
+  resizableClass: string = 'resizable'
+) {
   managedElements.push(htmlElem)
 
   const adventureTrackRoot = document.getElementById('adventure-track')
@@ -20,7 +26,8 @@ function registerResizableAdventureTrackElement(htmlElem: HTMLElement, resizeCal
     throw new Error('Adventure track element not found')
   }
 
-  htmlElem.classList.add('resizable')
+  htmlElem.setAttribute(resizableClassAttribute, resizableClass)
+  htmlElem.classList.add(resizableClass)
   const resizeObserver = new ResizeObserver(() => {
     adjustElementDimensionsIfNecessary(htmlElem, adventureTrackRoot, resizeCallback)
   })
@@ -127,7 +134,9 @@ function unregisterAllResizableElements() {
   managedElements.forEach((elem) => {
     elem.style.width = ''
     elem.style.height = ''
-    elem.classList.remove('resizable')
+    const resizableClass = elem.getAttribute(resizableClassAttribute)
+    if (resizableClass) elem.classList.remove(resizableClass)
+    elem.removeAttribute(resizableClassAttribute)
   })
 
   managedElements = []
