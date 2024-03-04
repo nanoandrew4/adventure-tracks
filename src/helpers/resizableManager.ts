@@ -1,3 +1,6 @@
+import type { State } from '@/vuex/store'
+import type { Store } from 'vuex'
+
 const resizableClassAttribute = 'resizable-class'
 
 function registerResizableTaggedElements() {
@@ -29,12 +32,12 @@ function registerResizableAdventureTrackElement(
   htmlElem.setAttribute(resizableClassAttribute, resizableClass)
   htmlElem.classList.add(resizableClass)
   const resizeObserver = new ResizeObserver(() => {
-    adjustElementDimensionsIfNecessary(htmlElem, adventureTrackRoot, resizeCallback)
+    adjustElementDimensionsIfNecessary(adventureTrackRoot, htmlElem, resizeCallback)
   })
 
   document.addEventListener('mousemove', () => {
     if (resizableElementState.get(htmlElem) === ResizeStates.MAYBE_RESIZING) {
-      adjustElementDimensionsIfNecessary(htmlElem, adventureTrackRoot, resizeCallback)
+      adjustElementDimensionsIfNecessary(adventureTrackRoot, htmlElem, resizeCallback)
     }
   })
 
@@ -47,17 +50,32 @@ function registerResizableAdventureTrackElement(
     if (resizableElementState.get(htmlElem) === ResizeStates.MAYBE_RESIZING) {
       resizableElementState.set(htmlElem, ResizeStates.NONE)
       resizeObserver.disconnect()
-      adjustElementDimensionsIfNecessary(htmlElem, adventureTrackRoot, resizeCallback)
+      adjustElementDimensionsIfNecessary(adventureTrackRoot, htmlElem, resizeCallback)
     }
   })
 }
 
+function adjustMapSizeToFitDetails(store: Store<State>) {
+  const adventureTrackElem = document.getElementById('adventure-track')
+  const adventureDetailElem = document.getElementById('adventure-track-details')
+  if (
+    adventureTrackElem &&
+    adventureDetailElem &&
+    adventureDetailElem.getBoundingClientRect().bottom >
+      adventureTrackElem.getBoundingClientRect().bottom
+  ) {
+    store.commit('SET_RESIZE_MAP_TO_FIT_SIBLINGS', true)
+  }
+}
+
 function adjustElementDimensionsIfNecessary(
-  htmlElem: HTMLElement,
   rootElem: HTMLElement,
-  resizeCallback: () => void
+  htmlElem: HTMLElement,
+  resizeCallback: () => void,
+  forceAdjust?: boolean
 ) {
-  if (!htmlElem.style.width.includes('px') && !htmlElem.style.height.includes('px')) return
+  if (!forceAdjust && !htmlElem.style.width.includes('px') && !htmlElem.style.height.includes('px'))
+    return
 
   const rootRect = rootElem.getBoundingClientRect()
   const elemRect = htmlElem.getBoundingClientRect()
@@ -115,7 +133,7 @@ function getMaxHeightForElement(rootElem: HTMLElement, htmlElem: HTMLElement): n
         allOtherElementHeights += c.getBoundingClientRect().height
     }
   }
-
+  
   return allOtherElementHeights
 }
 
@@ -126,7 +144,7 @@ function adjustAllRegisteredElementDimensionsIfNecessary() {
   }
 
   managedElements.forEach((elem) => {
-    adjustElementDimensionsIfNecessary(elem, adventureTrackRoot, () => {})
+    adjustElementDimensionsIfNecessary(adventureTrackRoot, elem, () => {})
   })
 }
 
@@ -147,5 +165,7 @@ export {
   registerResizableTaggedElements,
   registerResizableAdventureTrackElement,
   adjustAllRegisteredElementDimensionsIfNecessary,
-  unregisterAllResizableElements
+  unregisterAllResizableElements,
+  adjustElementDimensionsIfNecessary,
+  adjustMapSizeToFitDetails
 }

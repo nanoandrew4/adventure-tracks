@@ -20,7 +20,10 @@ import { defineComponent, type PropType } from 'vue'
 
 import CustomText from './CustomText.vue'
 import type { Label } from '@/types/Label'
-import { registerResizableAdventureTrackElement } from '@/helpers/resizableManager'
+import {
+  adjustMapSizeToFitDetails,
+  registerResizableAdventureTrackElement
+} from '@/helpers/resizableManager'
 import { registerDraggableElement } from '@/helpers/draggableManager'
 import type { Store } from 'vuex'
 import { useStore } from '@/vuex/store'
@@ -48,6 +51,7 @@ export default defineComponent({
     customizationEnabled: (): boolean => store.state.adventure.customizationEnabled
   },
   mounted() {
+    this.checkIfLabelExceedsAdventureTrackBounds()
     if (this.customizationEnabled) {
       this.enableCustomization()
     }
@@ -59,12 +63,23 @@ export default defineComponent({
         registerResizableAdventureTrackElement(rootElem, () => {})
         registerDraggableElement(rootElem, store)
       }
+    },
+    checkIfLabelExceedsAdventureTrackBounds() {
+      this.$nextTick(() => {
+        adjustMapSizeToFitDetails(store)
+      })
     }
   },
   watch: {
     customizationEnabled(enabled: boolean) {
       if (enabled) {
         this.enableCustomization()
+      }
+    },
+    label: {
+      deep: true,
+      handler() {
+        this.checkIfLabelExceedsAdventureTrackBounds()
       }
     }
   }
@@ -84,16 +99,16 @@ export default defineComponent({
   margin: 0 1vw 0 1vw;
 }
 
-.label-name {
+.label-name,
+.label-value {
+  /* max-width: 50%; */
+  overflow-wrap: break-word;
   color: black;
-  margin-right: 4%;
-  width: max-content;
   font-size: 10cqw;
+  width: max-content;
 }
 
-.label-value {
-  color: black;
-  width: max-content;
-  font-size: 10cqw;
+.label-name {
+  margin-right: 4%;
 }
 </style>

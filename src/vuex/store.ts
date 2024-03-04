@@ -11,11 +11,13 @@ import type { MapStyle } from '@/types/MapStyle'
 export interface State {
   adventure: Adventure
   boundingCoordinateBox: [number, number, number, number]
-  refreshDataGraph: boolean
-  recenterMap: boolean
   activitiesLoadProgress: ActivityLoadProgress
   mapStyles: Set<MapStyle>
-  activeMapStyle: MapStyle,
+  activeMapStyle: MapStyle
+  
+  recenterMap: boolean
+  resizeMapToFitSiblings: boolean
+  refreshDataGraph: boolean
   snackbarMessage: string
 }
 
@@ -28,10 +30,12 @@ export const store = createStore<State>({
     boundingCoordinateBox: [
       -74.04728500751165, 40.68392799015035, -73.91058699000139, 40.87764500765852
     ],
-    refreshDataGraph: false,
-    recenterMap: false,
     mapBoxToken: import.meta.env.VITE_MAPBOX_ACCESS_TOKEN,
     mapStyles: new Set(),
+    
+    recenterMap: false,
+    refreshDataGraph: false,
+    resizeMapToFitSiblings: false,
     snackbarMessage: ''
   },
   mutations

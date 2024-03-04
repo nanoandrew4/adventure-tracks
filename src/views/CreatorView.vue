@@ -15,8 +15,8 @@
         ref="activityMap"
       />
       <div
-        class="adventure-track-details adventure-track-details"
-        :class="`adventure track-details adventure-track-details${adventureTrackChildrenStyleSuffix}`"
+        id="adventure-track-details"
+        :class="`adventure-track-details adventure-track-details${adventureTrackChildrenStyleSuffix}`"
       >
         <DataGraph
           :display="displayGraph"
@@ -161,6 +161,7 @@ import {
 } from '@/helpers/draggableManager'
 import {
   adjustAllRegisteredElementDimensionsIfNecessary,
+  adjustMapSizeToFitDetails,
   registerResizableTaggedElements,
   unregisterAllResizableElements
 } from '@/helpers/resizableManager'
@@ -220,7 +221,9 @@ export default defineComponent({
     labels: () =>
       store.state.adventure.labels.filter(
         (label: Label) => label.name.text.length > 0 && label.value.text.length > 0
-      )
+      ),
+    mainText: () => store.state.adventure.mainText,
+    secondaryText: () => store.state.adventure.secondaryText
   },
   data() {
     const rawGpxFiles: string[] = []
@@ -322,6 +325,22 @@ export default defineComponent({
           store.commit('SET_SNACKBAR_MESSAGE', '')
         }, 5500) // snackbar stays open 5000ms by default
       }
+    },
+    mainText: {
+      deep: true,
+      handler() {
+        this.$nextTick(() => {
+          adjustMapSizeToFitDetails(store)
+        })
+      }
+    },
+    secondaryText: {
+      deep: true,
+      handler() {
+        this.$nextTick(() => {
+          adjustMapSizeToFitDetails(store)
+        })
+      }
     }
   },
   updated: function () {
@@ -402,13 +421,13 @@ export default defineComponent({
   height: calc(75% - 0.5vw);
 }
 
-.adventure-track-details--with-elevation {
+/* .adventure-track-details--with-elevation {
   max-height: calc(30% - 0.5vw * 2);
 }
 
 .adventure-track-details--without-elevation {
   max-height: calc(25% - 0.5vw * 2);
-}
+} */
 
 .adventure-track-details {
   display: flex;

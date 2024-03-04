@@ -16,7 +16,10 @@ import { DelayedRunner } from '../../helpers/delayedRunner'
 import { ReducedActivity } from '../../types/ReducedActivity'
 import { BoundingBoxCalculator } from '@/helpers/boundingBoxCalculator'
 import { mapSourceTracker } from '@/helpers/mapSourceTracker'
-import { registerResizableAdventureTrackElement } from '@/helpers/resizableManager'
+import {
+  adjustElementDimensionsIfNecessary,
+  registerResizableAdventureTrackElement
+} from '@/helpers/resizableManager'
 import type { MapStyle } from '@/types/MapStyle'
 import { initializeDevicePixelRatio } from '@/helpers/devicePixelRatioManager'
 
@@ -40,7 +43,8 @@ export default defineComponent({
       state.adventure.activities.map((activity: Activity) => new ReducedActivity(activity)),
     boundingCoordinateBox: (): [number, number, number, number] => state.boundingCoordinateBox,
     activeMapStyle: (): MapStyle => state.adventure.mapStyle,
-    recenterMap: (): boolean => store.state.recenterMap
+    recenterMap: (): boolean => store.state.recenterMap,
+    resizeMapToFitSiblings: (): boolean => store.state.resizeMapToFitSiblings
   },
   setup() {
     store = useStore()
@@ -86,16 +90,23 @@ export default defineComponent({
         const t = this
         const rootElem = document.getElementById('mapContainer')
         if (rootElem) {
-          registerResizableAdventureTrackElement(rootElem, () => {
-            if (new Date().getTime() - t.lastResizeTimestamp < RESIZE_MILLISECONDS_BETWEEN_FRAMES) {
-              t.delayedRunner.runDelayedFunction(() => {
+          registerResizableAdventureTrackElement(
+            rootElem,
+            () => {
+              if (
+                new Date().getTime() - t.lastResizeTimestamp <
+                RESIZE_MILLISECONDS_BETWEEN_FRAMES
+              ) {
+                t.delayedRunner.runDelayedFunction(() => {
+                  t.resizeMap()
+                }, RESIZE_MILLISECONDS_BETWEEN_FRAMES)
+              } else {
+                t.delayedRunner.clearTimeout()
                 t.resizeMap()
-              }, RESIZE_MILLISECONDS_BETWEEN_FRAMES)
-            } else {
-              t.delayedRunner.clearTimeout()
-              t.resizeMap()
-            }
-          }, 'resizable-vertical')
+              }
+            },
+            'resizable-vertical'
+          )
         }
       }
     },
@@ -114,6 +125,23 @@ export default defineComponent({
       if (newVal) {
         this.recenter()
         store.commit('SET_RECENTER_MAP', false)
+      }
+    },
+    resizeMapToFitSiblings(newVal: boolean) {
+      if (newVal) {
+        const adventureTrack = document.getElementById('adventure-track')
+        const mapElem = document.getElementById('mapContainer')
+        if (adventureTrack && mapElem) {
+          adjustElementDimensionsIfNecessary(
+            adventureTrack,
+            mapElem,
+            () => {
+              this.resizeMap()
+            },
+            true
+          )
+        }
+        store.commit('SET_RESIZE_MAP_TO_FIT_SIBLINGS', false)
       }
     }
   },
@@ -255,7 +283,10 @@ export default defineComponent({
       map.remove()
       this.initMap()
       map.once('load', () => {
-        map.fitBounds(originalBounds, { padding: this.getBoundsPadding(originalBounds), animate: false })
+        map.fitBounds(originalBounds, {
+          padding: this.getBoundsPadding(originalBounds),
+          animate: false
+        })
         this.sourceTracker = new mapSourceTracker()
         this.refreshMap(this.reducedActivities)
         map.once('idle', () => {

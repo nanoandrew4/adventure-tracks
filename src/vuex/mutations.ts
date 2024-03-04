@@ -44,5 +44,8 @@ export default {
   },
   SET_SNACKBAR_MESSAGE(state: State, message: string) {
     state.snackbarMessage = message
+  },
+  SET_RESIZE_MAP_TO_FIT_SIBLINGS(state: State, resizeMap: boolean) {
+    state.resizeMapToFitSiblings = resizeMap
   }
 }
