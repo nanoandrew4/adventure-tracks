@@ -10,10 +10,6 @@
     />
 
     <div class="wrapper">
-      <nav>
-        <RouterLink to="/">{{ t('header.home') }}</RouterLink>
-        <RouterLink to="/create">{{ t('header.creator') }}</RouterLink>
-      </nav>
       <div class="header-controls">
         <ThemeSwitcher />
         <LocaleSwitcher />
@@ -57,28 +53,6 @@ header {
   z-index: 1;
 }
 
-nav {
-  position: absolute;
-  width: 100vw;
-  left: 0;
-  font-size: 1rem;
-  text-align: center;
-}
-
-nav a.router-link-exact-active {
-  color: rgb(var(--v-theme-text-selected));
-}
-
-nav a {
-  display: inline-block;
-  padding: 0 1rem;
-  color: rgb(var(--v-theme-text));
-}
-
-nav a:first-of-type {
-  border: 0;
-}
-
 @media (min-width: 1024px) {
   header {
     display: flex;
@@ -96,7 +70,7 @@ nav a:first-of-type {
 
     .header-controls {
       display: inherit;
-      padding-top: 1vh;
+      align-items: center;
     }
   }
 }

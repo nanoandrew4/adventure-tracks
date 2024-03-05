@@ -4,6 +4,10 @@
     "creator": "Creator",
     "about": "About"
   },
+  "lang":{
+    "en": "English",
+    "es": "Español"
+  },
   "creator": {
     "mobile": "Mobile is currently unsupported, please access this page from a desktop to get the best experience",
     "draggable-instructions": "Drag and drop anywhere, click to restore to original position",
