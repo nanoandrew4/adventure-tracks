@@ -343,7 +343,11 @@ export default defineComponent({
 
 .mapboxgl-ctrl-attrib {
   border-radius: 12px;
-  font-size: small;
+}
+
+.mapboxgl-ctrl-attrib-inner {
+  line-height: 1;
+  font-size: var(--mapbox-attribution-font-size);
 }
 
 .mapbox-improve-map {

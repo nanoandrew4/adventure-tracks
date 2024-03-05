@@ -278,6 +278,10 @@ export default defineComponent({
         this.showConfigurationPanel = false
 
         captureElement.style.borderRadius = '0px'
+        const originalMapboxAttributionFontSize = document.documentElement.style.getPropertyValue(
+          '--mapbox-attribution-font-size'
+        )
+        document.documentElement.style.setProperty('--mapbox-attribution-font-size', '8px')
 
         setHiResDPR(captureElement.getBoundingClientRect())
 
@@ -301,6 +305,10 @@ export default defineComponent({
             activityMapRef.repaintForCapture()
 
             captureElement!.style.borderRadius = ''
+            document.documentElement.style.setProperty(
+              '--mapbox-attribution-font-size',
+              originalMapboxAttributionFontSize
+            )
 
             this.isSaving = false
             this.showConfigurationPanel = true
