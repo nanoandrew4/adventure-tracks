@@ -16,7 +16,7 @@ type MessageSchema = typeof en
 const i18n = createI18n<[MessageSchema], 'en' | 'es'>({
   legacy: false,
   allowComposition: true,
-  locale: 'en',
+  locale: navigator.language.split('-')[0],
   fallbackLocale: 'en',
   globalInjection: true,
   messages: {
