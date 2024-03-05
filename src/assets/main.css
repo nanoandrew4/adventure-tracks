@@ -1,5 +1,9 @@
 @import './base.css';
 
+:root {
+  --adventure-background-color: rgb(0, 0, 0);
+}
+
 #app {
   width: 100vw;
   height: 100vh;
@@ -16,6 +20,14 @@
 .resizable {
   resize: both;
   overflow: hidden;
+}
+
+.resizable:hover {
+
+  svg,
+  p {
+    box-shadow: inset 0px 0px 0px 2px var(--inverted-adventure-background-color);
+  }
 }
 
 .resizable-vertical {

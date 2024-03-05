@@ -188,6 +188,7 @@ import FileSaver from 'file-saver'
 import { retrieveDefaultMapStyles } from '@/helpers/retrieveDefaultMapStyles'
 import type { MapStyle } from '@/types/MapStyle'
 import { setHiResDPR, setStdResDPR } from '@/helpers/devicePixelRatioManager'
+import invert from 'invert-color'
 
 let store: Store
 
@@ -208,6 +209,7 @@ export default defineComponent({
         .map((style: MapStyle) => style.mainTextFont)
         .filter((f: any) => f !== undefined) as string[],
     adventure: (): Adventure => store.state.adventure,
+    adventureBackgroundColor: () => store.state.adventure.backgroundColor,
     isMobile: (): boolean => screen.width < 760,
     customizationEnabled: (): boolean => store.state.adventure.customizationEnabled,
     displayGraph: function (): boolean {
@@ -261,6 +263,9 @@ export default defineComponent({
     if (!store.state.mapStyles || store.state.mapStyles.size === 0) {
       retrieveDefaultMapStyles().then((mapStyles) => store.commit('ADD_MAP_STYLES', mapStyles))
     }
+  },
+  mounted() {
+    this.setInvertedAdventureBackgroundColor()
   },
   methods: {
     async capture() {
@@ -319,6 +324,16 @@ export default defineComponent({
     resizeMap(recenter?: boolean) {
       let activityMapRef = this.$refs.activityMap as typeof ActivityMap
       activityMapRef.resizeMap(recenter)
+    },
+    setInvertedAdventureBackgroundColor() {
+      document.documentElement.style.setProperty(
+        '--adventure-background-color',
+        this.adventureBackgroundColor
+      )
+      document.documentElement.style.setProperty(
+        '--inverted-adventure-background-color',
+        invert(this.adventureBackgroundColor)
+      )
     }
   },
   watch: {
@@ -356,6 +371,9 @@ export default defineComponent({
           adjustMapSizeToFitDetails(store)
         })
       }
+    },
+    adventureBackgroundColor(newVal: string) {
+      this.setInvertedAdventureBackgroundColor()
     }
   },
   updated: function () {
