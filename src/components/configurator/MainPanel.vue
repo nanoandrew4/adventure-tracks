@@ -90,6 +90,12 @@
       :text="$t('creator.config-panel.save')"
       @click="$emit('capture')"
     />
+    <v-btn
+      color="surface-light"
+      class="configurator-reset-btn"
+      :text="$t('creator.config-panel.reset')"
+      @click="$emit('reset')"
+    />
   </div>
   <div
     :class="!show ? 'show-configurator-btn' : 'show-configurator-btn--hidden'"
@@ -100,7 +106,6 @@
       icon="mdi-cog"
       @click.stop="$emit('change-visibility')"
     />
-    <!-- <p>{{ $t('creator.config-panel.title') }}</p> -->
   </div>
 </template>
 
@@ -119,7 +124,7 @@ let store: Store
 let state: State
 
 export default defineComponent({
-  emits: ['capture', 'change-visibility'],
+  emits: ['capture', 'reset', 'change-visibility'],
   computed: {
     filesWithErrors(): string {
       if (!state.activitiesLoadProgress) return ''
@@ -154,7 +159,7 @@ export default defineComponent({
   data() {
     return {
       activityLoadCompletedSuccessfully: false,
-      activityLoadCompletedWithErrors: false,
+      activityLoadCompletedWithErrors: false
     }
   },
   watch: {
@@ -247,7 +252,12 @@ export default defineComponent({
 }
 
 .configurator-save-btn {
-  margin-top: 1vw;
+  margin-top: 2vh;
+  width: 80%;
+}
+
+.configurator-reset-btn {
+  margin-top: 1vh;
   width: 80%;
 }
 </style>

@@ -4,7 +4,7 @@
     "creator": "Creator",
     "about": "About"
   },
-  "lang":{
+  "lang": {
     "en": "English",
     "es": "Español"
   },
@@ -59,6 +59,7 @@
       "select-gpx-files": "Select GPX files",
       "adventure": "Adventure",
       "save": "Save adventure",
+      "reset": "Reset adventure",
       "adventure-section": {
         "vertical-layout": "Portrait",
         "horizontal-layout": "Landscape",
@@ -83,6 +84,11 @@
         "confirm": "Confirm",
         "discard": "Discard",
         "save": "Save"
+      },
+      "reset-adventure": {
+        "text": "Resetting will cause all changes to be lost and a sample adventure to be loaded in place of the one you have been working on, are you sure you want to continue?",
+        "cancel": "Cancel",
+        "confirm": "Confirm"
       },
       "labels": "Labels",
       "labels-section": {

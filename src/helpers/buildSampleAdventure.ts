@@ -2,7 +2,7 @@ import { LayoutMode, type Adventure } from '../types/Adventure'
 import { constants } from '../constants/constants'
 import { DataGraph } from '@/types/DataGraph'
 
-export function buildSampleAdventure(secondaryTextVal: string): Adventure {
+export function buildSampleAdventure(): Adventure {
   return {
     activities: [],
     labels: [],
@@ -17,7 +17,7 @@ export function buildSampleAdventure(secondaryTextVal: string): Adventure {
       italic: false
     },
     secondaryText: {
-      text: secondaryTextVal,
+      text: new Date().toLocaleDateString(),
       color: constants.defaultTextColor,
       font: constants.defaultFont,
       fontSize: '7.5',
@@ -32,6 +32,6 @@ export function buildSampleAdventure(secondaryTextVal: string): Adventure {
     },
     dataGraph: new DataGraph(),
     customizationEnabled: false,
-    layoutMode: LayoutMode.LANDSCAPE,
+    layoutMode: LayoutMode.LANDSCAPE
   }
 }

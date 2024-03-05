@@ -73,6 +73,7 @@
     </div>
     <ConfigurationPanel
       @capture="showSaveAdventureDialog = true"
+      @reset="showResetDialog = true"
       @change-visibility="showConfigurationPanel = !showConfigurationPanel"
       :show="showConfigurationPanel"
     />
@@ -136,6 +137,29 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+    <v-dialog
+      v-model="showResetDialog"
+      width="fit-content"
+      height="fit-content"
+    >
+      <v-card class="reset-adventure-dialog">
+        <v-card-text>
+          {{ $t('creator.config-panel.reset-adventure.text') }}
+        </v-card-text>
+
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn
+            :text="$t('creator.config-panel.reset-adventure.cancel')"
+            @click="showResetDialog=false"
+          />
+          <v-btn
+            :text="$t('creator.config-panel.reset-adventure.confirm')"
+            @click="resetAdventure"
+          />
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
     <v-snackbar
       v-model="showSnackbar"
       color="red"
@@ -189,6 +213,7 @@ import { retrieveDefaultMapStyles } from '@/helpers/retrieveDefaultMapStyles'
 import type { MapStyle } from '@/types/MapStyle'
 import { setHiResDPR, setStdResDPR } from '@/helpers/devicePixelRatioManager'
 import invert from 'invert-color'
+import { buildSampleAdventure } from '@/helpers/buildSampleAdventure'
 
 let store: Store
 
@@ -251,6 +276,7 @@ export default defineComponent({
       showConfigurationPanel: true,
       showSaveAdventureDialog: false,
       showGeneratedImageDialog: false,
+      showResetDialog: false,
       isSaving: false,
       lastAdventureTrackClassSuffix: '',
       generatedImageDataURL: '',
@@ -317,6 +343,10 @@ export default defineComponent({
       } else {
         alert('Adventure track to save could not be located')
       }
+    },
+    resetAdventure() {
+      store.commit('SET_ADVENTURE', buildSampleAdventure())
+      this.showResetDialog = false
     },
     saveGeneratedImage() {
       FileSaver.saveAs(this.generatedImageDataURL, 'image.png')
@@ -531,6 +561,10 @@ div#secondary-text-container {
 
 .centered-dialog-text {
   text-align: center;
+}
+
+.reset-adventure-dialog {
+  max-width: 50%;
 }
 
 .mobile-creator {
