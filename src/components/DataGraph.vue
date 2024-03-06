@@ -87,7 +87,10 @@ export default defineComponent({
       lastDrawTimestamp: new Date().getTime(),
       delayedRunner: new DelayedRunner(),
       highestPoint: 0,
-      lowestPoint: 0
+      lowestPoint: 0,
+      resizeObserver: new ResizeObserver(() => {
+        this.drawGraph(this.reducedActivities, undefined, true)
+      })
     }
   },
   setup() {
@@ -98,8 +101,14 @@ export default defineComponent({
     if (this.customizationEnabled) {
       this.enableCustomization()
     }
+
+    const dataGraphContainer = document.getElementById('data-graph-container')
+    if (dataGraphContainer) this.resizeObserver.observe(dataGraphContainer)
   },
-  unmounted() {},
+  unmounted() {
+    const dataGraphContainer = document.getElementById('data-graph-container')
+    if (dataGraphContainer) this.resizeObserver.unobserve(dataGraphContainer)
+  },
   watch: {
     reducedActivities: {
       deep: true,
