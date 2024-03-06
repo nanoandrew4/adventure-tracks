@@ -69,6 +69,7 @@ function createElevationSvg(
     activitySvgPath.setAttribute('d', d)
     svgGroup.appendChild(activitySvgPath)
     newSvg.appendChild(svgGroup)
+    currPx -= 1 // Start drawing next group one pixel back to ensure it always overlaps with the previous group and there is no whitespace between groups
   }
   return { svg: newSvg, lowestPoint, highestPoint }
 }
