@@ -1,3 +1,4 @@
+import type { Position } from 'geojson'
 import { type Activity } from '../types/Activity'
 import objectHash from 'object-hash'
 
@@ -27,22 +28,24 @@ interface ElevationResponse {
 
 const cache: Map<string, number[]> = new Map()
 
-async function correctElevation(activity: Activity): Promise<boolean | undefined> {
-  const longLatCoords = activity.getLongLatCoords()
-
-  return calculateElevation(longLatCoords).then((elevationData) => {
-    if (activity.geoJsonFeature) {
-      return activity.updateElevation(elevationData)
+async function fetchCorrectedElevationData(
+  longLatCoords: Position[],
+  smoothingFactor: number
+): Promise<number[]> {
+  let coordsToUseForNormalization: number[][] = []
+  if (smoothingFactor < longLatCoords.length) {
+    for (let j = 0; j < smoothingFactor && j < longLatCoords.length; j++) {
+      coordsToUseForNormalization.push(longLatCoords[j])
     }
-  })
+  }
+
+  return calculateElevation(coordsToUseForNormalization)
 }
 
 async function calculateElevation(longLatCoords: number[][]): Promise<number[]> {
   const activityCoordinatesHash = objectHash.sha1(longLatCoords)
   if (cache.has(activityCoordinatesHash)) {
-    return new Promise<number[]>(() => {
-      return cache.get(activityCoordinatesHash)
-    })
+    return cache.get(activityCoordinatesHash) as number[]
   }
 
   const coordsToCorrect = longLatCoords.flatMap((longLatCoord) => [
@@ -77,4 +80,4 @@ async function calculateElevation(longLatCoords: number[][]): Promise<number[]> 
     })
 }
 
-export { correctElevation }
+export { fetchCorrectedElevationData }

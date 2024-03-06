@@ -41,10 +41,16 @@
         />
       </div>
       <v-btn
-        v-if="ENABLE_ELEVATION_CORRECTION"
+        v-if="ENABLE_ELEVATION_CORRECTION && !isElevationCorrected"
         :text="$t('creator.config-panel.activities-section.activity.correct-elevation')"
         :loading="elevationCorrectionInProgress"
         @click="correctElevationAndUpdateRefreshFlag"
+      />
+      <v-btn
+        v-if="ENABLE_ELEVATION_CORRECTION && isElevationCorrected"
+        color="surface-light"
+        :text="$t('creator.config-panel.activities-section.activity.undo-correct-elevation')"
+        @click="revertElevationCorrection"
       />
     </div>
   </div>
@@ -57,10 +63,10 @@ import ColorPicker from './ColorPicker.vue'
 import { type Activity } from '../../types/Activity'
 import { useStore } from '../../vuex/store'
 import { Store } from '../../../vuex'
-import { correctElevation } from '../../helpers/correctElevation'
 
 let store: Store
-const ENABLE_ELEVATION_CORRECTION = import.meta.env.VITE_ENABLE_ELEVATION_CORRECTION == "true"
+const ENABLE_ELEVATION_CORRECTION = import.meta.env.VITE_ENABLE_ELEVATION_CORRECTION == 'true'
+const smoothingFactor = 5
 
 export default defineComponent({
   components: {
@@ -76,6 +82,7 @@ export default defineComponent({
     return {
       unfolded: false,
       elevationCorrectionInProgress: false,
+      isElevationCorrected: false,
       useSameColor: false,
       ENABLE_ELEVATION_CORRECTION
     }
@@ -92,13 +99,22 @@ export default defineComponent({
     correctElevationAndUpdateRefreshFlag() {
       const t = this
       t.elevationCorrectionInProgress = true
-      correctElevation(this.activity)
+      this.activity
+        .correctElevation(smoothingFactor)
         .then((updated) => {
-          if (updated) store.commit('SET_REFRESH_DATA_GRAPH', true)
+          if (updated) {
+            store.commit('SET_REFRESH_DATA_GRAPH', true)
+            t.isElevationCorrected = true
+          }
         })
         .finally(() => {
           t.elevationCorrectionInProgress = false
         })
+    },
+    revertElevationCorrection() {
+      this.activity.revertElevationCorrection()
+      store.commit('SET_REFRESH_DATA_GRAPH', true)
+      this.isElevationCorrected = false
     }
   },
   watch: {

@@ -31,6 +31,7 @@
           "line-color": "Line color",
           "elevation-color": "Elevation profile color",
           "correct-elevation": "Correct elevation data",
+          "undo-correct-elevation": "Undo elevation correction",
           "use-same-color": "Use same color"
         }
       },

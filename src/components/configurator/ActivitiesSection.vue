@@ -4,10 +4,7 @@
     variant="accordion"
     class="activities-section"
   >
-    <v-expansion-panel
-      :key="activity.uid"
-      v-for="activity in sortedActivities"
-    >
+    <v-expansion-panel v-for="activity in sortedActivities">
       <v-expansion-panel-title class="configurator-activity-title">
         <v-icon
           class="configurator-activity-delete"

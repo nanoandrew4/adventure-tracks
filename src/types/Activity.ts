@@ -1,6 +1,7 @@
 import objectHash from 'object-hash'
 import type { Feature, Position } from 'geojson'
 import { constants } from '@/constants/constants'
+import { fetchCorrectedElevationData } from '@/helpers/correctElevation'
 
 export class Activity {
   uid: string
@@ -14,6 +15,7 @@ export class Activity {
   geoJsonFeature?: Feature
 
   longLatCoords: number[][]
+  originalElevation: number[]
   elevation: number[]
 
   constructor(geoJsonFeature: Feature, defaultTextColor?: string) {
@@ -31,6 +33,7 @@ export class Activity {
     }
     this.longLatCoords = []
     this.elevation = []
+    this.originalElevation = []
   }
 
   getLongLatCoords(): number[][] {
@@ -75,72 +78,83 @@ export class Activity {
     }
   }
 
-  // Future me, I'm sorry for this
-  updateElevation(updatedElevationValues: number[]): boolean {
-    if (!this.geoJsonFeature || !updatedElevationValues) return false
+  revertElevationCorrection() {
+    if (!this.geoJsonFeature) return
+    this.elevation = this.originalElevation
 
     const geometryType = this.geoJsonFeature.geometry.type
     if (geometryType == 'LineString' || geometryType == 'MultiPoint') {
-      if (
-        this.geoJsonFeature.geometry.coordinates.length &&
-        this.geoJsonFeature.geometry.coordinates.length == updatedElevationValues.length
-      ) {
+      if (this.geoJsonFeature.geometry.coordinates) {
         for (let i = 0; i < this.geoJsonFeature.geometry.coordinates.length; i++)
-          this.setElevation(this.geoJsonFeature.geometry.coordinates[i], updatedElevationValues[i])
-        this.elevation = updatedElevationValues
+          this.geoJsonFeature.geometry.coordinates[i][2] = this.elevation[i]
+      }
+    } else if (geometryType == 'MultiLineString') {
+      let coordCount = 0
+      if (this.geoJsonFeature.geometry.coordinates) {
+        for (let i = 0; i < this.geoJsonFeature.geometry.coordinates.length; i++) {
+          for (let j = 0; j < this.geoJsonFeature.geometry.coordinates[i].length; j++)
+            this.geoJsonFeature.geometry.coordinates[i][j][2] = this.elevation[coordCount++]
+        }
+      }
+    }
+  }
+
+  async correctElevation(smoothingFactor: number): Promise<boolean> {
+    if (!this.geoJsonFeature) return false
+
+    if (this.originalElevation.length === 0) this.originalElevation = this.elevation
+
+    const geometryType = this.geoJsonFeature.geometry.type
+    if (geometryType == 'LineString' || geometryType == 'MultiPoint') {
+      if (this.geoJsonFeature.geometry.coordinates) {
+        await this.correctElevationForCoordinates(
+          this.geoJsonFeature.geometry.coordinates,
+          smoothingFactor
+        ).then((newElevation) => (this.elevation = newElevation))
         return true
       }
-    } else if (geometryType == 'MultiLineString' || geometryType == 'Polygon') {
+    } else if (geometryType == 'MultiLineString') {
       let coordCount = 0
       for (let i = 0; i < this.geoJsonFeature.geometry.coordinates.length; i++)
         coordCount += this.geoJsonFeature.geometry.coordinates[i].length
-      if (
-        this.geoJsonFeature.geometry.coordinates.length &&
-        coordCount == updatedElevationValues.length
-      ) {
-        coordCount = 0
-        for (let i = 0; i < this.geoJsonFeature.geometry.coordinates.length; i++)
-          for (let j = 0; j < this.geoJsonFeature.geometry.coordinates[i].length; j++) {
-            this.setElevation(
-              this.geoJsonFeature.geometry.coordinates[i][j],
-              updatedElevationValues[coordCount++]
-            )
-          }
-        this.elevation = updatedElevationValues
-        return true
-      }
-    } else if (geometryType == 'Point') {
-      if (updatedElevationValues.length === 1) {
-        this.setElevation(this.geoJsonFeature?.geometry.coordinates, updatedElevationValues[0])
-        return true
-      }
-    } else if (geometryType == 'MultiPolygon') {
-      let coordCount = 0
-      for (let i = 0; i < this.geoJsonFeature.geometry.coordinates.length; i++)
-        for (let j = 0; j < this.geoJsonFeature.geometry.coordinates[i].length; j++)
-          coordCount += this.geoJsonFeature.geometry.coordinates[i][j].length
-
-      if (
-        this.geoJsonFeature.geometry.coordinates.length &&
-        coordCount == updatedElevationValues.length
-      ) {
-        coordCount = 0
-        for (let i = 0; i < this.geoJsonFeature.geometry.coordinates.length; i++)
-          for (let j = 0; j < this.geoJsonFeature.geometry.coordinates[i].length; j++)
-            for (let k = 0; this.geoJsonFeature.geometry.coordinates[i][j].length; k++)
-              this.setElevation(
-                this.geoJsonFeature.geometry.coordinates[i][j][k],
-                updatedElevationValues[coordCount++]
-              )
-        this.elevation = updatedElevationValues
+      if (this.geoJsonFeature.geometry.coordinates) {
+        let promises: Promise<number[]>[] = []
+        let aggregatedNewElevation: number[] = []
+        for (let i = 0; i < this.geoJsonFeature.geometry.coordinates.length; i++) {
+          promises.push(
+            this.correctElevationForCoordinates(
+              this.geoJsonFeature.geometry.coordinates[i],
+              smoothingFactor
+            ).then((newElevation) => aggregatedNewElevation.concat(newElevation))
+          )
+        }
+        for (const p of promises) await p
+        this.elevation = aggregatedNewElevation
         return true
       }
     }
     return false
   }
 
-  private setElevation(pos: Position, elevationVal: number) {
-    if (pos.length === 2) pos.push(elevationVal)
-    else if (pos.length === 3) pos[2] = elevationVal
+  private async correctElevationForCoordinates(
+    coords: Position[],
+    smoothingFactor: number
+  ): Promise<number[]> {
+    return fetchCorrectedElevationData(coords, smoothingFactor).then((correctedElevationValues) => {
+      let elevationCorrection = 0
+      let newElevation = []
+      if (correctedElevationValues.length > 0) {
+        for (let i = 0; i < correctedElevationValues.length; i++)
+          elevationCorrection += this.elevation[i] - correctedElevationValues[i]
+        elevationCorrection /= correctedElevationValues.length
+
+        for (let i = 0; i < coords.length; i++) {
+          coords[i][2] = coords[i][2] - elevationCorrection
+          if (coords[i][2] < 0) coords[i][2] = 0
+          newElevation.push(coords[i][2])
+        }
+      }
+      return newElevation
+    })
   }
 }
