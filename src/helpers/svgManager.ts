@@ -6,8 +6,13 @@ interface ElevationSvg {
   highestPoint: number
 }
 
-function createElevationSvg(activities: Activity[], componentWidth: number, componentHeight: number): ElevationSvg | null {
-  let highestPoint = 0, lowestPoint = 0
+function createElevationSvg(
+  activities: Activity[],
+  componentWidth: number,
+  componentHeight: number
+): ElevationSvg | null {
+  let highestPoint = 0,
+    lowestPoint = 0
   let totalDuration = 0
   activities.forEach((activity) => {
     const elevationProfile = activity.getElevation()
@@ -16,8 +21,8 @@ function createElevationSvg(activities: Activity[], componentWidth: number, comp
     highestPoint = Math.max(...elevationProfile, highestPoint)
     lowestPoint = Math.min(...elevationProfile, lowestPoint)
   })
-  
-  const yNormalizationOffset = -lowestPoint + 1
+
+  const yNormalizationOffset = -lowestPoint + 10
   highestPoint += yNormalizationOffset
 
   if (highestPoint === 0) {
@@ -51,7 +56,12 @@ function createElevationSvg(activities: Activity[], componentWidth: number, comp
     const stepSize = activityWidth / elevationProfile.length
     let d = 'M ' + currPx + ' ' + componentHeight
     elevationProfile.forEach((elevationPoint) => {
-      d += ' L ' + currPx + ' ' + (componentHeight - ((elevationPoint + yNormalizationOffset) / highestPoint) * componentHeight)
+      d +=
+        ' L ' +
+        currPx +
+        ' ' +
+        (componentHeight -
+          ((elevationPoint + yNormalizationOffset) / highestPoint) * componentHeight)
       currPx += stepSize
     })
     d += ' L ' + currPx + ' ' + componentHeight
@@ -60,7 +70,7 @@ function createElevationSvg(activities: Activity[], componentWidth: number, comp
     svgGroup.appendChild(activitySvgPath)
     newSvg.appendChild(svgGroup)
   }
-  return {svg: newSvg, lowestPoint, highestPoint}
+  return { svg: newSvg, lowestPoint, highestPoint }
 }
 
 export { createElevationSvg }

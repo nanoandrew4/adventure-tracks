@@ -261,7 +261,7 @@ export default defineComponent({
 }
 
 .highest-point {
-  margin-top: -1em;
+  margin-top: -0.5em;
 }
 
 .point-spacer {
@@ -269,7 +269,7 @@ export default defineComponent({
 }
 
 .lowest-point {
-  margin-bottom: -1em;
+  margin-bottom: -0.5em;
 }
 
 svg g path {
