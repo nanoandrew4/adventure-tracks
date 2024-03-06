@@ -179,7 +179,7 @@ export default defineComponent({
 
 .activities-section {
   overflow-y: scroll;
-  max-height: 45vh;
+  max-height: 40vh;
 }
 
 .activities-section::-webkit-scrollbar {
