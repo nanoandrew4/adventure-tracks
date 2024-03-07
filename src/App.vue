@@ -21,7 +21,7 @@
 </template>
 
 <script setup lang="ts">
-import { RouterLink, RouterView } from 'vue-router'
+import { RouterView } from 'vue-router'
 import LocaleSwitcher from './components/header/LocaleSwitcher.vue'
 import ThemeSwitcher from './components/header/ThemeSwitcher.vue'
 import { useI18n } from 'vue-i18n'

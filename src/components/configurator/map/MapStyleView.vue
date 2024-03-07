@@ -76,9 +76,11 @@ export default defineComponent({
         modifiedAdventure.mainText.font =
           this.mapStyle.mainTextFont ?? modifiedAdventure.mainText.font
         modifiedAdventure.secondaryText.color =
-          this.mapStyle.mainTextColor ?? modifiedAdventure.secondaryText.color
+          this.mapStyle.secondaryTextColor ?? modifiedAdventure.secondaryText.color
         modifiedAdventure.secondaryText.font =
           this.mapStyle.secondaryTextFont ?? modifiedAdventure.secondaryText.font
+        modifiedAdventure.dataGraph.graphText.color = this.mapStyle.secondaryTextColor ?? modifiedAdventure.secondaryText.color 
+        modifiedAdventure.dataGraph.graphText.font = this.mapStyle.secondaryTextFont ?? modifiedAdventure.secondaryText.font 
         if (modifiedAdventure.labels) {
           modifiedAdventure.labels.forEach((l) => {
             l.name.color = this.mapStyle.labelNameTextColor ?? l.name.color

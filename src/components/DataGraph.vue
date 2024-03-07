@@ -270,6 +270,7 @@ export default defineComponent({
 
 .lowest-point {
   margin-bottom: -0.5em;
+  margin-right: 0.25vw;
 }
 
 svg g path {
