@@ -1,11 +1,13 @@
 import './assets/main.css'
 import 'vue-file-selector/dist/main.css'
+import 'vue3-carousel-3d/dist/style.css'
 
 import { createApp } from 'vue'
 import { createI18n } from 'vue-i18n'
 import { store, key } from './vuex/store'
 import App from './App.vue'
 import VueImageZoomer from 'vue-image-zoomer'
+import Carousel3d from 'vue3-carousel-3d'
 import 'vue-image-zoomer/dist/style.css'
 import router from './router'
 
@@ -104,6 +106,7 @@ app.use(store, key)
 app.use(FileSelector)
 app.use(vuetify)
 app.use(VueImageZoomer)
+app.use(Carousel3d)
 app.mount('#app')
 
 // app.config.performance = true
