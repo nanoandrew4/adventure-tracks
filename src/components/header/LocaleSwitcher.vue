@@ -2,6 +2,7 @@
   <div class="locale-changer">
     <v-menu
       open-on-hover
+      open-on-click
       :location="'bottom'"
     >
       <template v-slot:activator="{ props }">
@@ -28,6 +29,10 @@
 </template>
 
 <style scoped>
+.locale-changer {
+  width: fit-content;
+}
+
 .selected-locale,
 .v-list-item {
   cursor: pointer;

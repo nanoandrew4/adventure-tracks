@@ -42,4 +42,6 @@ body {
   -moz-osx-font-smoothing: grayscale;
   --ms-overflow-style: none;
   overflow: -moz-scrollbars-none;
+  padding-left: 4px;
+  padding-right: 4px;
 }
