@@ -89,7 +89,7 @@
 import { defineComponent } from 'vue'
 
 import { useStore } from '@/vuex/store'
-import { Store } from '../../../../vuex'
+import { Store } from 'vuex'
 import MapStyleView from '@/components/configurator/map/MapStyleView.vue'
 import type { MapStyle } from '@/types/MapStyle'
 

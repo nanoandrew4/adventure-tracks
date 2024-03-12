@@ -1,20 +1,104 @@
 {
-  "header": {
-    "home": "Home",
-    "creator": "Creador",
-    "about": "About"
+  "lang": {
+    "en": "English",
+    "es": "Español"
+  },
+  "home": {
+    "main-text": "Has logrado algo épico",
+    "button-text": "Inmortalizemoslo",
+    "subtext": "Adventure Tracks te permite generar arte de tus aventuras, en alta resolución y listo para imprimir"
   },
   "creator": {
+    "mobile": "La experiencia en móvil no esta soportada actualmente, accede desde un ordenador. El soporte para móviles llegará pronto",
+    "draggable-instructions": "Pincha y arrastra donde quieras, pincha para restaurar a la posición original",
+    "snackbar": {
+      "element-does-not-fit": "El elemento seleccionado no cabe en su posición original. Redimensiona otros elementos para hacer hueco y prueba otra vez"
+    },
     "config-panel": {
+      "title": "Configuración",
       "activities": "Actividades",
-      "activity": {
-        "line-color": "Color de linea",
-        "elevation-color": "Color del perfil de elevación"
+      "customizable-text": {
+        "text": "Texto",
+        "color": "Color",
+        "font": "Fuente",
+        "font-size": "Tamaño de la fuente",
+        "font-style": "Estilo de la fuente"
       },
-      "select-gpx-files": "Selecciona tus ficheros GPX",
-      "map-styles": "Estilos del mapa",
+      "activities-section": {
+        "file-errors": "Ha habido errores procesando los siguientes ficheros: { files }",
+        "activity": {
+          "activity-color": "Color de la actividad",
+          "line-color": "Color de la linea",
+          "elevation-color": "Color de la elevación",
+          "correct-elevation": "Corregir elevación",
+          "undo-correct-elevation": "Deshacer corrección",
+          "use-same-color": "Usar mismo color"
+        }
+      },
+      "map": "Mapa",
+      "map-config": {
+        "map-styles": "Estilos de mapas",
+        "actions": "Acciones",
+        "recenter": "Centrar el map",
+        "import-custom-style": {
+          "activator-btn": "Importar estilos custom de MapBox",
+          "text": "Introduce tu usuario y StyleID de MapBox para importar y usar el estilo",
+          "style-name": "Nombre del estilo (como quieres llamarlo)",
+          "style-username": "Usuario de MapBox",
+          "style-id": "Style ID de MapBox",
+          "close": "Cerrar",
+          "save": "Guardar"
+        }
+      },
+      "data-graph": "Gráficos de datos",
+      "data-graph-section": {
+        "no-activities": "Para habilitar las opciones en esta sección, añade algunas actividades en la sección de 'Actividades'",
+        "show-elevation": "Dibujar perfil de elevación",
+        "show-highest-lowest-points": "Mostrar puntos altos/bajos en el gráfico",
+        "text-color": "Color del texto del gráfico"
+      },
+      "select-gpx-files": "Seleccionar ficheros GPX",
       "adventure": "Aventura",
-      "save": "Guardar aventura"
+      "save": "Guardar aventura",
+      "reset": "Restablecer aventura",
+      "adventure-section": {
+        "vertical-layout": "Vertical",
+        "horizontal-layout": "Apaisada",
+        "background-color": "Color de fondo",
+        "main-text": "Texto principal",
+        "main-text-color": "Color del texto principal",
+        "secondary-text": "Texto secundario",
+        "secondary-text-color": "Color del texto secundario",
+        "line-width": "Grosor de la linea de actividad",
+        "enable-customization": "Habilitar personalización",
+        "customization-tooltip": "Mostrar instrucciones para elementos arrastrables",
+        "disable-customization-dialog": {
+          "text": "Deshabilitar la personalización restablecerá todos los elementos arrastrados y redimensionados, estas seguro que quieres continuar?",
+          "cancel": "Cancelar",
+          "confirm": "Confirmar"
+        }
+      },
+      "save-adventure": {
+        "text": "Para capturar tu aventura en maxima resolución, se redimensionará en segundo plano antes de la captura. La captura llevara varios segundos. Deseas continuar?",
+        "generated-image-text": "Aquí tienes la imagen generada, revisala a ver si la quieres guardar",
+        "cancel": "Cancelar",
+        "confirm": "Confirmar",
+        "discard": "Desechar",
+        "save": "Guardar"
+      },
+      "reset-adventure": {
+        "text": "Restablecer causara que todos los cambios hechos se pierdan y una aventura con datos por defecto se cargue en lugar de la que estabas trabajando, estas seguro que quieres continuar?",
+        "cancel": "Cancelar",
+        "confirm": "Confirmar"
+      },
+      "labels": "Etiquetas",
+      "labels-section": {
+        "add-label": "Añadir etiqueta",
+        "label-name": "Etiqueta",
+        "label-value": "Valor",
+        "label-name-color": "Color del texto",
+        "label-value-color": "Color del texto"
+      }
     }
   }
 }

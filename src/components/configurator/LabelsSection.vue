@@ -39,7 +39,7 @@ import { defineComponent } from 'vue'
 
 import { useStore } from '@/vuex/store'
 import { createEmptyLabel } from '@/types/Label'
-import { Store } from '../../../vuex'
+import { Store } from 'vuex'
 import type { CustomText } from '@/types/CustomText'
 import CustomizableText from '@/components/configurator/CustomizableText.vue'
 import type { Adventure } from '@/types/Adventure'

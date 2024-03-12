@@ -45,7 +45,7 @@ import { LayoutMode, type Adventure } from '@/types/Adventure'
 import CustomizableText from '@/components/configurator/CustomizableText.vue'
 
 import { useStore } from '@/vuex/store'
-import { Store } from '../../../vuex'
+import { Store } from 'vuex'
 import type { DataGraph } from '@/types/DataGraph'
 
 let store: Store

@@ -120,7 +120,7 @@ import ColorPicker from './ColorPicker.vue'
 import CustomizableText from './CustomizableText.vue'
 
 import { useStore } from '@/vuex/store'
-import { Store } from '../../../vuex'
+import { Store } from 'vuex'
 
 let store: Store
 

@@ -410,7 +410,7 @@ export default defineComponent({
         })
       }
     },
-    adventureBackgroundColor(newVal: string) {
+    adventureBackgroundColor() {
       this.setInvertedAdventureBackgroundColor()
     }
   },

@@ -1,9 +1,4 @@
 {
-  "header": {
-    "home": "Home",
-    "creator": "Creator",
-    "about": "About"
-  },
   "lang": {
     "en": "English",
     "es": "Español"
@@ -14,7 +9,7 @@
     "subtext": "Adventure Tracks allows you to generate high resolution, ready to print artwork of your adventures"
   },
   "creator": {
-    "mobile": "Mobile is currently unsupported, please access this page from a desktop to get the best experience",
+    "mobile": "Mobile is currently unsupported, please access this page from a desktop to get the best experience. Mobile support will be coming soon",
     "draggable-instructions": "Drag and drop anywhere, click to restore to original position",
     "snackbar": {
       "element-does-not-fit": "The selected element doesn't fit in its original position. Resize other elements to make room for it and try again"

@@ -62,7 +62,7 @@ import ColorPicker from './ColorPicker.vue'
 
 import { type Activity } from '../../types/Activity'
 import { useStore } from '../../vuex/store'
-import { Store } from '../../../vuex'
+import { Store } from 'vuex'
 
 let store: Store
 const ENABLE_ELEVATION_CORRECTION = import.meta.env.VITE_ENABLE_ELEVATION_CORRECTION == 'true'
