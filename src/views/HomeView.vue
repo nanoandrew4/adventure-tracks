@@ -1,11 +1,15 @@
 <template>
   <main class="main">
     <div :class="'main-text' + (areImagesLoaded ? '--bottom' : '')">
-      <h1>You've done something great</h1>
-      <v-btn href="/create">Lets immortalize it</v-btn>
-      <p v-show="areImagesLoaded">
-        Adventure Tracks allows you to generate high resolution, ready to print artwork of your
-        adventures!
+      <h1>{{ $t('home.main-text') }}</h1>
+      <v-btn
+        :variant="areImagesLoaded ? 'outlined' : 'text'"
+        :color="areImagesLoaded ? 'primary' : 'text-color'"
+        href="/create"
+        >{{ $t('home.button-text') }}</v-btn
+      >
+      <p :class="'subtext' + (areImagesLoaded ? '' : '--faded')">
+        {{ $t('home.subtext') }}
       </p>
     </div>
 
@@ -113,9 +117,7 @@ export default defineComponent({
   watch: {
     areImagesLoaded(loaded: boolean) {
       if (loaded) {
-        setTimeout(() => {
-          this.carouselClass = 'carousel--visible'
-        }, 1000)
+        this.carouselClass = 'carousel--visible'
       } else {
         this.carouselClass = 'carousel--faded'
       }
@@ -141,9 +143,13 @@ export default defineComponent({
 }
 @media (max-width: 768px) {
   .main {
-    /* height: calc((100vw / 2) * sqrt(2)); */
     height: fit-content;
   }
+}
+
+h1 {
+  font-size: 1.5rem;
+  padding-bottom: 2vh;
 }
 
 .main-text,
@@ -155,9 +161,31 @@ export default defineComponent({
   text-align: center;
   width: 100%;
 
+  padding-left: 5vw;
+  padding-right: 5vw;
+
   transition: top 0.5s ease;
 
   z-index: 2;
+}
+
+.subtext--faded,
+.subtext {
+  position: fixed;
+  width: 100%;
+  left: 0;
+  bottom: 10px;
+  text-align: center;
+
+  transition: opacity 1s 1s ease;
+}
+
+.subtext--faded {
+  opacity: 0;
+}
+
+.subtext {
+  opacity: 1;
 }
 
 .main-text {

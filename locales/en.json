@@ -8,6 +8,11 @@
     "en": "English",
     "es": "Español"
   },
+  "home": {
+    "main-text": "You've done something great",
+    "button-text": "Lets immortalize it",
+    "subtext": "Adventure Tracks allows you to generate high resolution, ready to print artwork of your adventures"
+  },
   "creator": {
     "mobile": "Mobile is currently unsupported, please access this page from a desktop to get the best experience",
     "draggable-instructions": "Drag and drop anywhere, click to restore to original position",

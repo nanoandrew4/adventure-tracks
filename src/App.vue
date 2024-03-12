@@ -1,5 +1,5 @@
 <template>
-  <header>
+  <header :class="headerClass">
     <img
       alt="Site logo"
       class="logo"
@@ -21,6 +21,7 @@
 </template>
 
 <script setup lang="ts">
+import { ref, computed } from 'vue'
 import { RouterView } from 'vue-router'
 import LocaleSwitcher from './components/header/LocaleSwitcher.vue'
 import ThemeSwitcher from './components/header/ThemeSwitcher.vue'
@@ -31,6 +32,15 @@ const theme = useTheme()
 const darkThemeMq = window.matchMedia('(prefers-color-scheme: dark)')
 if (darkThemeMq.matches) {
   theme.global.name.value = 'dark'
+}
+
+let headerClass = ref('')
+const isHomePage = computed(() => document.location.pathname == '/')
+if (isHomePage.value) {
+  headerClass.value = 'header--faded'
+  setTimeout(() => {
+    headerClass.value = 'header--visible'
+  }, 2000)
 }
 </script>
 
@@ -77,5 +87,18 @@ header .wrapper {
     align-items: center;
     padding-right: calc(var(--section-gap) / 2);
   }
+}
+
+.header--faded,
+.header--visible {
+  transition: opacity 1s 2s ease;
+}
+
+.header--faded {
+  opacity: 0;
+}
+
+.header--visible {
+  opacity: 1;
 }
 </style>
