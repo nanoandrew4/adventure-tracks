@@ -10,6 +10,7 @@
   },
   "creator": {
     "mobile": "Mobile is currently unsupported, please access this page from a desktop to get the best experience. Mobile support will be coming soon",
+    "unavailable": "The creator is currently unavailable, please refresh the page or come back later",
     "draggable-instructions": "Drag and drop anywhere, click to restore to original position",
     "snackbar": {
       "element-does-not-fit": "The selected element doesn't fit in its original position. Resize other elements to make room for it and try again"

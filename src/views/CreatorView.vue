@@ -1,6 +1,6 @@
 <template>
   <div
-    v-if="!isMobile"
+    v-if="!isMobile && !tokenUnknown"
     id="track-creator"
     class="track-creator"
   >
@@ -12,6 +12,7 @@
     >
       <ActivityMap
         :class="`adventure-track-map${adventureTrackChildrenStyleSuffix}`"
+        @token-unavailable="tokenUnknown = true"
         ref="activityMap"
       />
       <div
@@ -151,7 +152,7 @@
           <v-spacer></v-spacer>
           <v-btn
             :text="$t('creator.config-panel.reset-adventure.cancel')"
-            @click="showResetDialog=false"
+            @click="showResetDialog = false"
           />
           <v-btn
             :text="$t('creator.config-panel.reset-adventure.confirm')"
@@ -171,10 +172,16 @@
     </v-snackbar>
   </div>
   <div
-    v-else
-    class="mobile-creator"
+    v-else-if="isMobile"
+    class="centered-text-block"
   >
     <p>{{ $t('creator.mobile') }}</p>
+  </div>
+  <div
+    v-else
+    class="centered-text-block"
+  >
+    <p>{{ $t('creator.unavailable') }}</p>
   </div>
 </template>
 
@@ -281,7 +288,9 @@ export default defineComponent({
       lastAdventureTrackClassSuffix: '',
       generatedImageDataURL: '',
       generatedImageThumbnailDataURL: '',
-      showSnackbar: false
+      showSnackbar: false,
+      finishedMounting: false,
+      tokenUnknown: false
     }
   },
   setup() {
@@ -292,6 +301,7 @@ export default defineComponent({
   },
   mounted() {
     this.setInvertedAdventureBackgroundColor()
+    this.finishedMounting = true
   },
   methods: {
     async capture() {
@@ -415,19 +425,21 @@ export default defineComponent({
     }
   },
   updated: function () {
-    this.$nextTick(async () => {
-      if (this.lastStyleSuffix !== this.adventureTrackChildrenStyleSuffix) {
-        this.resizeMap(!this.isSaving) // Do not recenter while capturing adventure
-        this.lastStyleSuffix = this.adventureTrackChildrenStyleSuffix
-      } else if (this.lastAdventureTrackClassSuffix !== this.adventureTrackClassSuffix) {
-        if (!this.isSaving) {
-          // Do not recenter while capturing adventure
-          this.resizeMap(true)
-          store.commit('SET_REFRESH_DATA_GRAPH', true)
-          this.lastAdventureTrackClassSuffix = this.adventureTrackClassSuffix
+    if (this.finishedMounting) {
+      this.$nextTick(async () => {
+        if (this.lastStyleSuffix !== this.adventureTrackChildrenStyleSuffix) {
+          this.resizeMap(!this.isSaving) // Do not recenter while capturing adventure
+          this.lastStyleSuffix = this.adventureTrackChildrenStyleSuffix
+        } else if (this.lastAdventureTrackClassSuffix !== this.adventureTrackClassSuffix) {
+          if (!this.isSaving) {
+            // Do not recenter while capturing adventure
+            this.resizeMap(true)
+            store.commit('SET_REFRESH_DATA_GRAPH', true)
+            this.lastAdventureTrackClassSuffix = this.adventureTrackClassSuffix
+          }
         }
-      }
-    })
+      })
+    }
   }
 })
 </script>
@@ -567,7 +579,7 @@ div#secondary-text-container {
   max-width: 50%;
 }
 
-.mobile-creator {
+.centered-text-block {
   display: flex;
   justify-content: center;
   align-items: center;

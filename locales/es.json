@@ -10,6 +10,7 @@
   },
   "creator": {
     "mobile": "La experiencia en móvil no esta soportada actualmente, accede desde un ordenador. El soporte para móviles llegará pronto",
+    "unavailable": "El creador no esta disponible temporalmente, refresca la pagina o prueba a volver mas tarde",
     "draggable-instructions": "Pincha y arrastra donde quieras, pincha para restaurar a la posición original",
     "snackbar": {
       "element-does-not-fit": "El elemento seleccionado no cabe en su posición original. Redimensiona otros elementos para hacer hueco y prueba otra vez"
@@ -79,7 +80,7 @@
         }
       },
       "save-adventure": {
-        "text": "Para capturar tu aventura en maxima resolución, se redimensionará en segundo plano antes de la captura. La captura llevara varios segundos. Deseas continuar?",
+        "text": "Para capturar tu aventura en maxima resolución, se redimensionará en segundo plano antes de la captura. La captura llevará varios segundos. Deseas continuar?",
         "generated-image-text": "Aquí tienes la imagen generada, revisala a ver si la quieres guardar",
         "cancel": "Cancelar",
         "confirm": "Confirmar",
@@ -87,7 +88,7 @@
         "save": "Guardar"
       },
       "reset-adventure": {
-        "text": "Restablecer causara que todos los cambios hechos se pierdan y una aventura con datos por defecto se cargue en lugar de la que estabas trabajando, estas seguro que quieres continuar?",
+        "text": "Restablecer causara que todos los cambios hechos se pierdan y una aventura con datos por defecto se cargue en lugar de la que estabas trabajando, estás seguro que quieres continuar?",
         "cancel": "Cancelar",
         "confirm": "Confirmar"
       },

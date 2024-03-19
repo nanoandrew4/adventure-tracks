@@ -22,6 +22,7 @@ import {
 } from '@/helpers/resizableManager'
 import type { MapStyle } from '@/types/MapStyle'
 import { initializeDevicePixelRatio } from '@/helpers/devicePixelRatioManager'
+import { retrieveMapBoxToken } from '@/helpers/mapboxTokenRetriever'
 
 const TARGET_DRAW_REFRESH_RATE = 10.0
 const TARGET_DRAW_RESIZE_RATE = 2.0
@@ -35,6 +36,7 @@ let map: mapboxgl.Map
 const layersToPutOnTop = ['settlement-major-label', 'settlement-minor-label']
 
 export default defineComponent({
+  emits: ["token-unavailable"],
   computed: {
     lineWidth: (): number => state.adventure.lineWidth,
     activities: (): Activity[] => state.adventure.activities,
@@ -49,7 +51,6 @@ export default defineComponent({
   setup() {
     store = useStore()
     state = store.state
-    mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN
   },
   data() {
     return {
@@ -61,16 +62,21 @@ export default defineComponent({
     }
   },
   mounted() {
-    const mapContainerElement = document.getElementById('mapContainer')
-    if (mapContainerElement == null) return
+    retrieveMapBoxToken().then((token) => {
+      mapboxgl.accessToken = token
+      const mapContainerElement = document.getElementById('mapContainer')
+      if (mapContainerElement == null) return
 
-    initializeDevicePixelRatio()
+      initializeDevicePixelRatio()
 
-    this.initMap()
+      this.initMap()
 
-    map.on('load', () => {
-      this.fpsCappedMapRefresh(this.reducedActivities)
-      this.recenter()
+      map.on('load', () => {
+        this.fpsCappedMapRefresh(this.reducedActivities)
+        this.recenter()
+      })
+    }).catch(() => {
+      this.$emit('token-unavailable')
     })
   },
   unmounted() {
