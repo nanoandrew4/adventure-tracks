@@ -3,8 +3,8 @@
     <div class="activity-details">
       <v-checkbox
         class="activity-checkbox"
-        :true-icon="'mdi-toggle-switch'"
-        :false-icon="'mdi-toggle-switch-off'"
+        :true-icon="mdiToggleSwitch"
+        :false-icon="mdiToggleSwitchOff"
         :hide-details="true"
         :density="'compact'"
         :label="$t('creator.config-panel.activities-section.activity.use-same-color')"
@@ -64,6 +64,11 @@ import { type Activity } from '../../types/Activity'
 import { useStore } from '../../vuex/store'
 import { Store } from 'vuex'
 
+import {
+  mdiToggleSwitch,
+  mdiToggleSwitchOff
+} from '@mdi/js'
+
 let store: Store
 const ENABLE_ELEVATION_CORRECTION = import.meta.env.VITE_ENABLE_ELEVATION_CORRECTION == 'true'
 const smoothingFactor = 5
@@ -78,17 +83,19 @@ export default defineComponent({
       required: true
     }
   },
+  setup() {
+    store = useStore()
+  },
   data() {
     return {
       unfolded: false,
       elevationCorrectionInProgress: false,
       isElevationCorrected: false,
       useSameColor: false,
-      ENABLE_ELEVATION_CORRECTION
+      ENABLE_ELEVATION_CORRECTION,
+      mdiToggleSwitch,
+      mdiToggleSwitchOff
     }
-  },
-  setup() {
-    store = useStore()
   },
   methods: {
     updateActivity(modifierFunc: (activityToUpdate: Activity) => void) {

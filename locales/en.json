@@ -6,7 +6,8 @@
   "home": {
     "main-text": "You've done something great",
     "button-text": "Lets immortalize it",
-    "subtext": "Adventure Tracks allows you to generate high resolution, ready to print artwork of your adventures"
+    "subtext": "Adventure Tracks allows you to generate high resolution, ready to print artwork of your adventures.",
+    "source-code": "Source code freely available on GitHub."
   },
   "creator": {
     "mobile": "Mobile is currently unsupported, please access this page from a desktop to get the best experience. Mobile support will be coming soon",

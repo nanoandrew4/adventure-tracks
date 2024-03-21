@@ -22,7 +22,7 @@
       />
       <v-icon
         class="configurator-activity-delete"
-        icon="mdi-delete"
+        :icon="mdiDelete"
         @click.stop="deleteLabel(idx)"
       />
     </div>
@@ -44,6 +44,10 @@ import type { CustomText } from '@/types/CustomText'
 import CustomizableText from '@/components/configurator/CustomizableText.vue'
 import type { Adventure } from '@/types/Adventure'
 
+import {
+  mdiDelete
+} from '@mdi/js'
+
 let store: Store
 
 export default defineComponent({
@@ -56,6 +60,11 @@ export default defineComponent({
   },
   setup() {
     store = useStore()
+  },
+  data() {
+    return {
+      mdiDelete
+    }
   },
   methods: {
     addEmptyLabel() {

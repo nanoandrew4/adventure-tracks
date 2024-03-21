@@ -9,7 +9,7 @@
       <v-expansion-panel-title class="configurator-activity-title">
         <v-icon
           class="configurator-activity-delete"
-          icon="mdi-delete"
+          :icon="deleteIcon"
           @click.stop="deleteActivity(activity.uid)"
         />
         <h3 class="configurator-activity-name">{{ activity.name }}</h3>
@@ -35,6 +35,8 @@ import { defineComponent } from 'vue'
 import { type FsValidationResult } from 'vue-file-selector/dist'
 import { gpxGen, kmlGen, type F, tcxGen } from '@tmcw/togeojson'
 
+import { mdiDelete } from '@mdi/js'
+
 import ActivityCard from './ActivityCard.vue'
 import { Activity } from '../../types/Activity'
 import { useStore, type State } from '../../vuex/store'
@@ -59,6 +61,11 @@ export default defineComponent({
   setup() {
     store = useStore()
     state = store.state
+  },
+  data() {
+    return {
+      deleteIcon: mdiDelete
+    }
   },
   methods: {
     deleteActivity(uidToDelete: string) {

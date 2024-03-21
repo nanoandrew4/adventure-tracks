@@ -15,7 +15,7 @@
           <v-icon
             v-if="mapStyle.custom"
             class="delete-style"
-            icon="mdi-close-circle-outline"
+            :icon="mdiCloseCircleOutline"
             @click="deleteCustomStyle"
           />
         </div>
@@ -32,6 +32,10 @@ import { Store } from 'vuex'
 import type { MapStyle } from '@/types/MapStyle'
 import type { Adventure } from '@/types/Adventure'
 
+import {
+  mdiCloseCircleOutline
+} from '@mdi/js'
+
 let store: Store
 
 export default defineComponent({
@@ -45,14 +49,15 @@ export default defineComponent({
       required: true
     }
   },
+  setup() {
+    store = useStore()
+  },
   data() {
     return {
       coords: '-9.418679382652044,38.694794308394194',
-      resolution: '400x400'
+      resolution: '400x400',
+      mdiCloseCircleOutline
     }
-  },
-  setup() {
-    store = useStore()
   },
   methods: {
     setStyleAsActive() {

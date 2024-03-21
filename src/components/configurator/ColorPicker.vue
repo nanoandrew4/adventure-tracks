@@ -18,7 +18,7 @@
       >
         <v-icon
           @click="open = false"
-          icon="mdi-close-circle-outline"
+          :icon="mdiCloseCircleOutline"
         />
         <v-color-picker
           :model-value="color"
@@ -32,6 +32,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
+import { mdiCloseCircleOutline } from '@mdi/js'
 
 export default defineComponent({
   emits: ['color-updated'],
@@ -58,7 +59,8 @@ export default defineComponent({
     let circleBoundingClient: DOMRect | undefined
     return {
       open: false,
-      circleBoundingClient
+      circleBoundingClient,
+      mdiCloseCircleOutline
     }
   }
 })

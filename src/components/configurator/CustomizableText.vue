@@ -60,10 +60,10 @@
 
     <div v-show="selectedEditMode == EDIT_MODE.FONT_STYLE">
       <v-btn @click="() => emitUpdate((modelValue) => (modelValue.bold = !modelValue.bold))">
-        <v-icon icon="mdi-format-bold" />
+        <v-icon :icon="mdiFormatBold" />
       </v-btn>
       <v-btn @click="() => emitUpdate((modelValue) => (modelValue.italic = !modelValue.italic))">
-        <v-icon icon="mdi-format-italic"
+        <v-icon :icon="mdiFormatItalic"
       /></v-btn>
     </div>
   </div>
@@ -77,6 +77,16 @@ import TextEditMode from './TextEditMode.vue'
 import type { CustomText } from '@/types/CustomText'
 import FontPicker from 'font-picker'
 import type { CustomTextStyle } from '@/types/CustomTextStyle'
+
+import {
+  mdiFormatBold,
+  mdiFormatItalic,
+  mdiPalette,
+  mdiFormatText,
+  mdiFormatSize,
+  mdiFormatFont,
+  mdiFormatTextVariant
+} from '@mdi/js'
 
 const apiKey = import.meta.env.VITE_GOOGLE_FONTS_API_KEY
 
@@ -94,17 +104,17 @@ export interface EditModeProps {
 }
 
 const CUSTOM_TEXT_STYLES_MODE_TO_PROPS_MAP = new Map<EDIT_MODE, EditModeProps>([
-  [EDIT_MODE.COLOR, { icon: 'mdi-palette', labelSuffix: 'color' }],
-  [EDIT_MODE.FONT, { icon: 'mdi-format-text', labelSuffix: 'font' }],
-  [EDIT_MODE.FONT_SIZE, { icon: 'mdi-format-size', labelSuffix: 'font-size' }],
-  [EDIT_MODE.FONT_STYLE, { icon: 'mdi-format-font', labelSuffix: 'font-style' }]
+  [EDIT_MODE.COLOR, { icon: mdiPalette, labelSuffix: 'color' }],
+  [EDIT_MODE.FONT, { icon: mdiFormatText, labelSuffix: 'font' }],
+  [EDIT_MODE.FONT_SIZE, { icon: mdiFormatSize, labelSuffix: 'font-size' }],
+  [EDIT_MODE.FONT_STYLE, { icon: mdiFormatFont, labelSuffix: 'font-style' }]
 ])
 
 const CUSTOM_TEXT_MODE_TO_PROPS_MAP = new Map<EDIT_MODE, EditModeProps>(
   CUSTOM_TEXT_STYLES_MODE_TO_PROPS_MAP
 )
 CUSTOM_TEXT_MODE_TO_PROPS_MAP.set(EDIT_MODE.TEXT, {
-  icon: 'mdi-format-text-variant',
+  icon: mdiFormatTextVariant,
   labelSuffix: 'text'
 })
 
@@ -133,10 +143,11 @@ export default defineComponent({
       modifiableCustomText: this.customText,
       selectedEditMode: this.isCustomText() ? EDIT_MODE.TEXT : EDIT_MODE.COLOR,
       EDIT_MODE,
-      modesToShowMap:
-      this.isCustomText()
-          ? CUSTOM_TEXT_MODE_TO_PROPS_MAP
-          : CUSTOM_TEXT_STYLES_MODE_TO_PROPS_MAP
+      modesToShowMap: this.isCustomText()
+        ? CUSTOM_TEXT_MODE_TO_PROPS_MAP
+        : CUSTOM_TEXT_STYLES_MODE_TO_PROPS_MAP,
+      mdiFormatBold,
+      mdiFormatItalic
     }
   },
   methods: {

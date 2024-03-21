@@ -4,7 +4,7 @@
       <h2>{{ $t('creator.config-panel.title') }}</h2>
       <v-icon
         class="configurator-hide"
-        icon="mdi-arrow-collapse-right"
+        :icon="mdiArrowCollapseRight"
         @click.stop="$emit('change-visibility')"
       />
     </div>
@@ -19,7 +19,7 @@
             />
             <v-icon
               v-else-if="activityLoadCompletedSuccessfully"
-              icon="mdi-check-circle"
+              :icon="mdiCheckCircle"
               color="green"
             />
             <v-tooltip
@@ -35,7 +35,7 @@
               <template v-slot:activator="{ props }">
                 <v-icon
                   v-bind="props"
-                  icon="mdi-alert-circle-outline"
+                  :icon="mdiAlertCircleOutline"
                   color="red"
                   @click.stop="activityLoadCompletedWithErrors = false"
                 />
@@ -43,7 +43,7 @@
             </v-tooltip>
             <v-icon
               v-else
-              :icon="expanded ? 'mdi-chevron-up' : 'mdi-chevron-down'"
+              :icon="expanded ? mdiChevronUp : mdiChevronDown"
             ></v-icon>
           </template>
         </v-expansion-panel-title>
@@ -103,7 +103,7 @@
   >
     <v-icon
       class="configurator-hide"
-      icon="mdi-cog"
+      :icon="mdiCog"
       @click.stop="$emit('change-visibility')"
     />
   </div>
@@ -119,6 +119,8 @@ import DataGraphSection from './DataGraphSection.vue'
 import MapSection from './map/MapSection.vue'
 import { Store } from 'vuex'
 import { useStore, type State } from '../../vuex/store'
+
+import { mdiCog, mdiChevronUp, mdiChevronDown, mdiAlertCircleOutline, mdiCheckCircle, mdiArrowCollapseRight } from '@mdi/js'
 
 let store: Store
 let state: State
@@ -159,7 +161,13 @@ export default defineComponent({
   data() {
     return {
       activityLoadCompletedSuccessfully: false,
-      activityLoadCompletedWithErrors: false
+      activityLoadCompletedWithErrors: false,
+      mdiCog,
+      mdiChevronUp,
+      mdiChevronDown,
+      mdiAlertCircleOutline,
+      mdiCheckCircle,
+      mdiArrowCollapseRight
     }
   },
   watch: {

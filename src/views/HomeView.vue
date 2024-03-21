@@ -10,7 +10,9 @@
       >
       <p :class="'subtext' + (areImagesLoaded ? '' : '--faded')">
         {{ $t('home.subtext') }}
+        <a href="https://github.com/nanoandrew4/adventure-tracks">{{ $t('home.source-code') }}</a>
       </p>
+      
     </div>
 
     <Carousel3d
@@ -31,6 +33,7 @@
       >
         <v-img
           :src="image"
+          alt="Sample image"
           :eager="true"
           @load="loadedImagesSet.add(image)"
         ></v-img>
@@ -68,11 +71,11 @@ export default defineComponent({
     getScaledImage(img: string): string {
       const size = Math.max(this.slideWidth, this.slideHeight)
       if (size > 960 * 0.75) {
-        return img.replace('.png', '_high.jpg')
+        return img.replace('.png', '_high.webp')
       } else if (size > 480 * 0.75) {
-        return img.replace('.png', '_mid.jpg')
+        return img.replace('.png', '_mid.webp')
       } else {
-        return img.replace('.png', '_low.jpg')
+        return img.replace('.png', '_low.webp')
       }
     },
     assignCarouselImages() {

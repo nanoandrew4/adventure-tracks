@@ -1,7 +1,7 @@
 <template>
   <v-icon
     :class="`theme-switcher--${selectedTheme}`"
-    icon="mdi-theme-light-dark"
+    :icon="iconPath"
     @click="switchTheme"
   />
 </template>
@@ -10,6 +10,7 @@
 import { defineComponent } from 'vue'
 
 import { useTheme, type ThemeInstance } from 'vuetify'
+import { mdiThemeLightDark } from '@mdi/js'
 
 let theme: ThemeInstance
 
@@ -19,6 +20,11 @@ export default defineComponent({
   },
   setup() {
     theme = useTheme()
+  },
+  data() {
+    return {
+      iconPath: mdiThemeLightDark
+    }
   },
   methods: {
     switchTheme() {
@@ -35,9 +41,9 @@ export default defineComponent({
 <style scoped>
 .theme-switcher--light,
 .theme-switcher--dark {
-  font-size: 2rem;
-  padding-right: 2vw;
-  padding-left: 2vw;
+  font-size: 4rem;
+  width: clamp(16px, max(1.5vw, 4vh), 32px);
+  height: clamp(16px, max(1.5vw, 4vh), 32px);
 }
 
 .theme-switcher--light {

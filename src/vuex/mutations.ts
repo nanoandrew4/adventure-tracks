@@ -50,5 +50,8 @@ export default {
   },
   SET_SHOW_CUSTOM_TOOLTIP(state: State, show: boolean) {
     state.showCustomTooltip = show
+  },
+  SET_MAPBOX_TOKEN(state: State, token: string) {
+    state.mapBoxToken = token
   }
 }

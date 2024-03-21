@@ -6,7 +6,8 @@
   "home": {
     "main-text": "Has logrado algo épico",
     "button-text": "Inmortalizemoslo",
-    "subtext": "Adventure Tracks te permite generar arte de tus aventuras, en alta resolución y listo para imprimir"
+    "subtext": "Adventure Tracks te permite generar arte de tus aventuras, en alta resolución y listo para imprimir.",
+    "source-code": "Código fuente disponible en GitHub."
   },
   "creator": {
     "mobile": "La experiencia en móvil no esta soportada actualmente, accede desde un ordenador. El soporte para móviles llegará pronto",

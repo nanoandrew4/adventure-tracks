@@ -63,6 +63,8 @@ export default defineComponent({
   },
   mounted() {
     retrieveMapBoxToken().then((token) => {
+      store.commit('SET_MAPBOX_TOKEN', token)
+      
       mapboxgl.accessToken = token
       const mapContainerElement = document.getElementById('mapContainer')
       if (mapContainerElement == null) return
