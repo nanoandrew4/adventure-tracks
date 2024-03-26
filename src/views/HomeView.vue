@@ -81,15 +81,15 @@ export default defineComponent({
       this.loadedImagesSet.clear()
       if (this.isPortrait) {
         this.carouselImages = [
-          this.getScaledImage('/assets/sample_vert_1.png'),
-          this.getScaledImage('/assets/sample_vert_2.png'),
-          this.getScaledImage('/assets/sample_vert_3.png')
+          this.getScaledImage('/images/sample_vert_1.png'),
+          this.getScaledImage('/images/sample_vert_2.png'),
+          this.getScaledImage('/images/sample_vert_3.png')
         ]
       } else {
         this.carouselImages = [
-          this.getScaledImage('/assets/sample_hor_1.png'),
-          this.getScaledImage('/assets/sample_hor_2.png'),
-          this.getScaledImage('/assets/sample_hor_3.png')
+          this.getScaledImage('/images/sample_hor_1.png'),
+          this.getScaledImage('/images/sample_hor_2.png'),
+          this.getScaledImage('/images/sample_hor_3.png')
         ]
       }
     }
