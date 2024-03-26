@@ -7,7 +7,7 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-public/*.png
+public/**/*.png
 
 node_modules
 .DS_Store

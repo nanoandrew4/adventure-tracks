@@ -8,11 +8,10 @@
         href="/create"
         >{{ $t('home.button-text') }}</v-btn
       >
-      <p :class="'subtext' + (areImagesLoaded ? '' : '--faded')">
+      <p :class="'subtext' + (showSubtext ? '' : '--faded')">
         {{ $t('home.subtext') }}
         <a href="https://github.com/nanoandrew4/adventure-tracks">{{ $t('home.source-code') }}</a>
       </p>
-      
     </div>
 
     <Carousel3d
@@ -82,15 +81,15 @@ export default defineComponent({
       this.loadedImagesSet.clear()
       if (this.isPortrait) {
         this.carouselImages = [
-          this.getScaledImage('/sample_vert_1.png'),
-          this.getScaledImage('/sample_vert_2.png'),
-          this.getScaledImage('/sample_vert_3.png')
+          this.getScaledImage('/assets/sample_vert_1.png'),
+          this.getScaledImage('/assets/sample_vert_2.png'),
+          this.getScaledImage('/assets/sample_vert_3.png')
         ]
       } else {
         this.carouselImages = [
-          this.getScaledImage('/sample_hor_1.png'),
-          this.getScaledImage('/sample_hor_2.png'),
-          this.getScaledImage('/sample_hor_3.png')
+          this.getScaledImage('/assets/sample_hor_1.png'),
+          this.getScaledImage('/assets/sample_hor_2.png'),
+          this.getScaledImage('/assets/sample_hor_3.png')
         ]
       }
     }
@@ -101,6 +100,9 @@ export default defineComponent({
     },
     areImagesLoaded(): boolean {
       return this.loadCarousel && this.loadedImagesSet.size == this.carouselImages.length
+    },
+    showSubtext(): boolean {
+      return this.areImagesLoaded && document.documentElement.clientWidth < document.documentElement.clientHeight *2
     },
     slideWidth(): number {
       if (this.isPortrait) {
@@ -198,7 +200,7 @@ h1 {
 
 .main-text--bottom {
   display: block;
-  top: calc(85%);
+  top: calc(80%);
 }
 
 @media (max-width: 768px) {
