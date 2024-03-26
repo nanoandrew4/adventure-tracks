@@ -135,12 +135,25 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.main {
-  height: 90vh;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
+
+@media (min-aspect-ratio: 1.62) {
+  .main {
+    height: 90vh;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+  }
 }
+
+@media (max-aspect-ratio: 1.62) {
+  .main {
+    height: 90vh;
+    overflow: hidden;
+    display: flex;
+    align-items: start;
+  }
+}
+
 @media (max-height: 500px) {
   .main {
     height: calc((100vh / 2) * sqrt(2));
@@ -198,9 +211,18 @@ h1 {
   align-items: center;
 }
 
-.main-text--bottom {
-  display: block;
-  top: calc(80%);
+@media (min-aspect-ratio: 1.62) {
+  .main-text--bottom {
+    display: block;
+    top: calc(85%);
+  }
+}
+
+@media (max-aspect-ratio: 1.62) {
+  .main-text--bottom {
+    display: block;
+    top: calc(75%);
+  }
 }
 
 @media (max-width: 768px) {
@@ -224,6 +246,7 @@ h1 {
 
 .carousel-slide {
   border-radius: 4px;
+  background-color: transparent;
 }
 
 a {
