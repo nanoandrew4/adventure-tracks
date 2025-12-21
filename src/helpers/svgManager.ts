@@ -18,13 +18,10 @@ function createElevationSvg(
     const elevationProfile = activity.getElevation()
     if (activity.startTime && activity.endTime)
       totalDuration += activity.endTime.getTime() - activity.startTime.getTime()
-    highestPoint = Math.max(...elevationProfile, highestPoint)
-    lowestPoint = Math.min(...elevationProfile, lowestPoint)
-  })
-
+    highestPoint = Math.max(...elevationProfile)
+    lowestPoint = Math.min(...elevationProfile)
+  })  
   const yNormalizationOffset = -lowestPoint + 10
-  highestPoint += yNormalizationOffset
-
   if (highestPoint === 0) {
     return null
   }
@@ -61,7 +58,7 @@ function createElevationSvg(
         currPx +
         ' ' +
         (componentHeight -
-          ((elevationPoint + yNormalizationOffset) / highestPoint) * componentHeight)
+          ((elevationPoint + yNormalizationOffset) / (highestPoint + yNormalizationOffset)) * componentHeight)
       currPx += stepSize
     })
     d += ' L ' + currPx + ' ' + componentHeight
