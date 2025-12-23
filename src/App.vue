@@ -31,7 +31,7 @@ const theme = useTheme()
 
 const darkThemeMq = window.matchMedia('(prefers-color-scheme: dark)')
 if (darkThemeMq.matches) {
-  theme.global.name.value = 'dark'
+  theme.change('dark')
 }
 
 let headerClass = ref('')

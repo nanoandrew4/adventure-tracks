@@ -33,7 +33,7 @@
     "vue-image-zoomer": "^2.2.3",
     "vue-router": "^4.2.5",
     "vue3-icon": "^2.1.0",
-    "vuetify": "^3.4.4",
+    "vuetify": "^3.10.0",
     "vuex": "^4.0.2"
   },
   "devDependencies": {

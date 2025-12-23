@@ -22,8 +22,9 @@
         />
         <v-color-picker
           :model-value="color"
-          @update:model-value="(color) => $emit('color-updated', color)"
+          @update:model-value="(color: string) => $emit('color-updated', color)"
           :mode="'rgb'"
+          :hide-eye-dropper="true"
         ></v-color-picker>
       </div>
     </v-dialog>

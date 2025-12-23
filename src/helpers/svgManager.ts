@@ -12,14 +12,14 @@ function createElevationSvg(
   componentHeight: number
 ): ElevationSvg | null {
   let highestPoint = 0,
-    lowestPoint = 0
+    lowestPoint = 10000
   let totalDuration = 0
   activities.forEach((activity) => {
     const elevationProfile = activity.getElevation()
     if (activity.startTime && activity.endTime)
       totalDuration += activity.endTime.getTime() - activity.startTime.getTime()
-    highestPoint = Math.max(...elevationProfile)
-    lowestPoint = Math.min(...elevationProfile)
+    highestPoint = Math.max(...elevationProfile, highestPoint)
+    lowestPoint = Math.min(...elevationProfile, lowestPoint)
   })  
   const yNormalizationOffset = -lowestPoint + 10
   if (highestPoint === 0) {

@@ -6,7 +6,7 @@
 </template>
 
 <script lang="ts">
-import mapboxgl from 'mapbox-gl'
+import mapboxgl, { type SymbolLayer } from 'mapbox-gl'
 import { defineComponent } from 'vue'
 
 import type { Activity } from '../../types/Activity'
@@ -33,10 +33,10 @@ let store: Store
 let state: State
 let map: mapboxgl.Map
 
-const layersToPutOnTop = ['settlement-major-label', 'settlement-minor-label']
+const layersToPutOnTop = ['settlement-major-label', 'settlement-minor-label', 'place-label', 'path-label', 'place-city-lg-n', 'place-city-lg-s', 'place-city-md-n', 'place-city-md-s', 'place-city-sm', 'place-town', 'contour-label']
 
 export default defineComponent({
-  emits: ["token-unavailable"],
+  emits: ['token-unavailable'],
   computed: {
     lineWidth: (): number => state.adventure.lineWidth,
     activities: (): Activity[] => state.adventure.activities,
@@ -62,24 +62,26 @@ export default defineComponent({
     }
   },
   mounted() {
-    retrieveMapBoxToken().then((token) => {
-      store.commit('SET_MAPBOX_TOKEN', token)
-      
-      mapboxgl.accessToken = token
-      const mapContainerElement = document.getElementById('mapContainer')
-      if (mapContainerElement == null) return
+    retrieveMapBoxToken()
+      .then((token) => {
+        store.commit('SET_MAPBOX_TOKEN', token)
 
-      initializeDevicePixelRatio()
+        mapboxgl.accessToken = token
+        const mapContainerElement = document.getElementById('mapContainer')
+        if (mapContainerElement == null) return
 
-      this.initMap()
+        initializeDevicePixelRatio()
 
-      map.on('load', () => {
-        this.fpsCappedMapRefresh(this.reducedActivities)
-        this.recenter()
+        this.initMap()
+
+        map.on('load', () => {
+          this.fpsCappedMapRefresh(this.reducedActivities)
+          this.recenter()
+        })
       })
-    }).catch(() => {
-      this.$emit('token-unavailable')
-    })
+      .catch(() => {
+        this.$emit('token-unavailable')
+      })
   },
   unmounted() {
     map.remove()
@@ -237,7 +239,9 @@ export default defineComponent({
       this.addLayer(activity)
 
       layersToPutOnTop.forEach((l) => {
-        map.moveLayer(activity.layerName, l)
+        if ((map.getLayer(l) as SymbolLayer)?.id === l) {
+          map.moveLayer(activity.layerName, l)
+        }
       })
 
       this.sourceTracker.registerActivity(activity)
