@@ -10,16 +10,16 @@
           v-bind="props"
           variant="text"
           class="selected-locale text-none"
-          >{{ $t('lang.' + $i18n.locale) }}</v-btn
+          >{{ $t('lang.' + $i18n.locale.value) }}</v-btn
         >
       </template>
 
       <v-list>
         <v-list-item
-          v-for="(locale, index) in $i18n.availableLocales.filter((l) => l != $i18n.locale)"
+          v-for="(locale, index) in $i18n.availableLocales.filter((l) => l != $i18n.locale.value)"
           :key="index"
         >
-          <v-list-item-title @click="$i18n.locale = locale">{{
+          <v-list-item-title @click="$i18n.locale.value = locale">{{
             $t('lang.' + locale)
           }}</v-list-item-title>
         </v-list-item>

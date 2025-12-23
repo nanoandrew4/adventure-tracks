@@ -6,7 +6,7 @@
       src="@/assets/logo.svg"
       width="50"
       height="50"
-      @click="$router.push({ path: '/' })"
+      @click="router.push({ path: '/' })"
     />
 
     <div class="wrapper">
@@ -22,12 +22,13 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { RouterView } from 'vue-router'
+import { useRouter, RouterView } from 'vue-router'
 import LocaleSwitcher from './components/header/LocaleSwitcher.vue'
 import ThemeSwitcher from './components/header/ThemeSwitcher.vue'
 import { useTheme } from 'vuetify'
 
 const theme = useTheme()
+const router = useRouter()
 
 const darkThemeMq = window.matchMedia('(prefers-color-scheme: dark)')
 if (darkThemeMq.matches) {
