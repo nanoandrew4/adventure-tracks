@@ -118,6 +118,8 @@ CUSTOM_TEXT_MODE_TO_PROPS_MAP.set(EDIT_MODE.TEXT, {
   labelSuffix: 'text'
 })
 
+const fontPickerMap: Map<string, FontPicker> = new Map()
+
 export default defineComponent({
   emits: ['update:modelValue'],
   props: {
@@ -171,12 +173,15 @@ export default defineComponent({
   watch: {
     selectedEditMode(newEditMode: number) {
       if (newEditMode === EDIT_MODE.FONT) {
+        console.log(fontPickerMap)
         const t = this
-        const fontPicker = new FontPicker(apiKey, this.modelValue.font, {
-          pickerId: this.pickerId,
-          limit: 300
-        })
-        fontPicker.setOnChange((font) => {
+        if (!fontPickerMap.has(this.pickerId)) {
+          fontPickerMap.set(this.pickerId, new FontPicker(apiKey, this.modelValue.font, {
+            pickerId: this.pickerId,
+            limit: 300
+          }))
+        }
+        fontPickerMap.get(this.pickerId)!.setOnChange((font) => {
           t.emitUpdate(
             (updatedModel: CustomText | CustomTextStyle) => (updatedModel.font = font.family)
           )
@@ -197,7 +202,7 @@ export default defineComponent({
   flex-direction: row;
   align-items: center;
 
-  margin: 0.5vh 0 0.5vh 0;
+  margin: 0.5vh 0.5vh 0.5vh 0;
 }
 
 .customizable-text-menu-list-element {

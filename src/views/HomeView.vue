@@ -69,7 +69,9 @@ export default defineComponent({
   methods: {
     getScaledImage(img: string): string {
       const size = Math.max(this.slideWidth, this.slideHeight)
-      if (size > 960 * 0.75) {
+      if (size > 1300 * 0.75) {
+        return img.replace('.png', '_very_high.webp')
+      } else if (size > 960 * 0.75) {
         return img.replace('.png', '_high.webp')
       } else if (size > 480 * 0.75) {
         return img.replace('.png', '_mid.webp')

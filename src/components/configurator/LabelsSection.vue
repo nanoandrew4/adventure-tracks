@@ -104,10 +104,6 @@ export default defineComponent({
   margin-bottom: 1vh;
 }
 
-.label-container * {
-  margin: 0 0.25vw 0 0.25vw;
-}
-
 .text-field {
   width: 50%;
 }

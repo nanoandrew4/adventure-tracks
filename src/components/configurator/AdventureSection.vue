@@ -165,6 +165,12 @@ export default defineComponent({
 .adventure-layout-container {
   display: flex;
   justify-content: center;
+  .v-btn {
+    margin-right: 0.5vh;
+  }
+  :last-child {
+    margin-right: 0;
+  }
 }
 
 .text-field {
